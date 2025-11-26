@@ -247,7 +247,7 @@ const hotlines: Hotline[] = [
         category: "อาสาสมัคร",
         categories: ["อาสาสมัคร", "ยอดฮิต"],
         description: "ติดต่อคุณกุ้ง",
-        color: "bg-yellow-500",
+        color: "bg-purple-500",
         links: {
             facebook: "facebook: www.facebook.com/junekasama.silachai",
             instagram: ["https://www.instagram.com/june_kasama", "https://www.instagram.com/ple_nakorn"],
