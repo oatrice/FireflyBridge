@@ -50,6 +50,22 @@ const hotlines = [
         description: "แจ้งไฟฟ้าขัดข้อง (ตจว.)",
         color: "bg-purple-500",
     },
+    {
+        id: "7",
+        name: "ศูนย์ ปภ. (สายด่วน)",
+        number: "1784",
+        category: "Disaster",
+        description: "กรมป้องกันและบรรเทาสาธารณภัย",
+        color: "bg-indigo-600",
+    },
+    {
+        id: "8",
+        name: "สำนักงาน ปภ.",
+        number: "02-241-0866",
+        category: "Disaster",
+        description: "กรมป้องกันและบรรเทาสาธารณภัย (สำนักงาน)",
+        color: "bg-indigo-500",
+    },
 ];
 
 const externalLinks = [
