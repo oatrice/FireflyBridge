@@ -81,6 +81,16 @@ export default function Home() {
             <span className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></span>
             System Online
           </div>
+
+          <div className="mt-6">
+            <a
+              href="/rescue-contacts"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+            >
+              <span>🚁</span>
+              <span>จัดการเบอร์กู้ภัย</span>
+            </a>
+          </div>
         </header>
 
         <section>
