@@ -254,6 +254,17 @@ export default function Home() {
             </div>
           )}
         </section>
+
+        {/* Floating Feedback Button */}
+        <a
+          href="https://forms.gle/Wov1KL5bVdajnvkM7"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 font-medium z-50"
+        >
+          <span className="text-xl">💬</span>
+          <span>แจ้งข้อมูล / ข้อเสนอแนะ</span>
+        </a>
       </div>
     </main>
   );
