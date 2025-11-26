@@ -278,7 +278,7 @@ export default function Home() {
                       }
                     });
                     const allCategories = Array.from(allCategoriesSet);
-                    const priorityCategories = ["ทั้งหมด", "ยอดฮิต", "มูลนิธิ", "อาสาสมัคร"];
+                    const priorityCategories = ["ทั้งหมด", "ยอดฮิต", "มูลนิธิ", "อาสาสมัคร", "ท้องถิ่น"];
                     const otherCategories = allCategories.filter(cat => !priorityCategories.includes(cat));
                     const orderedCategories = [...priorityCategories, ...otherCategories];
 
