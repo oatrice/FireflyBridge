@@ -79,26 +79,27 @@ export default function Home() {
           <p className="text-neutral-500 text-lg">
             ศูนย์รวมข้อมูลและประสานงานภัยพิบัติ (Joint Command Center)
           </p>
-          <div className="mt-4 inline-flex items-center px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm font-medium">
+          {/* <div className="mt-4 inline-flex items-center px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm font-medium">
             <span className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></span>
             System Online
-          </div>
+          </div> */}
 
           <div className="mt-6 flex gap-4">
-            <a
+            {/* Temporarily hidden - Contact management and Social Media import feature */}
+            {/* <a
               href="/rescue-contacts"
               className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
             >
               <span>🚁</span>
               <span>จัดการเบอร์กู้ภัย</span>
-            </a>
-            <a
+            </a> */}
+            {/* <a
               href="/cases"
               className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors"
             >
               <span>📱</span>
               <span>นำเข้าเคสจาก Social Media</span>
-            </a>
+            </a> */}
           </div>
         </header>
 
