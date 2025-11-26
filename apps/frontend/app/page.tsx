@@ -102,48 +102,63 @@ export default function Home() {
 
         <section>
           <h2 className="text-2xl font-bold text-neutral-800 mb-6 flex items-center">
-            📞 เบอร์โทรฉุกเฉิน (Emergency Hotlines)
+            🏠 ศูนย์พักพิง (Shelters)
           </h2>
 
           {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[...Array(6)].map((_, i) => (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {[...Array(5)].map((_, i) => (
                 <div
                   key={i}
-                  className="h-40 bg-white rounded-2xl shadow-sm animate-pulse"
+                  className="h-48 bg-white rounded-2xl shadow-sm animate-pulse"
                 ></div>
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {hotlines.map((hotline) => (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {shelters.map((shelter) => (
                 <div
-                  key={hotline.id}
-                  className="group bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 border border-neutral-100 hover:border-neutral-200"
+                  key={shelter.id}
+                  className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 border border-neutral-100"
                 >
-                  <div className="flex justify-between items-start mb-4">
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-semibold text-white ${hotline.color}`}
-                    >
-                      {hotline.category}
-                    </span>
-                    <a
-                      href={`tel:${hotline.number}`}
-                      className="w-10 h-10 flex items-center justify-center rounded-full bg-green-50 text-green-600 hover:bg-green-100 transition-colors"
-                      aria-label={`Call ${hotline.name}`}
-                    >
-                      📞
-                    </a>
+                  <div className="flex items-start gap-4 mb-4">
+                    <div className="text-4xl">{shelter.icon}</div>
+                    <div className="flex-1">
+                      <h3 className="text-lg font-bold text-neutral-900 mb-1">
+                        {shelter.name}
+                      </h3>
+                      <p className="text-neutral-600 text-sm mb-1">
+                        📍 {shelter.location}
+                      </p>
+                      <p className="text-green-600 text-sm font-medium">
+                        ✅ {shelter.status}
+                      </p>
+                    </div>
                   </div>
-                  <h3 className="text-xl font-bold text-neutral-900 mb-1">
-                    {hotline.number}
-                  </h3>
-                  <p className="text-neutral-800 font-medium mb-2">
-                    {hotline.name}
-                  </p>
-                  <p className="text-neutral-500 text-sm">
-                    {hotline.description}
-                  </p>
+
+                  <div className="border-t border-neutral-100 pt-4">
+                    <p className="text-neutral-700 font-medium text-sm mb-2">
+                      ผู้ประสานงาน:
+                    </p>
+                    <div className="space-y-2">
+                      {shelter.contacts.map((contact, idx) => (
+                        <div
+                          key={idx}
+                          className="flex items-center justify-between text-sm"
+                        >
+                          <span className="text-neutral-600 flex-1">
+                            {contact.name}
+                          </span>
+                          <a
+                            href={`tel:${contact.phone}`}
+                            className="text-blue-600 font-medium hover:text-blue-700 hover:underline"
+                          >
+                            {contact.phone}
+                          </a>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
@@ -209,63 +224,48 @@ export default function Home() {
 
         <section className="mt-12">
           <h2 className="text-2xl font-bold text-neutral-800 mb-6 flex items-center">
-            🏠 ศูนย์พักพิง (Shelters)
+            📞 เบอร์โทรฉุกเฉิน (Emergency Hotlines)
           </h2>
 
           {loading ? (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {[...Array(5)].map((_, i) => (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[...Array(6)].map((_, i) => (
                 <div
                   key={i}
-                  className="h-48 bg-white rounded-2xl shadow-sm animate-pulse"
+                  className="h-40 bg-white rounded-2xl shadow-sm animate-pulse"
                 ></div>
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {shelters.map((shelter) => (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {hotlines.map((hotline) => (
                 <div
-                  key={shelter.id}
-                  className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 border border-neutral-100"
+                  key={hotline.id}
+                  className="group bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 border border-neutral-100 hover:border-neutral-200"
                 >
-                  <div className="flex items-start gap-4 mb-4">
-                    <div className="text-4xl">{shelter.icon}</div>
-                    <div className="flex-1">
-                      <h3 className="text-lg font-bold text-neutral-900 mb-1">
-                        {shelter.name}
-                      </h3>
-                      <p className="text-neutral-600 text-sm mb-1">
-                        📍 {shelter.location}
-                      </p>
-                      <p className="text-green-600 text-sm font-medium">
-                        ✅ {shelter.status}
-                      </p>
-                    </div>
+                  <div className="flex justify-between items-start mb-4">
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-semibold text-white ${hotline.color}`}
+                    >
+                      {hotline.category}
+                    </span>
+                    <a
+                      href={`tel:${hotline.number}`}
+                      className="w-10 h-10 flex items-center justify-center rounded-full bg-green-50 text-green-600 hover:bg-green-100 transition-colors"
+                      aria-label={`Call ${hotline.name}`}
+                    >
+                      📞
+                    </a>
                   </div>
-
-                  <div className="border-t border-neutral-100 pt-4">
-                    <p className="text-neutral-700 font-medium text-sm mb-2">
-                      ผู้ประสานงาน:
-                    </p>
-                    <div className="space-y-2">
-                      {shelter.contacts.map((contact, idx) => (
-                        <div
-                          key={idx}
-                          className="flex items-center justify-between text-sm"
-                        >
-                          <span className="text-neutral-600 flex-1">
-                            {contact.name}
-                          </span>
-                          <a
-                            href={`tel:${contact.phone}`}
-                            className="text-blue-600 font-medium hover:text-blue-700 hover:underline"
-                          >
-                            {contact.phone}
-                          </a>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                  <h3 className="text-xl font-bold text-neutral-900 mb-1">
+                    {hotline.number}
+                  </h3>
+                  <p className="text-neutral-800 font-medium mb-2">
+                    {hotline.name}
+                  </p>
+                  <p className="text-neutral-500 text-sm">
+                    {hotline.description}
+                  </p>
                 </div>
               ))}
             </div>
