@@ -20,28 +20,43 @@ interface ExternalLink {
   icon: string;
 }
 
+interface Shelter {
+  id: string;
+  name: string;
+  location: string;
+  status: string;
+  contacts: Array<{ name: string; phone: string }>;
+  area: string;
+  icon: string;
+}
+
 export default function Home() {
   const [hotlines, setHotlines] = useState<Hotline[]>([]);
   const [externalLinks, setExternalLinks] = useState<ExternalLink[]>([]);
+  const [shelters, setShelters] = useState<Shelter[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [hotlinesRes, linksRes] = await Promise.all([
+        const [hotlinesRes, linksRes, sheltersRes] = await Promise.all([
           fetch("http://localhost:3001/hotlines"),
           fetch("http://localhost:3001/external-links"),
+          fetch("http://localhost:3001/shelters"),
         ]);
 
-        if (!hotlinesRes.ok || !linksRes.ok) throw new Error("Failed to fetch");
+        if (!hotlinesRes.ok || !linksRes.ok || !sheltersRes.ok)
+          throw new Error("Failed to fetch");
 
-        const [hotlinesData, linksData] = await Promise.all([
+        const [hotlinesData, linksData, sheltersData] = await Promise.all([
           hotlinesRes.json(),
           linksRes.json(),
+          sheltersRes.json(),
         ]);
 
         setHotlines(hotlinesData);
         setExternalLinks(linksData);
+        setShelters(sheltersData);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -170,6 +185,71 @@ export default function Home() {
                     </div>
                   </div>
                 </a>
+              ))}
+            </div>
+          )}
+        </section>
+
+        <section className="mt-12">
+          <h2 className="text-2xl font-bold text-neutral-800 mb-6 flex items-center">
+            🏠 ศูนย์พักพิง (Shelters)
+          </h2>
+
+          {loading ? (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {[...Array(5)].map((_, i) => (
+                <div
+                  key={i}
+                  className="h-48 bg-white rounded-2xl shadow-sm animate-pulse"
+                ></div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {shelters.map((shelter) => (
+                <div
+                  key={shelter.id}
+                  className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 border border-neutral-100"
+                >
+                  <div className="flex items-start gap-4 mb-4">
+                    <div className="text-4xl">{shelter.icon}</div>
+                    <div className="flex-1">
+                      <h3 className="text-lg font-bold text-neutral-900 mb-1">
+                        {shelter.name}
+                      </h3>
+                      <p className="text-neutral-600 text-sm mb-1">
+                        📍 {shelter.location}
+                      </p>
+                      <p className="text-green-600 text-sm font-medium">
+                        ✅ {shelter.status}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="border-t border-neutral-100 pt-4">
+                    <p className="text-neutral-700 font-medium text-sm mb-2">
+                      ผู้ประสานงาน:
+                    </p>
+                    <div className="space-y-2">
+                      {shelter.contacts.map((contact, idx) => (
+                        <div
+                          key={idx}
+                          className="flex items-center justify-between text-sm"
+                        >
+                          <span className="text-neutral-600 flex-1">
+                            {contact.name}
+                          </span>
+                          <a
+                            href={`tel:${contact.phone}`}
+                            className="text-blue-600 font-medium hover:text-blue-700 hover:underline"
+                          >
+                            {contact.phone}
+                          </a>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
               ))}
             </div>
           )}

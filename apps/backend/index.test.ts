@@ -39,4 +39,21 @@ describe("FireflyBridge Backend", () => {
         expect(jitasa).toBeDefined();
         expect(jitasa.url).toBe("https://jitasa.care/");
     });
+
+    it("GET /shelters returns 200 and list of shelters", async () => {
+        const response = await app.handle(new Request("http://localhost/shelters"));
+        expect(response.status).toBe(200);
+
+        const data = (await response.json()) as any[];
+        expect(data).toBeArray();
+        expect(data.length).toBeGreaterThan(0);
+        expect(data[0]).toHaveProperty("name");
+        expect(data[0]).toHaveProperty("contacts");
+
+        // Check specific known data
+        const psu = data.find((s: any) => s.name.includes("มหาวิทยาลัยสงขลานครินทร์"));
+        expect(psu).toBeDefined();
+        expect(psu.contacts).toBeArray();
+        expect(psu.contacts.length).toBeGreaterThan(0);
+    });
 });
