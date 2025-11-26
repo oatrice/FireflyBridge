@@ -224,7 +224,7 @@ const hotlines: Hotline[] = [
         category: "มูลนิธิ",
         categories: ["มูลนิธิ", "ยอดฮิต"],
         description: "สายด่วนร่วมด้วยช่วยกัน",
-        color: "bg-purple-500",
+        color: "bg-teal-500",
         links: {
             facebook: "https://www.facebook.com/ruamkatanyu",
         }
