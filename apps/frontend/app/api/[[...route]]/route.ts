@@ -143,10 +143,7 @@ const hotlines: Hotline[] = [
         category: "ฉุกเฉิน",
         categories: ["ฉุกเฉิน", "ยอดฮิต"],
         description: "มูลนิธิมิตรภาพสามัคคี (ท่งเซียเซี่ยงตึ๊ง)",
-        color: "bg-red-500",
-        links: {
-            facebook: "https://www.facebook.com/sawanghaiyai"
-        }
+        color: "bg-red-500"
     },
     {
         id: "12",
@@ -154,10 +151,7 @@ const hotlines: Hotline[] = [
         number: "074-316-380",
         category: "ท้องถิ่น",
         description: "ป้องกันและบรรเทาสาธารณภัย",
-        color: "bg-green-500",
-        links: {
-            facebook: "https://www.facebook.com/songkhla.disaster"
-        }
+        color: "bg-green-500"
     },
 
     // Foundations (Local)
@@ -167,10 +161,7 @@ const hotlines: Hotline[] = [
         number: "074-350-955",
         category: "มูลนิธิ",
         description: "หาดใหญ่ - สงเคราะห์ผู้ประสบภัย",
-        color: "bg-teal-500",
-        links: {
-            facebook: "https://www.facebook.com/sawanghaiyai"
-        }
+        color: "bg-teal-500"
     },
     {
         id: "21",
@@ -180,7 +171,6 @@ const hotlines: Hotline[] = [
         description: "อาคารกิจกรรมนักศึกษาและศูนย์กีฬา ม.อ.",
         color: "bg-teal-500",
         links: {
-            facebook: "https://www.facebook.com/PSU.Student.Development",
             website: "https://www.psu.ac.th/"
         }
     },
@@ -202,10 +192,7 @@ const hotlines: Hotline[] = [
         number: "074-221-286",
         category: "มูลนิธิ",
         description: "พัฒนาชุมชนและสังคม",
-        color: "bg-teal-500",
-        links: {
-            facebook: "https://www.facebook.com/SongkhlaCommunityFoundation"
-        }
+        color: "bg-teal-500"
     },
     {
         id: "24",
@@ -236,7 +223,7 @@ const hotlines: Hotline[] = [
         description: "สายด่วนสภากาชาดไทย",
         color: "bg-pink-500",
         links: {
-            facebook: "https://www.facebook.com/ThaiRedCross",
+            facebook: "https://www.facebook.com/ThaiRedCrossSociety",
             website: "https://www.redcross.or.th/"
         }
     },
@@ -247,21 +234,20 @@ const hotlines: Hotline[] = [
         category: "อาสาสมัคร",
         categories: ["อาสาสมัคร", "ยอดฮิต"],
         description: "ติดต่อคุณองุ่น",
-        color: "bg-purple-500",
-        links: {
-            facebook: "https://www.facebook.com/org.thamdee"
-        }
+        color: "bg-purple-500"
     },
     {
         id: "33",
         name: "โรงครัวเปิ้ล นาคร",
-        number: "06-3226-0599",
+        numbers : ["06-3226-0599", "08-1413-4222", "08-2323-2345"],
         category: "อาสาสมัคร",
         categories: ["อาสาสมัคร", "ยอดฮิต"],
         description: "ติดต่อคุณกุ้ง",
         color: "bg-yellow-500",
         links: {
-            facebook: "https://www.facebook.com/PleNakornChannel"
+            facebook: "facebook: www.facebook.com/junekasama.silachai",
+            instagram: ["https://www.instagram.com/june_kasama", "https://www.instagram.com/ple_nakorn"],
+            youtube: "www.youtube.com/plenakornChannel"
         }
     },
     {
@@ -333,9 +319,7 @@ const hotlines: Hotline[] = [
         number: "074-333-222",
         category: "ท้องถิ่น",
         description: "พื้นที่น้ำน้อย",
-        color: "bg-green-500",
-        links: {
-            facebook: "https://www.facebook.com/namnoicity",        }
+        color: "bg-green-500"
     },
     {
         id: "53",
@@ -345,8 +329,8 @@ const hotlines: Hotline[] = [
         description: "พื้นที่ควนลัง",
         color: "bg-green-500",
         links: {
-            facebook: "https://www.facebook.com/KhuanklangCity",
-            website: "https://www.khuanlang.go.th/"
+            website: "https://www.khuanlang.go.th/",
+            facebook: "https://www.facebook.com/khuanlang"
         }
     },
 ];
