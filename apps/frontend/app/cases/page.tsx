@@ -30,6 +30,7 @@ export default function CasesPage() {
         latitude: "",
         longitude: "",
     });
+    const [coordinateInput, setCoordinateInput] = useState("");
     const [extractedData, setExtractedData] = useState<any>(null);
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
@@ -86,6 +87,7 @@ export default function CasesPage() {
             setExtractedData(newCase);
             setSuccess("เพิ่มเคสสำเร็จ");
             setFormData({ source: "facebook", source_url: "", raw_content: "", latitude: "", longitude: "" });
+            setCoordinateInput("");
             fetchCases();
         } catch (err) {
             setError("เกิดข้อผิดพลาดในการเพิ่มข้อมูล");
@@ -230,38 +232,38 @@ export default function CasesPage() {
                             </p>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-sm font-medium text-neutral-700 mb-1">
-                                    Latitude (ถ้ามี)
-                                </label>
-                                <input
-                                    type="number"
-                                    step="any"
-                                    value={formData.latitude}
-                                    onChange={(e) =>
-                                        setFormData({ ...formData, latitude: e.target.value })
-                                    }
-                                    className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-neutral-900"
-                                    placeholder="7.0067"
-                                />
-                            </div>
+                        <div className="md:col-span-2">
+                            <label className="block text-sm font-medium text-neutral-700 mb-1">
+                                พิกัด (Latitude, Longitude)
+                            </label>
+                            <input
+                                type="text"
+                                value={coordinateInput}
+                                onChange={(e) => {
+                                    const val = e.target.value;
+                                    setCoordinateInput(val);
 
-                            <div>
-                                <label className="block text-sm font-medium text-neutral-700 mb-1">
-                                    Longitude (ถ้ามี)
-                                </label>
-                                <input
-                                    type="number"
-                                    step="any"
-                                    value={formData.longitude}
-                                    onChange={(e) =>
-                                        setFormData({ ...formData, longitude: e.target.value })
+                                    // Regex to match various formats:
+                                    // 1. "lat, lng" or "lat,lng"
+                                    // 2. "lat lng"
+                                    // 3. "Lat: lat Lng: lng" etc.
+                                    // We'll extract all numbers and take the first two.
+                                    const numbers = val.match(/-?\d+(\.\d+)?/g);
+
+                                    if (numbers && numbers.length >= 2) {
+                                        const lat = numbers[0];
+                                        const lng = numbers[1];
+                                        setFormData({ ...formData, latitude: lat, longitude: lng });
+                                    } else {
+                                        setFormData({ ...formData, latitude: "", longitude: "" });
                                     }
-                                    className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-neutral-900"
-                                    placeholder="100.4925"
-                                />
-                            </div>
+                                }}
+                                className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-neutral-900"
+                                placeholder="เช่น 13.7563, 100.5018 หรือ 13.7563 100.5018"
+                            />
+                            <p className="text-xs text-neutral-500 mt-1">
+                                รองรับรูปแบบ: "lat, lng", "lat lng", หรือก๊อปปี้จาก Google Maps มาวางได้เลย
+                            </p>
                         </div>
 
                         <button
