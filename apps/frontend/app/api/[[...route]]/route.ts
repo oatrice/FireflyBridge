@@ -226,9 +226,7 @@ const hotlines: Hotline[] = [
         description: "สายด่วนร่วมด้วยช่วยกัน",
         color: "bg-purple-500",
         links: {
-            facebook: "https://www.facebook.com/ruamkatanyu",
-            website: "https://www.ruamkatanyu.or.th/"
-        }
+            facebook: "https://www.facebook.com/ruamkatanyu",        }
     },
     {
         id: "31",
@@ -327,9 +325,7 @@ const hotlines: Hotline[] = [
         description: "พื้นที่คลองแห",
         color: "bg-green-500",
         links: {
-            facebook: "https://www.facebook.com/klonghaecity",
-            website: "https://www.klonghaecity.go.th/"
-        }
+            facebook: "https://www.facebook.com/klonghaecity",        }
     },
     {
         id: "52",
@@ -339,9 +335,7 @@ const hotlines: Hotline[] = [
         description: "พื้นที่น้ำน้อย",
         color: "bg-green-500",
         links: {
-            facebook: "https://www.facebook.com/namnoicity",
-            website: "http://namnoicity.go.th/"
-        }
+            facebook: "https://www.facebook.com/namnoicity",        }
     },
     {
         id: "53",
