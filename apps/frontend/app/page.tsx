@@ -338,51 +338,46 @@ export default function Home() {
                         key={hotline.id}
                         className="group bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 border border-neutral-100 hover:border-neutral-200"
                       >
-                        <div className="flex justify-between items-start mb-4">
+                        <div className="flex justify-between items-start mb-2">
                           <span
                             className={`px-3 py-1 rounded-full text-xs font-semibold text-white ${hotline.color}`}
                           >
                             {hotline.category}
                           </span>
-                          {/* Call Button Logic */}
-                          {hotline.numbers && hotline.numbers.length > 0 ? (
-                            <div className="flex gap-1">
-                              {hotline.numbers.map((num, idx) => (
-                                <a
-                                  key={idx}
-                                  href={`tel:${num}`}
-                                  className="w-10 h-10 flex items-center justify-center rounded-full bg-green-50 text-green-600 hover:bg-green-100 transition-colors"
-                                  aria-label={`Call ${hotline.name} - ${num}`}
-                                  title={`Call ${num}`}
-                                >
-                                  📞
-                                </a>
-                              ))}
-                            </div>
-                          ) : (
-                            <a
-                              href={`tel:${hotline.number}`}
-                              className="w-10 h-10 flex items-center justify-center rounded-full bg-green-50 text-green-600 hover:bg-green-100 transition-colors"
-                              aria-label={`Call ${hotline.name}`}
-                            >
-                              📞
-                            </a>
-                          )}
                         </div>
 
                         {/* Phone Number Display Logic */}
                         {hotline.numbers && hotline.numbers.length > 0 ? (
-                          <div className="mb-1">
+                          <div className="mb-2 space-y-1">
                             {hotline.numbers.map((num, idx) => (
-                              <h3 key={idx} className="text-xl font-bold text-neutral-900">
-                                {num}
-                              </h3>
+                              <a
+                                key={idx}
+                                href={`tel:${num}`}
+                                className="flex items-center gap-2 group w-fit hover:opacity-80 transition-opacity"
+                                title={`Call ${num}`}
+                              >
+                                <h3 className="text-xl font-bold text-neutral-900 group-hover:text-blue-600 transition-colors">
+                                  {num}
+                                </h3>
+                                <span className="w-8 h-8 flex items-center justify-center rounded-full bg-green-50 text-green-600 group-hover:bg-green-100 transition-colors text-sm">
+                                  📞
+                                </span>
+                              </a>
                             ))}
                           </div>
                         ) : (
-                          <h3 className="text-xl font-bold text-neutral-900 mb-1">
-                            {hotline.number}
-                          </h3>
+                          <a
+                            href={`tel:${hotline.number}`}
+                            className="flex items-center gap-2 group w-fit mb-2 hover:opacity-80 transition-opacity"
+                            title={`Call ${hotline.name}`}
+                          >
+                            <h3 className="text-xl font-bold text-neutral-900 group-hover:text-blue-600 transition-colors">
+                              {hotline.number}
+                            </h3>
+                            <span className="w-8 h-8 flex items-center justify-center rounded-full bg-green-50 text-green-600 group-hover:bg-green-100 transition-colors text-sm">
+                              📞
+                            </span>
+                          </a>
                         )}
 
                         <p className="text-neutral-800 font-medium mb-2">
