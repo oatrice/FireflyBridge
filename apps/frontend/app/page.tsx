@@ -78,15 +78,17 @@ export default function Home() {
 
       <div className="max-w-5xl mx-auto relative z-10">
         <header className="mb-12 text-center">
-          <div className="inline-block mb-4 px-6 py-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full shadow-lg">
-            <h1 className="text-4xl font-extrabold text-white tracking-tight flex items-center justify-center gap-3">
-              <span className="text-5xl">🛟</span>
-              Firefly Bridge
-            </h1>
+          <div className="flex flex-col items-center">
+            <div className="inline-block mb-4 px-6 py-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full shadow-lg">
+              <h1 className="text-4xl font-extrabold text-white tracking-tight flex items-center gap-3">
+                <span className="text-5xl">🛟</span>
+                Firefly Bridge
+              </h1>
+            </div>
+            <p className="text-neutral-700 text-lg font-medium mt-4 bg-white/60 backdrop-blur-sm inline-block px-6 py-2 rounded-full shadow-sm">
+              ศูนย์รวมข้อมูลและประสานงานภัยพิบัติ
+            </p>
           </div>
-          <p className="text-neutral-700 text-lg font-medium mt-4 bg-white/60 backdrop-blur-sm inline-block px-6 py-2 rounded-full shadow-sm">
-            ศูนย์รวมข้อมูลและประสานงานภัยพิบัติ (Joint Command Center)
-          </p>
           {/* <div className="mt-4 inline-flex items-center px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm font-medium">
             <span className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></span>
             System Online
@@ -420,7 +422,7 @@ export default function Home() {
           <span className="text-xl">💬</span>
           <span>แจ้งข้อมูล / ข้อเสนอแนะ</span>
         </a>
-      </div>
-    </main>
+      </div >
+    </main >
   );
 }
