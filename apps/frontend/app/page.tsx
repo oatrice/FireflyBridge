@@ -11,25 +11,45 @@ interface Hotline {
   color: string;
 }
 
+interface ExternalLink {
+  id: string;
+  name: string;
+  url: string;
+  description: string;
+  category: string;
+  icon: string;
+}
+
 export default function Home() {
   const [hotlines, setHotlines] = useState<Hotline[]>([]);
+  const [externalLinks, setExternalLinks] = useState<ExternalLink[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchHotlines = async () => {
+    const fetchData = async () => {
       try {
-        const res = await fetch("http://localhost:3001/hotlines");
-        if (!res.ok) throw new Error("Failed to fetch");
-        const data = await res.json();
-        setHotlines(data);
+        const [hotlinesRes, linksRes] = await Promise.all([
+          fetch("http://localhost:3001/hotlines"),
+          fetch("http://localhost:3001/external-links"),
+        ]);
+
+        if (!hotlinesRes.ok || !linksRes.ok) throw new Error("Failed to fetch");
+
+        const [hotlinesData, linksData] = await Promise.all([
+          hotlinesRes.json(),
+          linksRes.json(),
+        ]);
+
+        setHotlines(hotlinesData);
+        setExternalLinks(linksData);
       } catch (error) {
-        console.error("Error fetching hotlines:", error);
+        console.error("Error fetching data:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchHotlines();
+    fetchData();
   }, []);
 
   return (
@@ -93,6 +113,63 @@ export default function Home() {
                     {hotline.description}
                   </p>
                 </div>
+              ))}
+            </div>
+          )}
+        </section>
+
+        <section className="mt-12">
+          <h2 className="text-2xl font-bold text-neutral-800 mb-6 flex items-center">
+            🔗 แพลตฟอร์มภายนอก (External Rescue Platforms)
+          </h2>
+
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {[...Array(2)].map((_, i) => (
+                <div
+                  key={i}
+                  className="h-32 bg-white rounded-2xl shadow-sm animate-pulse"
+                ></div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {externalLinks.map((link) => (
+                <a
+                  key={link.id}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 border border-neutral-100 hover:border-blue-200 hover:bg-blue-50/30"
+                >
+                  <div className="flex items-start gap-4">
+                    <div className="text-4xl">{link.icon}</div>
+                    <div className="flex-1">
+                      <h3 className="text-xl font-bold text-neutral-900 mb-1 group-hover:text-blue-600 transition-colors">
+                        {link.name}
+                      </h3>
+                      <p className="text-neutral-600 text-sm mb-2">
+                        {link.description}
+                      </p>
+                      <div className="flex items-center text-blue-600 text-sm font-medium">
+                        <span>เปิดดูข้อมูล</span>
+                        <svg
+                          className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M14 5l7 7m0 0l-7 7m7-7H3"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                </a>
               ))}
             </div>
           )}

@@ -52,10 +52,38 @@ const hotlines = [
     }
 ];
 
+const externalLinks = [
+    {
+        id: "1",
+        name: "Jitasa Care",
+        url: "https://jitasa.care/",
+        description: "แพลตฟอร์มประสานงานช่วยเหลือผู้ประสบภัย",
+        category: "Rescue Platform",
+        icon: "🆘"
+    },
+    {
+        id: "2",
+        name: "Kai Tod Hat Yai",
+        url: "https://kaitodhatyaii.vercel.app/",
+        description: "ระบบแจ้งเหตุน้ำท่วมและขอความช่วยเหลือ หาดใหญ่-สงขลา",
+        category: "Rescue Platform",
+        icon: "🌊"
+    },
+    {
+        id: "3",
+        name: "Rescue Sync",
+        url: "https://rescue.sync.co.th/",
+        description: "แพลตฟอร์มประสานงานช่วยเหลือและติดตามสถานการณ์แบบเรียลไทม์",
+        category: "Rescue Platform",
+        icon: "🚀"
+    }
+];
+
 export const app = new Elysia()
     .use(cors())
     .get("/", () => "FireflyBridge Backend is Running 🚀")
-    .get("/hotlines", () => hotlines);
+    .get("/hotlines", () => hotlines)
+    .get("/external-links", () => externalLinks);
 
 if (import.meta.main) {
     app.listen(3001);

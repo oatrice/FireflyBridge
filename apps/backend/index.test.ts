@@ -12,7 +12,7 @@ describe("FireflyBridge Backend", () => {
         const response = await app.handle(new Request("http://localhost/hotlines"));
         expect(response.status).toBe(200);
 
-        const data = await response.json();
+        const data = (await response.json()) as any[];
         expect(data).toBeArray();
         expect(data.length).toBeGreaterThan(0);
         expect(data[0]).toHaveProperty("number");
@@ -22,5 +22,21 @@ describe("FireflyBridge Backend", () => {
         const police = data.find((h: any) => h.number === "191");
         expect(police).toBeDefined();
         expect(police.name).toBe("เหตุด่วนเหตุร้าย");
+    });
+
+    it("GET /external-links returns 200 and list of external links", async () => {
+        const response = await app.handle(new Request("http://localhost/external-links"));
+        expect(response.status).toBe(200);
+
+        const data = (await response.json()) as any[];
+        expect(data).toBeArray();
+        expect(data.length).toBeGreaterThan(0);
+        expect(data[0]).toHaveProperty("url");
+        expect(data[0]).toHaveProperty("name");
+
+        // Check specific known data
+        const jitasa = data.find((link: any) => link.name === "Jitasa Care");
+        expect(jitasa).toBeDefined();
+        expect(jitasa.url).toBe("https://jitasa.care/");
     });
 });
