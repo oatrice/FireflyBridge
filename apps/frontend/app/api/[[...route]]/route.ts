@@ -43,6 +43,38 @@ const hotlines = [
         description: "สายด่วนภาครัฐ",
         color: "bg-blue-600",
     },
+    {
+        id: "6",
+        name: "ตำรวจทางหลวง",
+        number: "1193",
+        category: "Traffic",
+        description: "แจ้งอุบัติเหตุบนทางหลวง",
+        color: "bg-yellow-600",
+    },
+    {
+        id: "7",
+        name: "กรมเจ้าท่า",
+        number: "1199",
+        category: "Water",
+        description: "แจ้งเหตุทางน้ำ",
+        color: "bg-blue-500",
+    },
+    {
+        id: "8",
+        name: "ศูนย์ ปภ. (สายด่วน)",
+        number: "1784",
+        category: "Disaster",
+        description: "กรมป้องกันและบรรเทาสาธารณภัย",
+        color: "bg-indigo-600",
+    },
+    {
+        id: "9",
+        name: "สำนักงาน ปภ.",
+        number: "02-241-0866",
+        category: "Disaster",
+        description: "กรมป้องกันและบรรเทาสาธารณภัย (สำนักงาน)",
+        color: "bg-indigo-500",
+    },
 
     // Local Hatyai/Songkhla Emergency
     {
