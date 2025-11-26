@@ -365,7 +365,7 @@ export default function Home() {
                               </a>
                             ))}
                           </div>
-                        ) : (
+                        ) : hotline.number ? (
                           <a
                             href={`tel:${hotline.number}`}
                             className="flex items-center gap-2 group w-fit mb-2 hover:opacity-80 transition-opacity"
@@ -378,7 +378,7 @@ export default function Home() {
                               📞
                             </span>
                           </a>
-                        )}
+                        ) : null}
 
                         <p className="text-neutral-800 font-medium mb-2">
                           {hotline.name}
