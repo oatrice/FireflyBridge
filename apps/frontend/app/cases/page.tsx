@@ -276,7 +276,7 @@ export default function CasesPage() {
                     {extractedData && (
                         <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                             <h3 className="font-bold text-blue-900 mb-2">ข้อมูลที่ดึงได้:</h3>
-                            <div className="space-y-1 text-sm">
+                            <div className="space-y-1 text-sm text-neutral-900">
                                 <p><strong>เบอร์โทร:</strong> {extractedData.extracted_phones?.join(", ") || "-"}</p>
                                 <p><strong>สถานที่:</strong> {extractedData.extracted_location || "-"}</p>
                                 <p><strong>รายละเอียด:</strong> {extractedData.description}</p>
@@ -371,19 +371,19 @@ export default function CasesPage() {
                                     </p>
 
                                     {c.extracted_phones && c.extracted_phones.length > 0 && (
-                                        <p className="text-sm text-neutral-600 mb-1">
+                                        <p className="text-sm text-neutral-900 mb-1">
                                             <strong>เบอร์โทร:</strong> {c.extracted_phones.join(", ")}
                                         </p>
                                     )}
 
                                     {c.extracted_location && (
-                                        <p className="text-sm text-neutral-600 mb-1">
+                                        <p className="text-sm text-neutral-900 mb-1">
                                             <strong>สถานที่:</strong> {c.extracted_location}
                                         </p>
                                     )}
 
                                     {(c.latitude && c.longitude) && (
-                                        <p className="text-sm text-neutral-600 mb-1">
+                                        <p className="text-sm text-neutral-900 mb-1">
                                             <strong>พิกัด:</strong> {c.latitude}, {c.longitude}
                                         </p>
                                     )}
