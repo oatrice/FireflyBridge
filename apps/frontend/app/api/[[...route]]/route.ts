@@ -267,7 +267,7 @@ const externalLinks = [
     {
         id: "4",
         name: "Thai Flood Help",
-        url: "https://thaiflood.help/",
+        url: "https://thaifloodhelp.com/",
         description: "AI ช่วยคัดกรองข้อมูลผู้ประสบภัย",
         category: "แพลตฟอร์มช่วยเหลือ",
         icon: "🤖",
@@ -291,7 +291,7 @@ const externalLinks = [
     {
         id: "7",
         name: "กันจอมพลังช่วยสู้",
-        url: "https://www.facebook.com/gunjompalang",
+        url: "https://www.facebook.com/gunjompalang1",
         description: "ติดตามความช่วยเหลือและประสานงาน",
         category: "อาสาสมัคร",
         icon: "💪",
