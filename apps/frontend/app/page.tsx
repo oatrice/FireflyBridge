@@ -70,13 +70,21 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-neutral-50 p-8 font-sans">
-      <div className="max-w-5xl mx-auto">
+    <main className="min-h-screen bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 p-8 font-sans relative overflow-hidden">
+      {/* Decorative background elements */}
+      <div className="absolute top-0 left-0 w-96 h-96 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-blob"></div>
+      <div className="absolute top-0 right-0 w-96 h-96 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-blob animation-delay-2000"></div>
+      <div className="absolute bottom-0 left-1/2 w-96 h-96 bg-pink-300 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-blob animation-delay-4000"></div>
+
+      <div className="max-w-5xl mx-auto relative z-10">
         <header className="mb-12 text-center">
-          <h1 className="text-4xl font-extrabold text-neutral-900 mb-2 tracking-tight">
-            Firefly Bridge 🛟
-          </h1>
-          <p className="text-neutral-500 text-lg">
+          <div className="inline-block mb-4 px-6 py-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full shadow-lg">
+            <h1 className="text-4xl font-extrabold text-white tracking-tight flex items-center justify-center gap-3">
+              <span className="text-5xl">🛟</span>
+              Firefly Bridge
+            </h1>
+          </div>
+          <p className="text-neutral-700 text-lg font-medium mt-4 bg-white/60 backdrop-blur-sm inline-block px-6 py-2 rounded-full shadow-sm">
             ศูนย์รวมข้อมูลและประสานงานภัยพิบัติ (Joint Command Center)
           </p>
           {/* <div className="mt-4 inline-flex items-center px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm font-medium">
@@ -269,8 +277,8 @@ export default function Home() {
                         key={category}
                         onClick={() => setSelectedCategory(category === "ทั้งหมด" ? "All" : category)}
                         className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${(category === "ทั้งหมด" && selectedCategory === "All") || selectedCategory === category
-                            ? "bg-blue-600 text-white"
-                            : "bg-white text-neutral-600 hover:bg-neutral-100 border border-neutral-200"
+                          ? "bg-blue-600 text-white"
+                          : "bg-white text-neutral-600 hover:bg-neutral-100 border border-neutral-200"
                           }`}
                       >
                         {category}
