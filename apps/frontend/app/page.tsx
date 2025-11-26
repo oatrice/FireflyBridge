@@ -36,7 +36,7 @@ export default function Home() {
   const [shelters, setShelters] = useState<Shelter[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedCategory, setSelectedCategory] = useState("มูลนิธิ");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -258,29 +258,25 @@ export default function Home() {
 
                 {/* Category Filter */}
                 <div className="flex flex-wrap gap-2">
-                  <button
-                    onClick={() => setSelectedCategory("All")}
-                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${selectedCategory === "All"
-                      ? "bg-neutral-900 text-white"
-                      : "bg-white text-neutral-600 hover:bg-neutral-100 border border-neutral-200"
-                      }`}
-                  >
-                    ทั้งหมด
-                  </button>
-                  {Array.from(new Set(hotlines.map((h) => h.category))).map(
-                    (category) => (
+                  {(() => {
+                    const allCategories = Array.from(new Set(hotlines.map((h) => h.category)));
+                    const priorityCategories = ["ทั้งหมด", "มูลนิธิ", "อาสาสมัคร"];
+                    const otherCategories = allCategories.filter(cat => !priorityCategories.includes(cat));
+                    const orderedCategories = [...priorityCategories, ...otherCategories];
+
+                    return orderedCategories.map((category) => (
                       <button
                         key={category}
-                        onClick={() => setSelectedCategory(category)}
-                        className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${selectedCategory === category
-                          ? "bg-blue-600 text-white"
-                          : "bg-white text-neutral-600 hover:bg-neutral-100 border border-neutral-200"
+                        onClick={() => setSelectedCategory(category === "ทั้งหมด" ? "All" : category)}
+                        className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${(category === "ทั้งหมด" && selectedCategory === "All") || selectedCategory === category
+                            ? "bg-blue-600 text-white"
+                            : "bg-white text-neutral-600 hover:bg-neutral-100 border border-neutral-200"
                           }`}
                       >
                         {category}
                       </button>
-                    )
-                  )}
+                    ));
+                  })()}
                 </div>
               </div>
 
