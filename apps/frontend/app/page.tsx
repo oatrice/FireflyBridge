@@ -259,7 +259,7 @@ export default function Home() {
                     placeholder="ค้นหาเบอร์โทร, หน่วยงาน..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full px-4 py-3 pl-12 rounded-xl border border-neutral-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all text-neutral-900 placeholder-neutral-400"
+                    className="w-full px-4 py-3 pl-12 rounded-xl border-2 border-blue-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-neutral-900 placeholder-neutral-400 shadow-sm"
                   />
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xl">
                     🔍
