@@ -194,7 +194,7 @@ export default function CasesPage() {
 
                             <div>
                                 <label className="block text-sm font-medium text-neutral-700 mb-1">
-                                    URL ของโพสต์ (ถ้ามี)
+                                    URL ของโพสต์/Comment (ถ้ามี)
                                 </label>
                                 <input
                                     type="url"
@@ -205,6 +205,9 @@ export default function CasesPage() {
                                     className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                     placeholder="https://facebook.com/..."
                                 />
+                                <p className="text-xs text-neutral-500 mt-1">
+                                    💡 ถ้าหา URL ไม่ได้ ไม่ต้องใส่ก็ได้ - สำคัญที่สุดคือข้อความเนื้อหา
+                                </p>
                             </div>
                         </div>
 
