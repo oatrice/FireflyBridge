@@ -1,61 +1,61 @@
 import { Elysia, t } from "elysia";
 import { cors } from "@elysiajs/cors";
+import { neon } from "@neondatabase/serverless";
 
-// In-memory storage for rescue contacts
-let rescueContacts: Array<{
-    id: string;
-    name: string;
-    phone: string;
-    type: string;
-    area: string;
-    notes: string;
-    createdAt: string;
-}> = [];
+// Initialize Neon database connection
+const sql = neon(process.env.DATABASE_URL!);
 
 // Helper function to normalize phone numbers
 const normalizePhone = (phone: string): string => {
     return phone.replace(/[\s\-()]/g, "");
 };
 
-// Helper function to check for duplicates
-const isDuplicate = (phone: string): boolean => {
-    const normalized = normalizePhone(phone);
-    return rescueContacts.some(
-        (contact) => normalizePhone(contact.phone) === normalized
-    );
-};
-
 const app = new Elysia({ prefix: "/api/rescue-contacts" })
     .use(cors())
+
     // Get all rescue contacts
-    .get("/", () => rescueContacts)
+    .get("/", async () => {
+        const contacts = await sql`
+      SELECT id, name, phone, type, area, notes, created_at
+      FROM rescue_contacts
+      ORDER BY created_at DESC
+    `;
+        return contacts;
+    })
 
     // Add new rescue contact
     .post(
         "/",
-        ({ body, set }) => {
-            // Check for duplicate
-            if (isDuplicate(body.phone)) {
-                set.status = 400;
-                return {
-                    error: "Duplicate phone number",
-                    message: `เบอร์โทรศัพท์ ${body.phone} มีอยู่ในระบบแล้ว`,
-                };
+        async ({ body, set }) => {
+            try {
+                // Check for duplicate (using normalized phone)
+                const normalized = normalizePhone(body.phone);
+                const existing = await sql`
+          SELECT id FROM rescue_contacts
+          WHERE REPLACE(REPLACE(REPLACE(phone, ' ', ''), '-', ''), '()', '') = ${normalized}
+        `;
+
+                if (existing.length > 0) {
+                    set.status = 400;
+                    return {
+                        error: "Duplicate phone number",
+                        message: `เบอร์โทรศัพท์ ${body.phone} มีอยู่ในระบบแล้ว`,
+                    };
+                }
+
+                // Insert new contact
+                const result = await sql`
+          INSERT INTO rescue_contacts (name, phone, type, area, notes)
+          VALUES (${body.name}, ${body.phone}, ${body.type}, ${body.area}, ${body.notes || ""})
+          RETURNING id, name, phone, type, area, notes, created_at
+        `;
+
+                set.status = 201;
+                return result[0];
+            } catch (error) {
+                set.status = 500;
+                return { error: "Database error", message: "เกิดข้อผิดพลาดในการบันทึกข้อมูล" };
             }
-
-            const newContact = {
-                id: Date.now().toString(),
-                name: body.name,
-                phone: body.phone,
-                type: body.type,
-                area: body.area,
-                notes: body.notes || "",
-                createdAt: new Date().toISOString(),
-            };
-
-            rescueContacts.push(newContact);
-            set.status = 201;
-            return newContact;
         },
         {
             body: t.Object({
@@ -69,16 +69,24 @@ const app = new Elysia({ prefix: "/api/rescue-contacts" })
     )
 
     // Delete rescue contact
-    .delete("/:id", ({ params, set }) => {
-        const index = rescueContacts.findIndex((c) => c.id === params.id);
+    .delete("/:id", async ({ params, set }) => {
+        try {
+            const result = await sql`
+        DELETE FROM rescue_contacts
+        WHERE id = ${params.id}
+        RETURNING id, name, phone
+      `;
 
-        if (index === -1) {
-            set.status = 404;
-            return { error: "Contact not found" };
+            if (result.length === 0) {
+                set.status = 404;
+                return { error: "Contact not found" };
+            }
+
+            return { message: "Contact deleted", contact: result[0] };
+        } catch (error) {
+            set.status = 500;
+            return { error: "Database error" };
         }
-
-        const deleted = rescueContacts.splice(index, 1)[0];
-        return { message: "Contact deleted", contact: deleted };
     });
 
 export const GET = app.handle;
