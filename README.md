@@ -17,3 +17,36 @@ Monorepo สำหรับโปรเจ็ค FireflyBridge จัดกา�
 2. **รันโปรเจ็ค (Development)**:
    - รัน Frontend: `pnpm dev:frontend`
    - รัน Backend: `pnpm dev:backend`
+
+## การ Deploy (Deployment)
+
+### Deploy to Vercel
+
+1. **Push โค้ดขึ้น GitHub**:
+   ```bash
+   git init
+   git add .
+   git commit -m "Initial commit"
+   git remote add origin <your-repo-url>
+   git push -u origin main
+   ```
+
+2. **Deploy ผ่าน Vercel Dashboard**:
+   - ไปที่ [vercel.com](https://vercel.com)
+   - เลือก "Import Project"
+   - เชื่อมต่อ GitHub repository
+   - Vercel จะ detect Next.js และ Elysia อัตโนมัติ
+   - คลิก "Deploy"
+
+3. **หรือใช้ Vercel CLI**:
+   ```bash
+   npm i -g vercel
+   vercel
+   ```
+
+## API Endpoints
+
+- `GET /api/hotlines` - รายการเบอร์โทรฉุกเฉิน
+- `GET /api/external-links` - ลิงก์แพลตฟอร์มภายนอก
+- `GET /api/shelters` - ข้อมูลศูนย์พักพิง
+

@@ -40,9 +40,9 @@ export default function Home() {
     const fetchData = async () => {
       try {
         const [hotlinesRes, linksRes, sheltersRes] = await Promise.all([
-          fetch("http://localhost:3001/hotlines"),
-          fetch("http://localhost:3001/external-links"),
-          fetch("http://localhost:3001/shelters"),
+          fetch("/api/hotlines"),
+          fetch("/api/external-links"),
+          fetch("/api/shelters"),
         ]);
 
         if (!hotlinesRes.ok || !linksRes.ok || !sheltersRes.ok)
