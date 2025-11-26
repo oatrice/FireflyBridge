@@ -5,7 +5,8 @@ import { cors } from "@elysiajs/cors";
 interface Hotline {
     id: string;
     name: string;
-    number: string;
+    number?: string;
+    numbers?: string[];
     category: string;
     categories?: string[];
     description: string;
@@ -14,6 +15,8 @@ interface Hotline {
         facebook?: string;
         website?: string;
         line?: string;
+        instagram?: string[];
+        youtube?: string;
     };
 }
 
@@ -213,7 +216,8 @@ const hotlines: Hotline[] = [
         description: "สายด่วนร่วมด้วยช่วยกัน",
         color: "bg-purple-500",
         links: {
-            facebook: "https://www.facebook.com/ruamkatanyu",        }
+            facebook: "https://www.facebook.com/ruamkatanyu",
+        }
     },
     {
         id: "31",
@@ -239,7 +243,7 @@ const hotlines: Hotline[] = [
     {
         id: "33",
         name: "โรงครัวเปิ้ล นาคร",
-        numbers : ["06-3226-0599", "08-1413-4222", "08-2323-2345"],
+        numbers: ["06-3226-0599", "08-1413-4222", "08-2323-2345"],
         category: "อาสาสมัคร",
         categories: ["อาสาสมัคร", "ยอดฮิต"],
         description: "ติดต่อคุณกุ้ง",
@@ -311,7 +315,8 @@ const hotlines: Hotline[] = [
         description: "พื้นที่คลองแห",
         color: "bg-green-500",
         links: {
-            facebook: "https://www.facebook.com/klonghaecity",        }
+            facebook: "https://www.facebook.com/klonghaecity",
+        }
     },
     {
         id: "52",

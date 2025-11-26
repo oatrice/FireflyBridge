@@ -5,10 +5,19 @@ import { useEffect, useState } from "react";
 interface Hotline {
   id: string;
   name: string;
-  number: string;
+  number?: string;
+  numbers?: string[];
   category: string;
+  categories?: string[];
   description: string;
   color: string;
+  links?: {
+    facebook?: string;
+    website?: string;
+    line?: string;
+    instagram?: string[];
+    youtube?: string;
+  };
 }
 
 interface ExternalLink {
@@ -89,27 +98,9 @@ export default function Home() {
               ศูนย์รวมข้อมูลและประสานงานภัยพิบัติ
             </p>
           </div>
-          {/* <div className="mt-4 inline-flex items-center px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm font-medium">
-            <span className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></span>
-            System Online
-          </div> */}
 
           <div className="mt-6 flex gap-4">
             {/* Temporarily hidden - Contact management and Social Media import feature */}
-            {/* <a
-              href="/rescue-contacts"
-              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
-            >
-              <span>🚁</span>
-              <span>จัดการเบอร์กู้ภัย</span>
-            </a> */}
-            {/* <a
-              href="/cases"
-              className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors"
-            >
-              <span>📱</span>
-              <span>นำเข้าเคสจาก Social Media</span>
-            </a> */}
           </div>
         </header>
 
@@ -304,7 +295,8 @@ export default function Home() {
                     hotline.name
                       .toLowerCase()
                       .includes(searchTerm.toLowerCase()) ||
-                    hotline.number.includes(searchTerm) ||
+                    (hotline.number && hotline.number.includes(searchTerm)) ||
+                    (hotline.numbers && hotline.numbers.some((n: string) => n.includes(searchTerm))) ||
                     hotline.description
                       .toLowerCase()
                       .includes(searchTerm.toLowerCase());
@@ -352,17 +344,47 @@ export default function Home() {
                           >
                             {hotline.category}
                           </span>
-                          <a
-                            href={`tel:${hotline.number}`}
-                            className="w-10 h-10 flex items-center justify-center rounded-full bg-green-50 text-green-600 hover:bg-green-100 transition-colors"
-                            aria-label={`Call ${hotline.name}`}
-                          >
-                            📞
-                          </a>
+                          {/* Call Button Logic */}
+                          {hotline.numbers && hotline.numbers.length > 0 ? (
+                            <div className="flex gap-1">
+                              {hotline.numbers.map((num, idx) => (
+                                <a
+                                  key={idx}
+                                  href={`tel:${num}`}
+                                  className="w-10 h-10 flex items-center justify-center rounded-full bg-green-50 text-green-600 hover:bg-green-100 transition-colors"
+                                  aria-label={`Call ${hotline.name} - ${num}`}
+                                  title={`Call ${num}`}
+                                >
+                                  📞
+                                </a>
+                              ))}
+                            </div>
+                          ) : (
+                            <a
+                              href={`tel:${hotline.number}`}
+                              className="w-10 h-10 flex items-center justify-center rounded-full bg-green-50 text-green-600 hover:bg-green-100 transition-colors"
+                              aria-label={`Call ${hotline.name}`}
+                            >
+                              📞
+                            </a>
+                          )}
                         </div>
-                        <h3 className="text-xl font-bold text-neutral-900 mb-1">
-                          {hotline.number}
-                        </h3>
+
+                        {/* Phone Number Display Logic */}
+                        {hotline.numbers && hotline.numbers.length > 0 ? (
+                          <div className="mb-1">
+                            {hotline.numbers.map((num, idx) => (
+                              <h3 key={idx} className="text-xl font-bold text-neutral-900">
+                                {num}
+                              </h3>
+                            ))}
+                          </div>
+                        ) : (
+                          <h3 className="text-xl font-bold text-neutral-900 mb-1">
+                            {hotline.number}
+                          </h3>
+                        )}
+
                         <p className="text-neutral-800 font-medium mb-2">
                           {hotline.name}
                         </p>
@@ -371,11 +393,11 @@ export default function Home() {
                         </p>
 
                         {/* Social Links */}
-                        {(hotline as any).links && (
-                          <div className="flex gap-2 pt-3 border-t border-neutral-100">
-                            {(hotline as any).links.facebook && (
+                        {hotline.links && (
+                          <div className="flex flex-wrap gap-2 pt-3 border-t border-neutral-100">
+                            {hotline.links.facebook && (
                               <a
-                                href={(hotline as any).links.facebook}
+                                href={hotline.links.facebook}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="flex items-center gap-1 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg text-xs font-medium transition-colors"
@@ -385,9 +407,9 @@ export default function Home() {
                                 <span>FB</span>
                               </a>
                             )}
-                            {(hotline as any).links.website && (
+                            {hotline.links.website && (
                               <a
-                                href={(hotline as any).links.website}
+                                href={hotline.links.website}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="flex items-center gap-1 px-3 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-600 rounded-lg text-xs font-medium transition-colors"
@@ -397,9 +419,9 @@ export default function Home() {
                                 <span>Web</span>
                               </a>
                             )}
-                            {(hotline as any).links.line && (
+                            {hotline.links.line && (
                               <a
-                                href={(hotline as any).links.line}
+                                href={hotline.links.line}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="flex items-center gap-1 px-3 py-1.5 bg-green-50 hover:bg-green-100 text-green-600 rounded-lg text-xs font-medium transition-colors"
@@ -407,6 +429,31 @@ export default function Home() {
                               >
                                 <span>💬</span>
                                 <span>LINE</span>
+                              </a>
+                            )}
+                            {hotline.links.instagram && hotline.links.instagram.map((igLink, idx) => (
+                              <a
+                                key={idx}
+                                href={igLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-1 px-3 py-1.5 bg-pink-50 hover:bg-pink-100 text-pink-600 rounded-lg text-xs font-medium transition-colors"
+                                title="Instagram"
+                              >
+                                <span>📸</span>
+                                <span>IG</span>
+                              </a>
+                            ))}
+                            {hotline.links.youtube && (
+                              <a
+                                href={hotline.links.youtube.startsWith('http') ? hotline.links.youtube : `https://${hotline.links.youtube}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-1 px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-xs font-medium transition-colors"
+                                title="YouTube"
+                              >
+                                <span>▶️</span>
+                                <span>YT</span>
                               </a>
                             )}
                           </div>
