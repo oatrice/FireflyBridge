@@ -366,9 +366,51 @@ export default function Home() {
                         <p className="text-neutral-800 font-medium mb-2">
                           {hotline.name}
                         </p>
-                        <p className="text-neutral-500 text-sm">
+                        <p className="text-neutral-500 text-sm mb-3">
                           {hotline.description}
                         </p>
+
+                        {/* Social Links */}
+                        {(hotline as any).links && (
+                          <div className="flex gap-2 pt-3 border-t border-neutral-100">
+                            {(hotline as any).links.facebook && (
+                              <a
+                                href={(hotline as any).links.facebook}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-1 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg text-xs font-medium transition-colors"
+                                title="Facebook"
+                              >
+                                <span>👥</span>
+                                <span>FB</span>
+                              </a>
+                            )}
+                            {(hotline as any).links.website && (
+                              <a
+                                href={(hotline as any).links.website}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-1 px-3 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-600 rounded-lg text-xs font-medium transition-colors"
+                                title="Website"
+                              >
+                                <span>🌐</span>
+                                <span>Web</span>
+                              </a>
+                            )}
+                            {(hotline as any).links.line && (
+                              <a
+                                href={(hotline as any).links.line}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-1 px-3 py-1.5 bg-green-50 hover:bg-green-100 text-green-600 rounded-lg text-xs font-medium transition-colors"
+                                title="LINE"
+                              >
+                                <span>💬</span>
+                                <span>LINE</span>
+                              </a>
+                            )}
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>

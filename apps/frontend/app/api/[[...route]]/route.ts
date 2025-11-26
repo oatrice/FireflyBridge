@@ -1,7 +1,23 @@
 import { Elysia } from "elysia";
 import { cors } from "@elysiajs/cors";
 
-const hotlines = [
+// กำหนด Type เพื่อความชัดเจน (Optional)
+interface Hotline {
+    id: string;
+    name: string;
+    number: string;
+    category: string;
+    categories?: string[];
+    description: string;
+    color: string;
+    links?: {
+        facebook?: string;
+        website?: string;
+        line?: string;
+    };
+}
+
+const hotlines: Hotline[] = [
     // Emergency & Medical
     {
         id: "1",
@@ -10,6 +26,9 @@ const hotlines = [
         category: "ฉุกเฉิน",
         description: "แจ้งเหตุด่วนเหตุร้าย ตำรวจ",
         color: "bg-red-500",
+        links: {
+            website: "https://www.royalthaipolice.go.th/"
+        }
     },
     {
         id: "2",
@@ -18,6 +37,9 @@ const hotlines = [
         category: "การแพทย์",
         description: "สถาบันการแพทย์ฉุกเฉินแห่งชาติ",
         color: "bg-pink-500",
+        links: {
+            website: "https://www.niems.go.th/"
+        }
     },
     {
         id: "3",
@@ -35,14 +57,22 @@ const hotlines = [
         categories: ["ฉุกเฉิน", "ยอดฮิต"],
         description: "แจ้งเหตุสาธารณภัย/น้ำท่วม",
         color: "bg-red-500",
+        links: {
+            facebook: "https://www.facebook.com/atpohtecktung",
+            website: "https://www.pohtecktung.org/"
+        }
     },
     {
         id: "5",
         name: "ศูนย์ช่วยเหลือสังคม",
         number: "1300",
         category: "ฉุกเฉิน",
-        description: "สายด่วนภาครัฐ",
+        description: "สายด่วนภาครัฐ (พม.)",
         color: "bg-red-500",
+        links: {
+            facebook: "https://www.facebook.com/PrdMsociety1",
+            website: "https://www.m-society.go.th/"
+        }
     },
     {
         id: "6",
@@ -51,6 +81,10 @@ const hotlines = [
         category: "จราจร",
         description: "แจ้งอุบัติเหตุบนทางหลวง",
         color: "bg-yellow-500",
+        links: {
+            facebook: "https://www.facebook.com/highway1193",
+            website: "https://hwpd.cib.go.th/"
+        }
     },
     {
         id: "7",
@@ -59,6 +93,9 @@ const hotlines = [
         category: "ทางน้ำ",
         description: "แจ้งเหตุทางน้ำ",
         color: "bg-blue-500",
+        links: {
+            website: "https://md.go.th/"
+        }
     },
     {
         id: "8",
@@ -67,6 +104,11 @@ const hotlines = [
         category: "สาธารณภัย",
         description: "กรมป้องกันและบรรเทาสาธารณภัย",
         color: "bg-indigo-500",
+        links: {
+            facebook: "https://www.facebook.com/DDPMNews",
+            website: "https://www.disaster.go.th/",
+            line: "https://line.me/R/ti/p/@1784ddpm"
+        }
     },
     {
         id: "9",
@@ -75,6 +117,9 @@ const hotlines = [
         category: "สาธารณภัย",
         description: "กรมป้องกันและบรรเทาสาธารณภัย (สำนักงาน)",
         color: "bg-indigo-500",
+        links: {
+            website: "https://www.disaster.go.th/"
+        }
     },
 
     // Local Hatyai/Songkhla Emergency
@@ -85,6 +130,11 @@ const hotlines = [
         category: "ท้องถิ่น",
         description: "สายด่วน 24 ชั่วโมง",
         color: "bg-green-500",
+        links: {
+            facebook: "https://www.facebook.com/PR.Hatyaicity",
+            website: "https://www.hatyaicity.go.th/",
+            line: "https://line.me/R/ti/p/@hatyaicity"
+        }
     },
     {
         id: "11",
@@ -92,8 +142,11 @@ const hotlines = [
         number: "1163",
         category: "ฉุกเฉิน",
         categories: ["ฉุกเฉิน", "ยอดฮิต"],
-        description: "สายด่วนกู้ภัยหาดใหญ่",
+        description: "มูลนิธิมิตรภาพสามัคคี (ท่งเซียเซี่ยงตึ๊ง)",
         color: "bg-red-500",
+        links: {
+            facebook: "https://www.facebook.com/sawanghaiyai"
+        }
     },
     {
         id: "12",
@@ -102,6 +155,9 @@ const hotlines = [
         category: "ท้องถิ่น",
         description: "ป้องกันและบรรเทาสาธารณภัย",
         color: "bg-green-500",
+        links: {
+            facebook: "https://www.facebook.com/songkhla.disaster"
+        }
     },
 
     // Foundations (Local)
@@ -112,6 +168,9 @@ const hotlines = [
         category: "มูลนิธิ",
         description: "หาดใหญ่ - สงเคราะห์ผู้ประสบภัย",
         color: "bg-teal-500",
+        links: {
+            facebook: "https://www.facebook.com/sawanghaiyai"
+        }
     },
     {
         id: "21",
@@ -120,6 +179,10 @@ const hotlines = [
         category: "มูลนิธิ",
         description: "อาคารกิจกรรมนักศึกษาและศูนย์กีฬา ม.อ.",
         color: "bg-teal-500",
+        links: {
+            facebook: "https://www.facebook.com/PSU.Student.Development",
+            website: "https://www.psu.ac.th/"
+        }
     },
     {
         id: "22",
@@ -128,6 +191,10 @@ const hotlines = [
         category: "มูลนิธิ",
         description: "ช่วยเหลือเด็กและครอบครัว",
         color: "bg-teal-500",
+        links: {
+            facebook: "https://www.facebook.com/SOSThailand",
+            website: "https://www.sosthailand.org/"
+        }
     },
     {
         id: "23",
@@ -136,6 +203,9 @@ const hotlines = [
         category: "มูลนิธิ",
         description: "พัฒนาชุมชนและสังคม",
         color: "bg-teal-500",
+        links: {
+            facebook: "https://www.facebook.com/SongkhlaCommunityFoundation"
+        }
     },
     {
         id: "24",
@@ -143,7 +213,7 @@ const hotlines = [
         number: "074-327-147",
         category: "มูลนิธิ",
         description: "สงเคราะห์การศึกษาและผู้ประสบภัย",
-        color: "bg-teal-500",
+        color: "bg-teal-500"
     },
 
     // Volunteers & National Foundations
@@ -155,6 +225,10 @@ const hotlines = [
         categories: ["อาสาสมัคร", "ยอดฮิต"],
         description: "สายด่วนร่วมด้วยช่วยกัน",
         color: "bg-purple-500",
+        links: {
+            facebook: "https://www.facebook.com/ruamkatanyu",
+            website: "https://www.ruamkatanyu.or.th/"
+        }
     },
     {
         id: "31",
@@ -163,6 +237,10 @@ const hotlines = [
         category: "การแพทย์",
         description: "สายด่วนสภากาชาดไทย",
         color: "bg-pink-500",
+        links: {
+            facebook: "https://www.facebook.com/ThaiRedCross",
+            website: "https://www.redcross.or.th/"
+        }
     },
     {
         id: "32",
@@ -172,6 +250,9 @@ const hotlines = [
         categories: ["อาสาสมัคร", "ยอดฮิต"],
         description: "ติดต่อคุณองุ่น",
         color: "bg-purple-500",
+        links: {
+            facebook: "https://www.facebook.com/org.thamdee"
+        }
     },
     {
         id: "33",
@@ -181,6 +262,9 @@ const hotlines = [
         categories: ["อาสาสมัคร", "ยอดฮิต"],
         description: "ติดต่อคุณกุ้ง",
         color: "bg-yellow-500",
+        links: {
+            facebook: "https://www.facebook.com/PleNakornChannel"
+        }
     },
     {
         id: "34",
@@ -190,6 +274,9 @@ const hotlines = [
         categories: ["อาสาสมัคร", "ยอดฮิต"],
         description: "ฝ่ายประสานงาน",
         color: "bg-purple-500",
+        links: {
+            facebook: "https://www.facebook.com/Jaitungjai"
+        }
     },
 
     // Utilities
@@ -200,6 +287,11 @@ const hotlines = [
         category: "สาธารณูปโภค",
         description: "แจ้งไฟฟ้าขัดข้อง",
         color: "bg-cyan-500",
+        links: {
+            facebook: "https://www.facebook.com/PeaHatyai",
+            website: "https://www.pea.co.th/",
+            line: "https://line.me/R/ti/p/@peathailand"
+        }
     },
     {
         id: "41",
@@ -208,6 +300,10 @@ const hotlines = [
         category: "สาธารณูปโภค",
         description: "แจ้งน้ำไม่ไหล/ท่อแตก",
         color: "bg-cyan-500",
+        links: {
+            facebook: "https://www.facebook.com/pwahatyai",
+            website: "https://www.pwa.co.th/"
+        }
     },
 
     // Local Municipalities
@@ -218,6 +314,10 @@ const hotlines = [
         category: "ท้องถิ่น",
         description: "พื้นที่คอหงส์",
         color: "bg-green-500",
+        links: {
+            facebook: "https://www.facebook.com/khohongcity",
+            website: "https://www.khohongcity.go.th/"
+        }
     },
     {
         id: "51",
@@ -226,6 +326,10 @@ const hotlines = [
         category: "ท้องถิ่น",
         description: "พื้นที่คลองแห",
         color: "bg-green-500",
+        links: {
+            facebook: "https://www.facebook.com/klonghaecity",
+            website: "https://www.klonghaecity.go.th/"
+        }
     },
     {
         id: "52",
@@ -234,6 +338,10 @@ const hotlines = [
         category: "ท้องถิ่น",
         description: "พื้นที่น้ำน้อย",
         color: "bg-green-500",
+        links: {
+            facebook: "https://www.facebook.com/namnoicity",
+            website: "http://namnoicity.go.th/"
+        }
     },
     {
         id: "53",
@@ -242,6 +350,10 @@ const hotlines = [
         category: "ท้องถิ่น",
         description: "พื้นที่ควนลัง",
         color: "bg-green-500",
+        links: {
+            facebook: "https://www.facebook.com/KhuanklangCity",
+            website: "https://www.khuanlang.go.th/"
+        }
     },
 ];
 
