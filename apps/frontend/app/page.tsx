@@ -82,13 +82,20 @@ export default function Home() {
             System Online
           </div>
 
-          <div className="mt-6">
+          <div className="mt-6 flex gap-4">
             <a
               href="/rescue-contacts"
               className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
             >
               <span>🚁</span>
               <span>จัดการเบอร์กู้ภัย</span>
+            </a>
+            <a
+              href="/cases"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors"
+            >
+              <span>📱</span>
+              <span>นำเข้าเคสจาก Social Media</span>
             </a>
           </div>
         </header>
