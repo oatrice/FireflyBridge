@@ -273,7 +273,7 @@ export default function Home() {
               </a>
               <span className="hidden sm:inline text-neutral-300">|</span>
               <a
-                href="https://www.facebook.com/profile.php?id=61584449812966"
+                href="https://www.facebook.com/FireflyBridge/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 text-blue-600 hover:text-blue-700 hover:underline"
