@@ -388,6 +388,16 @@ export default function Home() {
                 <span>👥</span>
                 <span>Facebook Page</span>
               </a>
+              <span className="hidden sm:inline text-neutral-300">|</span>
+              <a
+                href="https://github.com/oatrice/FireflyBridge"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-blue-600 hover:text-blue-700 hover:underline"
+              >
+                <span>💻</span>
+                <span>GitHub (Contribute)</span>
+              </a>
             </div>
             <p className="text-neutral-500 text-xs mt-4">
               © 2025 Firefly Bridge - Joint Command Center
