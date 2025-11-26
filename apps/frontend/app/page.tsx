@@ -283,53 +283,81 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {hotlines
-                  .filter((hotline) => {
-                    const matchesSearch =
-                      hotline.name
-                        .toLowerCase()
-                        .includes(searchTerm.toLowerCase()) ||
-                      hotline.number.includes(searchTerm) ||
-                      hotline.description
-                        .toLowerCase()
-                        .includes(searchTerm.toLowerCase());
-                    const matchesCategory =
-                      selectedCategory === "All" ||
-                      hotline.category === selectedCategory;
-                    return matchesSearch && matchesCategory;
-                  })
-                  .map((hotline) => (
-                    <div
-                      key={hotline.id}
-                      className="group bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 border border-neutral-100 hover:border-neutral-200"
-                    >
-                      <div className="flex justify-between items-start mb-4">
-                        <span
-                          className={`px-3 py-1 rounded-full text-xs font-semibold text-white ${hotline.color}`}
-                        >
-                          {hotline.category}
-                        </span>
-                        <a
-                          href={`tel:${hotline.number}`}
-                          className="w-10 h-10 flex items-center justify-center rounded-full bg-green-50 text-green-600 hover:bg-green-100 transition-colors"
-                          aria-label={`Call ${hotline.name}`}
-                        >
-                          📞
-                        </a>
-                      </div>
-                      <h3 className="text-xl font-bold text-neutral-900 mb-1">
-                        {hotline.number}
+              {(() => {
+                const filteredHotlines = hotlines.filter((hotline) => {
+                  const matchesSearch =
+                    hotline.name
+                      .toLowerCase()
+                      .includes(searchTerm.toLowerCase()) ||
+                    hotline.number.includes(searchTerm) ||
+                    hotline.description
+                      .toLowerCase()
+                      .includes(searchTerm.toLowerCase());
+                  const matchesCategory =
+                    selectedCategory === "All" ||
+                    hotline.category === selectedCategory;
+                  return matchesSearch && matchesCategory;
+                });
+
+                if (filteredHotlines.length === 0) {
+                  return (
+                    <div className="col-span-full flex flex-col items-center justify-center py-16 px-4">
+                      <div className="text-6xl mb-4">🔍</div>
+                      <h3 className="text-xl font-bold text-neutral-800 mb-2">
+                        ไม่พบข้อมูล
                       </h3>
-                      <p className="text-neutral-800 font-medium mb-2">
-                        {hotline.name}
+                      <p className="text-neutral-500 text-center max-w-md">
+                        ไม่พบเบอร์โทรที่ตรงกับคำค้นหา "{searchTerm}"
+                        {selectedCategory !== "All" && ` ในหมวด "${selectedCategory}"`}
                       </p>
-                      <p className="text-neutral-500 text-sm">
-                        {hotline.description}
-                      </p>
+                      <button
+                        onClick={() => {
+                          setSearchTerm("");
+                          setSelectedCategory("All");
+                        }}
+                        className="mt-6 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+                      >
+                        ล้างการค้นหา
+                      </button>
                     </div>
-                  ))}
-              </div>
+                  );
+                }
+
+                return (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {filteredHotlines.map((hotline) => (
+                      <div
+                        key={hotline.id}
+                        className="group bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 border border-neutral-100 hover:border-neutral-200"
+                      >
+                        <div className="flex justify-between items-start mb-4">
+                          <span
+                            className={`px-3 py-1 rounded-full text-xs font-semibold text-white ${hotline.color}`}
+                          >
+                            {hotline.category}
+                          </span>
+                          <a
+                            href={`tel:${hotline.number}`}
+                            className="w-10 h-10 flex items-center justify-center rounded-full bg-green-50 text-green-600 hover:bg-green-100 transition-colors"
+                            aria-label={`Call ${hotline.name}`}
+                          >
+                            📞
+                          </a>
+                        </div>
+                        <h3 className="text-xl font-bold text-neutral-900 mb-1">
+                          {hotline.number}
+                        </h3>
+                        <p className="text-neutral-800 font-medium mb-2">
+                          {hotline.name}
+                        </p>
+                        <p className="text-neutral-500 text-sm">
+                          {hotline.description}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })()}
             </>
           )}
         </section>
