@@ -33,7 +33,7 @@ const hotlines = [
         number: "1418",
         category: "Emergency",
         description: "แจ้งเหตุสาธารณภัย/น้ำท่วม",
-        color: "bg-red-600",
+        color: "bg-red-500",
     },
     {
         id: "5",
@@ -41,7 +41,7 @@ const hotlines = [
         number: "1300",
         category: "Emergency",
         description: "สายด่วนภาครัฐ",
-        color: "bg-blue-600",
+        color: "bg-red-500",
     },
     {
         id: "6",
@@ -49,7 +49,7 @@ const hotlines = [
         number: "1193",
         category: "Traffic",
         description: "แจ้งอุบัติเหตุบนทางหลวง",
-        color: "bg-yellow-600",
+        color: "bg-yellow-500",
     },
     {
         id: "7",
@@ -65,7 +65,7 @@ const hotlines = [
         number: "1784",
         category: "Disaster",
         description: "กรมป้องกันและบรรเทาสาธารณภัย",
-        color: "bg-indigo-600",
+        color: "bg-indigo-500",
     },
     {
         id: "9",
@@ -83,7 +83,7 @@ const hotlines = [
         number: "074-200-000",
         category: "Local Gov",
         description: "สายด่วน 24 ชั่วโมง",
-        color: "bg-green-600",
+        color: "bg-green-500",
     },
     {
         id: "11",
@@ -99,7 +99,7 @@ const hotlines = [
         number: "074-316-380",
         category: "Local Gov",
         description: "ป้องกันและบรรเทาสาธารณภัย",
-        color: "bg-green-700",
+        color: "bg-green-500",
     },
 
     // Foundations (Local)
@@ -109,7 +109,7 @@ const hotlines = [
         number: "074-350-955",
         category: "Foundation",
         description: "หาดใหญ่ - สงเคราะห์ผู้ประสบภัย",
-        color: "bg-yellow-500",
+        color: "bg-teal-500",
     },
     {
         id: "21",
@@ -117,7 +117,7 @@ const hotlines = [
         number: "099-405-6239",
         category: "Foundation",
         description: "อาคารกิจกรรมนักศึกษาและศูนย์กีฬา ม.อ.",
-        color: "bg-blue-500",
+        color: "bg-teal-500",
     },
     {
         id: "22",
@@ -125,7 +125,7 @@ const hotlines = [
         number: "074-291-652",
         category: "Foundation",
         description: "ช่วยเหลือเด็กและครอบครัว",
-        color: "bg-blue-400",
+        color: "bg-teal-500",
     },
     {
         id: "23",
@@ -141,7 +141,7 @@ const hotlines = [
         number: "074-327-147",
         category: "Foundation",
         description: "สงเคราะห์การศึกษาและผู้ประสบภัย",
-        color: "bg-yellow-600",
+        color: "bg-teal-500",
     },
 
     // Volunteers & National Foundations
@@ -151,7 +151,7 @@ const hotlines = [
         number: "1677",
         category: "Volunteer",
         description: "สายด่วนร่วมด้วยช่วยกัน",
-        color: "bg-orange-600",
+        color: "bg-purple-500",
     },
     {
         id: "31",
@@ -159,7 +159,7 @@ const hotlines = [
         number: "1664",
         category: "Medical",
         description: "สายด่วนสภากาชาดไทย",
-        color: "bg-red-500",
+        color: "bg-pink-500",
     },
     {
         id: "32",
@@ -167,7 +167,7 @@ const hotlines = [
         number: "08-6431-5579",
         category: "Volunteer",
         description: "ติดต่อคุณองุ่น",
-        color: "bg-pink-600",
+        color: "bg-purple-500",
     },
     {
         id: "33",
@@ -175,7 +175,7 @@ const hotlines = [
         number: "06-3226-0599",
         category: "Volunteer",
         description: "ติดต่อคุณกุ้ง",
-        color: "bg-yellow-600",
+        color: "bg-purple-500",
     },
     {
         id: "34",
@@ -183,7 +183,7 @@ const hotlines = [
         number: "084-448-9223",
         category: "Volunteer",
         description: "ฝ่ายประสานงาน",
-        color: "bg-purple-600",
+        color: "bg-purple-500",
     },
 
     // Utilities
@@ -193,7 +193,7 @@ const hotlines = [
         number: "1129",
         category: "Utility",
         description: "แจ้งไฟฟ้าขัดข้อง",
-        color: "bg-purple-500",
+        color: "bg-cyan-500",
     },
     {
         id: "41",
@@ -201,7 +201,7 @@ const hotlines = [
         number: "074-598-093",
         category: "Utility",
         description: "แจ้งน้ำไม่ไหล/ท่อแตก",
-        color: "bg-blue-400",
+        color: "bg-cyan-500",
     },
 
     // Local Municipalities
