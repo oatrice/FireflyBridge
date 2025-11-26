@@ -183,7 +183,7 @@ export default function CasesPage() {
                                     onChange={(e) =>
                                         setFormData({ ...formData, source: e.target.value })
                                     }
-                                    className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-neutral-900"
                                 >
                                     <option value="facebook">Facebook</option>
                                     <option value="twitter">Twitter</option>
@@ -202,7 +202,7 @@ export default function CasesPage() {
                                     onChange={(e) =>
                                         setFormData({ ...formData, source_url: e.target.value })
                                     }
-                                    className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-neutral-900"
                                     placeholder="https://facebook.com/..."
                                 />
                                 <p className="text-xs text-neutral-500 mt-1">
@@ -221,7 +221,7 @@ export default function CasesPage() {
                                 onChange={(e) =>
                                     setFormData({ ...formData, raw_content: e.target.value })
                                 }
-                                className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-neutral-900"
                                 rows={6}
                                 placeholder="วางข้อความที่คัดลอกมาจาก Facebook, Twitter, LINE..."
                             />
@@ -242,7 +242,7 @@ export default function CasesPage() {
                                     onChange={(e) =>
                                         setFormData({ ...formData, latitude: e.target.value })
                                     }
-                                    className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-neutral-900"
                                     placeholder="7.0067"
                                 />
                             </div>
@@ -258,7 +258,7 @@ export default function CasesPage() {
                                     onChange={(e) =>
                                         setFormData({ ...formData, longitude: e.target.value })
                                     }
-                                    className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-neutral-900"
                                     placeholder="100.4925"
                                 />
                             </div>
@@ -296,7 +296,7 @@ export default function CasesPage() {
                             <select
                                 value={filterStatus}
                                 onChange={(e) => setFilterStatus(e.target.value)}
-                                className="px-4 py-2 border border-neutral-300 rounded-lg"
+                                className="px-4 py-2 border border-neutral-300 rounded-lg text-neutral-900"
                             >
                                 <option value="">ทั้งหมด</option>
                                 <option value="pending">รอดำเนินการ</option>
@@ -313,7 +313,7 @@ export default function CasesPage() {
                             <select
                                 value={filterUrgency}
                                 onChange={(e) => setFilterUrgency(e.target.value)}
-                                className="px-4 py-2 border border-neutral-300 rounded-lg"
+                                className="px-4 py-2 border border-neutral-300 rounded-lg text-neutral-900"
                             >
                                 <option value="">ทั้งหมด</option>
                                 <option value="critical">วิกฤต</option>

@@ -129,7 +129,7 @@ export default function RescueContactsPage() {
                                     onChange={(e) =>
                                         setFormData({ ...formData, name: e.target.value })
                                     }
-                                    className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-neutral-900"
                                     placeholder="เช่น มูลนิธิกู้ภัยหาดใหญ่"
                                 />
                             </div>
@@ -145,7 +145,7 @@ export default function RescueContactsPage() {
                                     onChange={(e) =>
                                         setFormData({ ...formData, phone: e.target.value })
                                     }
-                                    className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-neutral-900"
                                     placeholder="เช่น 081-234-5678"
                                 />
                             </div>
@@ -160,7 +160,7 @@ export default function RescueContactsPage() {
                                     onChange={(e) =>
                                         setFormData({ ...formData, type: e.target.value })
                                     }
-                                    className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-neutral-900"
                                 >
                                     <option value="เรือ">เรือ</option>
                                     <option value="รถ">รถ</option>
@@ -181,7 +181,7 @@ export default function RescueContactsPage() {
                                     onChange={(e) =>
                                         setFormData({ ...formData, area: e.target.value })
                                     }
-                                    className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-neutral-900"
                                     placeholder="เช่น หาดใหญ่, สงขลา"
                                 />
                             </div>
@@ -196,7 +196,7 @@ export default function RescueContactsPage() {
                                 onChange={(e) =>
                                     setFormData({ ...formData, notes: e.target.value })
                                 }
-                                className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-neutral-900"
                                 rows={3}
                                 placeholder="ข้อมูลเพิ่มเติม..."
                             />
