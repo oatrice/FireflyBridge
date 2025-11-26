@@ -38,25 +38,8 @@ const extractUrgencyLevel = (text: string): string => {
 };
 
 const extractDescription = (text: string): string => {
-    // Extract meaningful descriptions (sentences with numbers, people, conditions)
-    const descPatterns = [
-        /มี.{1,50}คน/g,           // มี...คน
-        /ติด.{1,50}/g,            // ติด...
-        /น้ำท่วม.{1,50}/g,        // น้ำท่วม...
-        /ต้องการ.{1,50}/g,        // ต้องการ...
-        /เด็ก.{1,50}/g,           // เด็ก...
-        /ผู้สูงอายุ.{1,50}/g,     // ผู้สูงอายุ...
-    ];
-
-    const descriptions: string[] = [];
-    descPatterns.forEach(pattern => {
-        const matches = text.match(pattern);
-        if (matches) {
-            descriptions.push(...matches);
-        }
-    });
-
-    return descriptions.join(', ') || text.substring(0, 200);
+    // Return the full text as description for now to avoid incorrect truncation
+    return text;
 };
 
 const extractLocation = (text: string): string | null => {
