@@ -35,6 +35,8 @@ export default function Home() {
   const [externalLinks, setExternalLinks] = useState<ExternalLink[]>([]);
   const [shelters, setShelters] = useState<Shelter[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -237,38 +239,98 @@ export default function Home() {
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {hotlines.map((hotline) => (
-                <div
-                  key={hotline.id}
-                  className="group bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 border border-neutral-100 hover:border-neutral-200"
-                >
-                  <div className="flex justify-between items-start mb-4">
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-semibold text-white ${hotline.color}`}
-                    >
-                      {hotline.category}
-                    </span>
-                    <a
-                      href={`tel:${hotline.number}`}
-                      className="w-10 h-10 flex items-center justify-center rounded-full bg-green-50 text-green-600 hover:bg-green-100 transition-colors"
-                      aria-label={`Call ${hotline.name}`}
-                    >
-                      📞
-                    </a>
-                  </div>
-                  <h3 className="text-xl font-bold text-neutral-900 mb-1">
-                    {hotline.number}
-                  </h3>
-                  <p className="text-neutral-800 font-medium mb-2">
-                    {hotline.name}
-                  </p>
-                  <p className="text-neutral-500 text-sm">
-                    {hotline.description}
-                  </p>
+            <>
+              <div className="mb-8 space-y-4">
+                {/* Search Bar */}
+                <div className="relative">
+                  <input
+                    type="text"
+                    placeholder="ค้นหาเบอร์โทร, หน่วยงาน..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full px-4 py-3 pl-12 rounded-xl border border-neutral-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all text-neutral-900 placeholder-neutral-400"
+                  />
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xl">
+                    🔍
+                  </span>
                 </div>
-              ))}
-            </div>
+
+                {/* Category Filter */}
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={() => setSelectedCategory("All")}
+                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${selectedCategory === "All"
+                      ? "bg-neutral-900 text-white"
+                      : "bg-white text-neutral-600 hover:bg-neutral-100 border border-neutral-200"
+                      }`}
+                  >
+                    ทั้งหมด
+                  </button>
+                  {Array.from(new Set(hotlines.map((h) => h.category))).map(
+                    (category) => (
+                      <button
+                        key={category}
+                        onClick={() => setSelectedCategory(category)}
+                        className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${selectedCategory === category
+                          ? "bg-blue-600 text-white"
+                          : "bg-white text-neutral-600 hover:bg-neutral-100 border border-neutral-200"
+                          }`}
+                      >
+                        {category}
+                      </button>
+                    )
+                  )}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {hotlines
+                  .filter((hotline) => {
+                    const matchesSearch =
+                      hotline.name
+                        .toLowerCase()
+                        .includes(searchTerm.toLowerCase()) ||
+                      hotline.number.includes(searchTerm) ||
+                      hotline.description
+                        .toLowerCase()
+                        .includes(searchTerm.toLowerCase());
+                    const matchesCategory =
+                      selectedCategory === "All" ||
+                      hotline.category === selectedCategory;
+                    return matchesSearch && matchesCategory;
+                  })
+                  .map((hotline) => (
+                    <div
+                      key={hotline.id}
+                      className="group bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 border border-neutral-100 hover:border-neutral-200"
+                    >
+                      <div className="flex justify-between items-start mb-4">
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs font-semibold text-white ${hotline.color}`}
+                        >
+                          {hotline.category}
+                        </span>
+                        <a
+                          href={`tel:${hotline.number}`}
+                          className="w-10 h-10 flex items-center justify-center rounded-full bg-green-50 text-green-600 hover:bg-green-100 transition-colors"
+                          aria-label={`Call ${hotline.name}`}
+                        >
+                          📞
+                        </a>
+                      </div>
+                      <h3 className="text-xl font-bold text-neutral-900 mb-1">
+                        {hotline.number}
+                      </h3>
+                      <p className="text-neutral-800 font-medium mb-2">
+                        {hotline.name}
+                      </p>
+                      <p className="text-neutral-500 text-sm">
+                        {hotline.description}
+                      </p>
+                    </div>
+                  ))}
+              </div>
+            </>
           )}
         </section>
 
