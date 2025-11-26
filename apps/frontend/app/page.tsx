@@ -36,7 +36,7 @@ export default function Home() {
   const [shelters, setShelters] = useState<Shelter[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("มูลนิธิ");
+  const [selectedCategory, setSelectedCategory] = useState("ยอดฮิต");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -269,8 +269,16 @@ export default function Home() {
                 {/* Category Filter */}
                 <div className="flex flex-wrap gap-2">
                   {(() => {
-                    const allCategories = Array.from(new Set(hotlines.map((h) => h.category)));
-                    const priorityCategories = ["ทั้งหมด", "มูลนิธิ", "อาสาสมัคร"];
+                    // Extract all categories including from categories array
+                    const allCategoriesSet = new Set<string>();
+                    hotlines.forEach((h: any) => {
+                      allCategoriesSet.add(h.category);
+                      if (h.categories) {
+                        h.categories.forEach((cat: string) => allCategoriesSet.add(cat));
+                      }
+                    });
+                    const allCategories = Array.from(allCategoriesSet);
+                    const priorityCategories = ["ทั้งหมด", "ยอดฮิต", "มูลนิธิ", "อาสาสมัคร"];
                     const otherCategories = allCategories.filter(cat => !priorityCategories.includes(cat));
                     const orderedCategories = [...priorityCategories, ...otherCategories];
 
@@ -291,7 +299,7 @@ export default function Home() {
               </div>
 
               {(() => {
-                const filteredHotlines = hotlines.filter((hotline) => {
+                const filteredHotlines = hotlines.filter((hotline: any) => {
                   const matchesSearch =
                     hotline.name
                       .toLowerCase()
@@ -302,7 +310,8 @@ export default function Home() {
                       .includes(searchTerm.toLowerCase());
                   const matchesCategory =
                     selectedCategory === "All" ||
-                    hotline.category === selectedCategory;
+                    hotline.category === selectedCategory ||
+                    (hotline.categories && hotline.categories.includes(selectedCategory));
                   return matchesSearch && matchesCategory;
                 });
 
