@@ -693,6 +693,14 @@ const externalLinks = [
         icon: "🆘",
     },
     {
+        id: "flood68",
+        name: "Flood68",
+        url: "https://flood68.peoplesparty.or.th",
+        description: "Single Dashboard รวมข้อมูลน้ำท่วม Real-time จาก Jitasa.care, GISTDA และ Social Media",
+        category: "แพลตฟอร์มช่วยเหลือ",
+        icon: "📊",
+    },
+    {
         id: "2",
         name: "Kai Tod Hat Yai",
         url: "https://kaitodhatyaii.vercel.app/",
