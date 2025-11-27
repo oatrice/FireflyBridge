@@ -310,9 +310,10 @@ export default function Home() {
                             navigator.clipboard.writeText(donation.accountNumber || "");
                             alert("คัดลอกเลขบัญชีแล้ว");
                           }}
-                          className="text-xs bg-white border border-neutral-200 px-2 py-1 rounded hover:bg-neutral-100 transition-colors"
+                          className="flex items-center gap-1 text-sm bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium transition-colors shadow-sm hover:shadow-md"
                         >
-                          คัดลอก
+                          <span>📋</span>
+                          <span>คัดลอก</span>
                         </button>
                       </div>
                       <p className="text-sm text-neutral-600 mt-1">
