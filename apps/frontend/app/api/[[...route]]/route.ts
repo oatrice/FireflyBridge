@@ -733,6 +733,14 @@ const externalLinks = [
         icon: "📍",
     },
     {
+        id: "0",
+        name: "HatYaiFlood.com",
+        url: "https://hatyaiflood.com/",
+        description: "ฐานข้อมูลกลาง เชื่อมต่อข้อมูล Real-time",
+        category: "ศูนย์บัญชาการ",
+        icon: "🚨",
+    },
+    {
         id: "7",
         name: "Hat Yai CommSK",
         url: "https://hatyai.commsk.dev/",
