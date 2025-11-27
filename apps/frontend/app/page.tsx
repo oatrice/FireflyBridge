@@ -116,6 +116,23 @@ export default function Home() {
                 </div>
               </div>
             </a>
+
+            <a
+              href="https://www.thaihelpcenter.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5"
+            >
+              <span className="text-2xl">📋</span>
+              <div className="text-left">
+                <div className="font-bold text-lg leading-tight">
+                  ตรวจสอบรายชื่อ
+                </div>
+                <div className="text-xs text-blue-100 font-medium">
+                  ผู้ที่ได้รับการช่วยเหลือไปยังศูนย์พักพิง
+                </div>
+              </div>
+            </a>
           </div>
         </header>
 
