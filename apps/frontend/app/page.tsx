@@ -180,7 +180,43 @@ export default function Home() {
           </div>
         </header>
 
-        <section>
+        {/* Navigation Bar */}
+        <nav className="sticky top-0 z-40 bg-gradient-to-r from-blue-600 to-indigo-600 shadow-lg">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-center gap-2 sm:gap-4 py-3 overflow-x-auto">
+              <a
+                href="#shelters"
+                className="flex items-center gap-2 px-3 sm:px-4 py-2 text-white hover:bg-white/20 rounded-lg transition-all duration-200 whitespace-nowrap text-sm sm:text-base font-medium"
+              >
+                <span>🏠</span>
+                <span>ศูนย์พักพิง</span>
+              </a>
+              <a
+                href="#donations"
+                className="flex items-center gap-2 px-3 sm:px-4 py-2 text-white hover:bg-white/20 rounded-lg transition-all duration-200 whitespace-nowrap text-sm sm:text-base font-medium"
+              >
+                <span>❤️</span>
+                <span>รับบริจาค</span>
+              </a>
+              <a
+                href="#external"
+                className="flex items-center gap-2 px-3 sm:px-4 py-2 text-white hover:bg-white/20 rounded-lg transition-all duration-200 whitespace-nowrap text-sm sm:text-base font-medium"
+              >
+                <span>🔗</span>
+                <span>แพลตฟอร์ม</span>
+              </a>
+              <a
+                href="#hotlines"
+                className="flex items-center gap-2 px-3 sm:px-4 py-2 text-white hover:bg-white/20 rounded-lg transition-all duration-200 whitespace-nowrap text-sm sm:text-base font-medium"
+              >
+                <span>📞</span>
+                <span>เบอร์ฉุกเฉิน</span>
+              </a>
+            </div>
+          </div>
+        </nav>
+
+        <section id="shelters" className="scroll-mt-20">
           <h2 className="text-2xl font-bold text-neutral-800 mb-6 flex items-center">
             🏠 ศูนย์พักพิง (Shelters)
           </h2>
@@ -257,7 +293,7 @@ export default function Home() {
           )}
         </section>
 
-        <section className="mt-12">
+        <section id="donations" className="mt-12 scroll-mt-20">
           <h2 className="text-2xl font-bold text-neutral-800 mb-6 flex items-center">
             ❤️ ช่องทางรับบริจาค (Donations)
           </h2>
@@ -353,7 +389,7 @@ export default function Home() {
           )}
         </section>
 
-        <section className="mt-12">
+        <section id="external" className="mt-12 scroll-mt-20">
           <h2 className="text-2xl font-bold text-neutral-800 mb-6 flex items-center">
             🔗 แพลตฟอร์มภายนอก (External Rescue Platforms)
           </h2>
@@ -410,7 +446,7 @@ export default function Home() {
           )}
         </section>
 
-        <section className="mt-12">
+        <section id="hotlines" className="mt-12 scroll-mt-20">
           <h2 className="text-2xl font-bold text-neutral-800 mb-6 flex items-center">
             📞 เบอร์โทรฉุกเฉิน (Emergency Hotlines)
           </h2>
