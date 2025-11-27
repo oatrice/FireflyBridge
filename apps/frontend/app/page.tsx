@@ -40,10 +40,22 @@ interface Shelter {
   link?: string;
 }
 
+interface DonationChannel {
+  id: string;
+  name: string;
+  bankName?: string;
+  accountNumber?: string;
+  accountName?: string;
+  description?: string;
+  qrCodeUrl?: string;
+  contacts?: { name: string; phone: string }[];
+}
+
 export default function Home() {
   const [hotlines, setHotlines] = useState<Hotline[]>([]);
   const [externalLinks, setExternalLinks] = useState<ExternalLink[]>([]);
   const [shelters, setShelters] = useState<Shelter[]>([]);
+  const [donations, setDonations] = useState<DonationChannel[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("ยอดฮิต");
@@ -61,24 +73,27 @@ export default function Home() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [hotlinesRes, linksRes, sheltersRes] = await Promise.all([
+        const [hotlinesRes, linksRes, sheltersRes, donationsRes] = await Promise.all([
           fetch("/api/hotlines"),
           fetch("/api/external-links"),
           fetch("/api/shelters"),
+          fetch("/api/donations"),
         ]);
 
-        if (!hotlinesRes.ok || !linksRes.ok || !sheltersRes.ok)
+        if (!hotlinesRes.ok || !linksRes.ok || !sheltersRes.ok || !donationsRes.ok)
           throw new Error("Failed to fetch");
 
-        const [hotlinesData, linksData, sheltersData] = await Promise.all([
+        const [hotlinesData, linksData, sheltersData, donationsData] = await Promise.all([
           hotlinesRes.json(),
           linksRes.json(),
           sheltersRes.json(),
+          donationsRes.json(),
         ]);
 
         setHotlines(hotlinesData);
         setExternalLinks(linksData);
         setShelters(sheltersData);
+        setDonations(donationsData);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -128,7 +143,7 @@ export default function Home() {
                 </div>
               </div>
             </a>
-            
+
             <a
               href="https://forms.gle/placeholder"
               target="_blank"
@@ -236,6 +251,101 @@ export default function Home() {
                       </a>
                     )}
                   </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+
+        <section className="mt-12">
+          <h2 className="text-2xl font-bold text-neutral-800 mb-6 flex items-center">
+            ❤️ ช่องทางรับบริจาค (Donations)
+          </h2>
+
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {[...Array(2)].map((_, i) => (
+                <div
+                  key={i}
+                  className="h-64 bg-white rounded-2xl shadow-sm animate-pulse"
+                ></div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {donations.map((donation) => (
+                <div
+                  key={donation.id}
+                  className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 border border-neutral-100"
+                >
+                  <h3 className="text-xl font-bold text-neutral-900 mb-2">
+                    {donation.name}
+                  </h3>
+                  {donation.description && (
+                    <p className="text-neutral-600 text-sm mb-4">
+                      {donation.description}
+                    </p>
+                  )}
+
+                  {donation.qrCodeUrl && (
+                    <div className="mb-4 flex justify-center">
+                      <img
+                        src={donation.qrCodeUrl}
+                        alt={`QR Code for ${donation.name}`}
+                        className="max-w-[200px] rounded-lg border border-neutral-200"
+                      />
+                    </div>
+                  )}
+
+                  {donation.bankName && (
+                    <div className="bg-neutral-50 p-4 rounded-xl mb-4">
+                      <p className="text-sm text-neutral-500 mb-1">ธนาคาร</p>
+                      <p className="font-bold text-neutral-800">{donation.bankName}</p>
+                      <div className="flex items-center gap-2 mt-2">
+                        <p className="text-xl font-mono font-bold text-blue-600">
+                          {donation.accountNumber}
+                        </p>
+                        <button
+                          onClick={() => {
+                            navigator.clipboard.writeText(donation.accountNumber || "");
+                            alert("คัดลอกเลขบัญชีแล้ว");
+                          }}
+                          className="text-xs bg-white border border-neutral-200 px-2 py-1 rounded hover:bg-neutral-100 transition-colors"
+                        >
+                          คัดลอก
+                        </button>
+                      </div>
+                      <p className="text-sm text-neutral-600 mt-1">
+                        ชื่อบัญชี: {donation.accountName}
+                      </p>
+                    </div>
+                  )}
+
+                  {donation.contacts && (
+                    <div className="border-t border-neutral-100 pt-4">
+                      <p className="text-neutral-700 font-medium text-sm mb-2">
+                        ติดต่อสอบถาม:
+                      </p>
+                      <div className="space-y-2">
+                        {donation.contacts.map((contact, idx) => (
+                          <div
+                            key={idx}
+                            className="flex items-center justify-between text-sm"
+                          >
+                            <span className="text-neutral-600 flex-1">
+                              {contact.name}
+                            </span>
+                            <a
+                              href={`tel:${contact.phone}`}
+                              className="text-blue-600 font-medium hover:text-blue-700 hover:underline"
+                            >
+                              {contact.phone}
+                            </a>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

@@ -538,12 +538,36 @@ const shelters = [
     },
 ];
 
+interface DonationChannel {
+    id: string;
+    name: string;
+    bankName?: string;
+    accountNumber?: string;
+    accountName?: string;
+    description?: string;
+    qrCodeUrl?: string;
+    contacts?: { name: string; phone: string }[];
+}
+
+const donations: DonationChannel[] = [
+    {
+        id: "1",
+        name: "มหาวิทยาลัยสงขลานครินทร์ (Prince of Songkla University)",
+        description: "เพื่อช่วยเหลือผู้ประสบอุทกภัย (บริจาคผ่าน QR Code เท่านั้น)",
+        qrCodeUrl: "/images/psu-donation-qr.png",
+        contacts: [
+            { name: "คุณเยาวลักษณ์ คุณาวรกุล", phone: "087-287-8713" }
+        ]
+    }
+];
+
 const app = new Elysia({ prefix: "/api" })
     .use(cors())
     .get("/", () => "FireflyBridge API is Running 🚀")
     .get("/hotlines", () => hotlines)
     .get("/external-links", () => externalLinks)
-    .get("/shelters", () => shelters);
+    .get("/shelters", () => shelters)
+    .get("/donations", () => donations);
 
 export const GET = app.handle;
 export const POST = app.handle;
