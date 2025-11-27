@@ -671,22 +671,27 @@ export default function Home() {
                       </h3>
 
                       {donation.description && (
-                        <p className="text-neutral-600 text-sm mb-4 flex-1">
+                        <p className="text-neutral-600 text-sm mb-4">
                           {donation.description}
                         </p>
                       )}
 
-                      {donation.qrCodeUrl && (
-                        <div className="mb-4 flex justify-center bg-neutral-50 p-4 rounded-xl">
+                      <div className="mb-4 flex justify-center bg-neutral-50 p-4 rounded-xl">
+                        {donation.qrCodeUrl ? (
                           <img
                             src={donation.qrCodeUrl}
                             alt={`QR Code for ${donation.name}`}
                             className="max-w-[180px] rounded-lg border border-neutral-200 shadow-sm"
                           />
-                        </div>
-                      )}
+                        ) : (
+                          <div className="w-full max-w-[180px] aspect-square bg-white rounded-lg border-2 border-dashed border-neutral-300 flex flex-col items-center justify-center text-neutral-400 gap-2">
+                            <span className="text-4xl">🖼️</span>
+                            <span className="text-xs font-medium">ไม่มีรูป QR Code</span>
+                          </div>
+                        )}
+                      </div>
 
-                      {donation.bankName && bankInfo && (
+                      {donation.bankName && bankInfo ? (
                         <div className="bg-neutral-50 p-4 rounded-xl mb-4 border border-neutral-100">
                           <div className="flex items-center gap-2 mb-2">
                             <span className="text-xl">{bankInfo.icon}</span>
@@ -715,6 +720,12 @@ export default function Home() {
                           </div>
                           <p className="text-xs text-neutral-500 mt-2 truncate">
                             ชื่อบัญชี: {donation.accountName}
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="bg-neutral-50 p-4 rounded-xl mb-4 border border-neutral-100 text-center py-6 flex-1 flex flex-col justify-center">
+                          <p className="text-neutral-400 text-sm">
+                            ไม่มีข้อมูลบัญชีธนาคาร
                           </p>
                         </div>
                       )}
