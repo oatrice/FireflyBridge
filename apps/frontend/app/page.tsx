@@ -167,7 +167,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
 
             <a
               href="https://docs.google.com/forms/d/e/1FAIpQLSdauJYHcAqhIEgsWqEtAXo_5VptI-xt4L3VVASfvuLlohHxZA/viewform"
@@ -216,6 +216,23 @@ export default function Home() {
                 </div>
                 <div className="text-xs text-blue-100 font-medium">
                   ผู้ที่ได้รับการช่วยเหลือไปยังศูนย์พักพิง
+                </div>
+              </div>
+            </a>
+
+            <a
+              href="https://hakon.psu.ac.th/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5"
+            >
+              <span className="text-2xl">👥</span>
+              <div className="text-left">
+                <div className="font-bold text-lg leading-tight">
+                  ค้นหาคนรู้จัก
+                </div>
+                <div className="text-xs text-purple-100 font-medium">
+                  ระบบค้นหาคนรู้จัก ม.อ.
                 </div>
               </div>
             </a>
