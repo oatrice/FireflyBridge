@@ -111,6 +111,24 @@ export default function Home() {
           </div>
 
           <div className="mt-6 flex gap-4">
+
+            <a
+              href="https://docs.google.com/forms/d/e/1FAIpQLSdauJYHcAqhIEgsWqEtAXo_5VptI-xt4L3VVASfvuLlohHxZA/viewform"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5"
+            >
+              <span className="text-2xl">🏃</span>
+              <div className="text-left">
+                <div className="font-bold text-lg leading-tight">
+                  แบบฟอร์มอพยพ
+                </div>
+                <div className="text-xs text-orange-100 font-medium">
+                  ศูนย์ประสานงานอพยพ ม.อ.
+                </div>
+              </div>
+            </a>
+            
             <a
               href="https://forms.gle/placeholder"
               target="_blank"
