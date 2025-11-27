@@ -67,6 +67,7 @@ export default function Home() {
   const [shelterViewMode, setShelterViewMode] = useState<"grid" | "list">("grid");
   const [shelterSortBy, setShelterSortBy] = useState<"name" | "area">("area");
   const [expandedAreas, setExpandedAreas] = useState<Set<string>>(new Set());
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -76,6 +77,11 @@ export default function Home() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [shelterSearchTerm, selectedArea, shelterViewMode]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -356,6 +362,18 @@ export default function Home() {
                   }
                 });
 
+                // Pagination
+                const itemsPerPage = shelterViewMode === "grid" ? 6 : 10;
+                const totalPages = Math.ceil(sortedShelters.length / itemsPerPage);
+                const startIndex = (currentPage - 1) * itemsPerPage;
+                const endIndex = startIndex + itemsPerPage;
+                const paginatedShelters = sortedShelters.slice(startIndex, endIndex);
+
+                // Reset to page 1 when filters change
+                if (currentPage > totalPages && totalPages > 0) {
+                  setCurrentPage(1);
+                }
+
                 if (sortedShelters.length === 0) {
                   return (
                     <div className="col-span-full flex flex-col items-center justify-center py-16 px-4">
@@ -371,6 +389,7 @@ export default function Home() {
                         onClick={() => {
                           setShelterSearchTerm("");
                           setSelectedArea("ทั้งหมด");
+                          setCurrentPage(1);
                         }}
                         className="mt-6 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
                       >
@@ -380,133 +399,201 @@ export default function Home() {
                   );
                 }
 
+                // Pagination Controls Component
+                const PaginationControls = () => (
+                  <div className="flex items-center justify-between mt-8 pt-6 border-t border-neutral-200">
+                    <div className="text-sm text-neutral-600">
+                      แสดง {startIndex + 1}-{Math.min(endIndex, sortedShelters.length)} จาก {sortedShelters.length} รายการ
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                        disabled={currentPage === 1}
+                        className={`px-4 py-2 rounded-lg font-medium transition-all ${currentPage === 1
+                          ? "bg-neutral-100 text-neutral-400 cursor-not-allowed"
+                          : "bg-white border border-neutral-200 text-neutral-700 hover:bg-neutral-50"
+                          }`}
+                      >
+                        ← ก่อนหน้า
+                      </button>
+
+                      <div className="flex gap-1">
+                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                          // Show first, last, current, and adjacent pages
+                          if (
+                            page === 1 ||
+                            page === totalPages ||
+                            (page >= currentPage - 1 && page <= currentPage + 1)
+                          ) {
+                            return (
+                              <button
+                                key={page}
+                                onClick={() => setCurrentPage(page)}
+                                className={`w-10 h-10 rounded-lg font-medium transition-all ${currentPage === page
+                                  ? "bg-blue-600 text-white shadow-md"
+                                  : "bg-white border border-neutral-200 text-neutral-700 hover:bg-neutral-50"
+                                  }`}
+                              >
+                                {page}
+                              </button>
+                            );
+                          } else if (
+                            page === currentPage - 2 ||
+                            page === currentPage + 2
+                          ) {
+                            return <span key={page} className="px-2 text-neutral-400">...</span>;
+                          }
+                          return null;
+                        })}
+                      </div>
+
+                      <button
+                        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                        disabled={currentPage === totalPages}
+                        className={`px-4 py-2 rounded-lg font-medium transition-all ${currentPage === totalPages
+                          ? "bg-neutral-100 text-neutral-400 cursor-not-allowed"
+                          : "bg-white border border-neutral-200 text-neutral-700 hover:bg-neutral-50"
+                          }`}
+                      >
+                        ถัดไป →
+                      </button>
+                    </div>
+                  </div>
+                );
+
                 // Render based on view mode
                 if (shelterViewMode === "list") {
                   // List View - Compact
                   return (
-                    <div className="space-y-2">
-                      {sortedShelters.map((shelter) => (
-                        <div
-                          key={shelter.id}
-                          className="bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-300 border border-neutral-100 hover:border-blue-200"
-                        >
-                          <div className="flex items-center justify-between gap-4">
-                            <div className="flex items-center gap-3 flex-1 min-w-0">
-                              <div className="text-2xl flex-shrink-0">{shelter.icon}</div>
-                              <div className="flex-1 min-w-0">
-                                <h3 className="text-base font-bold text-neutral-900 truncate">
-                                  {shelter.name}
-                                </h3>
-                                <p className="text-neutral-600 text-sm truncate">
-                                  📍 {shelter.location}
-                                </p>
+                    <>
+                      <div className="space-y-2">
+                        {paginatedShelters.map((shelter) => (
+                          <div
+                            key={shelter.id}
+                            className="bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-300 border border-neutral-100 hover:border-blue-200"
+                          >
+                            <div className="flex items-center justify-between gap-4">
+                              <div className="flex items-center gap-3 flex-1 min-w-0">
+                                <div className="text-2xl flex-shrink-0">{shelter.icon}</div>
+                                <div className="flex-1 min-w-0">
+                                  <h3 className="text-base font-bold text-neutral-900 truncate">
+                                    {shelter.name}
+                                  </h3>
+                                  <p className="text-neutral-600 text-sm truncate">
+                                    📍 {shelter.location}
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-2 flex-shrink-0">
+                                <span className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-medium">
+                                  {shelter.area}
+                                </span>
+                                {shelter.contacts.length > 0 && (
+                                  <a
+                                    href={`tel:${shelter.contacts[0].phone}`}
+                                    className="flex items-center gap-1 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg text-sm font-medium transition-colors shadow-sm"
+                                    title={`โทร ${shelter.contacts[0].name}`}
+                                  >
+                                    <span>📞</span>
+                                    <span className="hidden sm:inline">โทร</span>
+                                  </a>
+                                )}
                               </div>
                             </div>
-                            <div className="flex items-center gap-2 flex-shrink-0">
-                              <span className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-medium">
-                                {shelter.area}
-                              </span>
-                              {shelter.contacts.length > 0 && (
-                                <a
-                                  href={`tel:${shelter.contacts[0].phone}`}
-                                  className="flex items-center gap-1 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg text-sm font-medium transition-colors shadow-sm"
-                                  title={`โทร ${shelter.contacts[0].name}`}
-                                >
-                                  <span>📞</span>
-                                  <span className="hidden sm:inline">โทร</span>
-                                </a>
-                              )}
-                            </div>
                           </div>
-                        </div>
-                      ))}
-                    </div>
+                        ))}
+                      </div>
+                      {totalPages > 1 && <PaginationControls />}
+                    </>
                   );
                 } else {
                   // Grid View - Detailed
                   return (
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                      {sortedShelters.map((shelter) => (
-                        <div
-                          key={shelter.id}
-                          className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 border border-neutral-100"
-                        >
-                          <div className="flex items-start gap-4 mb-4">
-                            <div className="text-4xl">{shelter.icon}</div>
-                            <div className="flex-1">
-                              <h3 className="text-lg font-bold text-neutral-900 mb-1">
-                                {shelter.name}
-                              </h3>
-                              <p className="text-neutral-600 text-sm mb-1">
-                                📍 {shelter.location}
-                              </p>
-                              <p className="text-green-600 text-sm font-medium mb-1">
-                                ✅ {shelter.status}
-                              </p>
-                              <span className="inline-block px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-medium">
-                                {shelter.area}
-                              </span>
-                            </div>
-                          </div>
-
-                          <div className="border-t border-neutral-100 pt-4">
-                            {shelter.contacts.length > 0 ? (
-                              <>
-                                <p className="text-neutral-700 font-medium text-sm mb-2">
-                                  ผู้ประสานงาน:
+                    <>
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        {paginatedShelters.map((shelter) => (
+                          <div
+                            key={shelter.id}
+                            className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 border border-neutral-100"
+                          >
+                            <div className="flex items-start gap-4 mb-4">
+                              <div className="text-4xl">{shelter.icon}</div>
+                              <div className="flex-1">
+                                <h3 className="text-lg font-bold text-neutral-900 mb-1">
+                                  {shelter.name}
+                                </h3>
+                                <p className="text-neutral-600 text-sm mb-1">
+                                  📍 {shelter.location}
                                 </p>
-                                <div className="space-y-2 mb-4">
-                                  {shelter.contacts.map((contact, idx) => (
-                                    <div
-                                      key={idx}
-                                      className="flex items-center justify-between text-sm"
-                                    >
-                                      <span className="text-neutral-600 flex-1">
-                                        {contact.name}
-                                      </span>
-                                      <a
-                                        href={`tel:${contact.phone}`}
-                                        className="text-blue-600 font-medium hover:text-blue-700 hover:underline"
-                                      >
-                                        {contact.phone}
-                                      </a>
-                                    </div>
-                                  ))}
-                                </div>
-                              </>
-                            ) : (
-                              <p className="text-neutral-500 text-sm mb-4">
-                                ไม่มีข้อมูลผู้ประสานงาน
-                              </p>
-                            )}
+                                <p className="text-green-600 text-sm font-medium mb-1">
+                                  ✅ {shelter.status}
+                                </p>
+                                <span className="inline-block px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-medium">
+                                  {shelter.area}
+                                </span>
+                              </div>
+                            </div>
 
-                            {/* Quick Actions */}
-                            <div className="flex gap-2">
-                              {shelter.contacts.length > 0 && (
-                                <a
-                                  href={`tel:${shelter.contacts[0].phone}`}
-                                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-colors text-sm shadow-sm"
-                                >
-                                  <span>📞</span>
-                                  <span>โทรทันที</span>
-                                </a>
+                            <div className="border-t border-neutral-100 pt-4">
+                              {shelter.contacts.length > 0 ? (
+                                <>
+                                  <p className="text-neutral-700 font-medium text-sm mb-2">
+                                    ผู้ประสานงาน:
+                                  </p>
+                                  <div className="space-y-2 mb-4">
+                                    {shelter.contacts.map((contact, idx) => (
+                                      <div
+                                        key={idx}
+                                        className="flex items-center justify-between text-sm"
+                                      >
+                                        <span className="text-neutral-600 flex-1">
+                                          {contact.name}
+                                        </span>
+                                        <a
+                                          href={`tel:${contact.phone}`}
+                                          className="text-blue-600 font-medium hover:text-blue-700 hover:underline"
+                                        >
+                                          {contact.phone}
+                                        </a>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </>
+                              ) : (
+                                <p className="text-neutral-500 text-sm mb-4">
+                                  ไม่มีข้อมูลผู้ประสานงาน
+                                </p>
                               )}
-                              {shelter.link && (
-                                <a
-                                  href={shelter.link}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg font-medium transition-colors text-sm"
-                                >
-                                  <span>📍</span>
-                                  <span>แผนที่</span>
-                                </a>
-                              )}
+
+                              {/* Quick Actions */}
+                              <div className="flex gap-2">
+                                {shelter.contacts.length > 0 && (
+                                  <a
+                                    href={`tel:${shelter.contacts[0].phone}`}
+                                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-colors text-sm shadow-sm"
+                                  >
+                                    <span>📞</span>
+                                    <span>โทรทันที</span>
+                                  </a>
+                                )}
+                                {shelter.link && (
+                                  <a
+                                    href={shelter.link}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg font-medium transition-colors text-sm"
+                                  >
+                                    <span>📍</span>
+                                    <span>แผนที่</span>
+                                  </a>
+                                )}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      ))}
-                    </div>
+                        ))}
+                      </div>
+                      {totalPages > 1 && <PaginationControls />}
+                    </>
                   );
                 }
               })()}
