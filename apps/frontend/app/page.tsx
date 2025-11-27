@@ -285,8 +285,8 @@ export default function Home() {
                             key={area}
                             onClick={() => setSelectedArea(area)}
                             className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${selectedArea === area
-                                ? "bg-blue-600 text-white shadow-md"
-                                : "bg-white text-neutral-600 hover:bg-neutral-100 border border-neutral-200"
+                              ? "bg-blue-600 text-white shadow-md"
+                              : "bg-white text-neutral-600 hover:bg-neutral-100 border border-neutral-200"
                               }`}
                           >
                             {area} ({count})
@@ -303,8 +303,8 @@ export default function Home() {
                       <button
                         onClick={() => setShelterViewMode("grid")}
                         className={`px-3 py-1.5 rounded text-sm font-medium transition-all ${shelterViewMode === "grid"
-                            ? "bg-blue-600 text-white"
-                            : "text-neutral-600 hover:text-neutral-900"
+                          ? "bg-blue-600 text-white"
+                          : "text-neutral-600 hover:text-neutral-900"
                           }`}
                         title="Grid View"
                       >
@@ -313,8 +313,8 @@ export default function Home() {
                       <button
                         onClick={() => setShelterViewMode("list")}
                         className={`px-3 py-1.5 rounded text-sm font-medium transition-all ${shelterViewMode === "list"
-                            ? "bg-blue-600 text-white"
-                            : "text-neutral-600 hover:text-neutral-900"
+                          ? "bg-blue-600 text-white"
+                          : "text-neutral-600 hover:text-neutral-900"
                           }`}
                         title="List View"
                       >
@@ -355,15 +355,6 @@ export default function Home() {
                     return a.name.localeCompare(b.name, 'th');
                   }
                 });
-
-                // Group by area
-                const groupedShelters = sortedShelters.reduce((acc, shelter) => {
-                  if (!acc[shelter.area]) {
-                    acc[shelter.area] = [];
-                  }
-                  acc[shelter.area].push(shelter);
-                  return acc;
-                }, {} as Record<string, Shelter[]>);
 
                 if (sortedShelters.length === 0) {
                   return (
@@ -432,122 +423,89 @@ export default function Home() {
                     </div>
                   );
                 } else {
-                  // Grid View with Grouping - Detailed
+                  // Grid View - Detailed
                   return (
-                    <div className="space-y-6">
-                      {Object.entries(groupedShelters).map(([area, sheltersInArea]) => {
-                        const isExpanded = expandedAreas.has(area);
-                        return (
-                          <div key={area} className="border border-neutral-200 rounded-2xl overflow-hidden bg-white shadow-sm">
-                            {/* Area Header */}
-                            <button
-                              onClick={() => {
-                                const newExpanded = new Set(expandedAreas);
-                                if (isExpanded) {
-                                  newExpanded.delete(area);
-                                } else {
-                                  newExpanded.add(area);
-                                }
-                                setExpandedAreas(newExpanded);
-                              }}
-                              className="w-full px-6 py-4 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 transition-all flex items-center justify-between"
-                            >
-                              <div className="flex items-center gap-3">
-                                <span className="text-2xl">{isExpanded ? "▼" : "▶"}</span>
-                                <h3 className="text-lg font-bold text-neutral-800">
-                                  {area}
-                                </h3>
-                                <span className="px-3 py-1 bg-blue-600 text-white rounded-full text-sm font-medium">
-                                  {sheltersInArea.length} ศูนย์
-                                </span>
-                              </div>
-                            </button>
-
-                            {/* Area Content */}
-                            {isExpanded && (
-                              <div className="p-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
-                                {sheltersInArea.map((shelter) => (
-                                  <div
-                                    key={shelter.id}
-                                    className="bg-neutral-50 rounded-xl p-5 hover:bg-white hover:shadow-md transition-all duration-300 border border-neutral-100"
-                                  >
-                                    <div className="flex items-start gap-4 mb-4">
-                                      <div className="text-4xl">{shelter.icon}</div>
-                                      <div className="flex-1">
-                                        <h4 className="text-lg font-bold text-neutral-900 mb-1">
-                                          {shelter.name}
-                                        </h4>
-                                        <p className="text-neutral-600 text-sm mb-1">
-                                          📍 {shelter.location}
-                                        </p>
-                                        <p className="text-green-600 text-sm font-medium">
-                                          ✅ {shelter.status}
-                                        </p>
-                                      </div>
-                                    </div>
-
-                                    <div className="border-t border-neutral-200 pt-4">
-                                      {shelter.contacts.length > 0 ? (
-                                        <>
-                                          <p className="text-neutral-700 font-medium text-sm mb-2">
-                                            ผู้ประสานงาน:
-                                          </p>
-                                          <div className="space-y-2 mb-4">
-                                            {shelter.contacts.map((contact, idx) => (
-                                              <div
-                                                key={idx}
-                                                className="flex items-center justify-between text-sm"
-                                              >
-                                                <span className="text-neutral-600 flex-1">
-                                                  {contact.name}
-                                                </span>
-                                                <a
-                                                  href={`tel:${contact.phone}`}
-                                                  className="text-blue-600 font-medium hover:text-blue-700 hover:underline"
-                                                >
-                                                  {contact.phone}
-                                                </a>
-                                              </div>
-                                            ))}
-                                          </div>
-                                        </>
-                                      ) : (
-                                        <p className="text-neutral-500 text-sm mb-4">
-                                          ไม่มีข้อมูลผู้ประสานงาน
-                                        </p>
-                                      )}
-
-                                      {/* Quick Actions */}
-                                      <div className="flex gap-2">
-                                        {shelter.contacts.length > 0 && (
-                                          <a
-                                            href={`tel:${shelter.contacts[0].phone}`}
-                                            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-colors text-sm shadow-sm"
-                                          >
-                                            <span>📞</span>
-                                            <span>โทรทันที</span>
-                                          </a>
-                                        )}
-                                        {shelter.link && (
-                                          <a
-                                            href={shelter.link}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg font-medium transition-colors text-sm"
-                                          >
-                                            <span>📍</span>
-                                            <span>แผนที่</span>
-                                          </a>
-                                        )}
-                                      </div>
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-                            )}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      {sortedShelters.map((shelter) => (
+                        <div
+                          key={shelter.id}
+                          className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 border border-neutral-100"
+                        >
+                          <div className="flex items-start gap-4 mb-4">
+                            <div className="text-4xl">{shelter.icon}</div>
+                            <div className="flex-1">
+                              <h3 className="text-lg font-bold text-neutral-900 mb-1">
+                                {shelter.name}
+                              </h3>
+                              <p className="text-neutral-600 text-sm mb-1">
+                                📍 {shelter.location}
+                              </p>
+                              <p className="text-green-600 text-sm font-medium mb-1">
+                                ✅ {shelter.status}
+                              </p>
+                              <span className="inline-block px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-medium">
+                                {shelter.area}
+                              </span>
+                            </div>
                           </div>
-                        );
-                      })}
+
+                          <div className="border-t border-neutral-100 pt-4">
+                            {shelter.contacts.length > 0 ? (
+                              <>
+                                <p className="text-neutral-700 font-medium text-sm mb-2">
+                                  ผู้ประสานงาน:
+                                </p>
+                                <div className="space-y-2 mb-4">
+                                  {shelter.contacts.map((contact, idx) => (
+                                    <div
+                                      key={idx}
+                                      className="flex items-center justify-between text-sm"
+                                    >
+                                      <span className="text-neutral-600 flex-1">
+                                        {contact.name}
+                                      </span>
+                                      <a
+                                        href={`tel:${contact.phone}`}
+                                        className="text-blue-600 font-medium hover:text-blue-700 hover:underline"
+                                      >
+                                        {contact.phone}
+                                      </a>
+                                    </div>
+                                  ))}
+                                </div>
+                              </>
+                            ) : (
+                              <p className="text-neutral-500 text-sm mb-4">
+                                ไม่มีข้อมูลผู้ประสานงาน
+                              </p>
+                            )}
+
+                            {/* Quick Actions */}
+                            <div className="flex gap-2">
+                              {shelter.contacts.length > 0 && (
+                                <a
+                                  href={`tel:${shelter.contacts[0].phone}`}
+                                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-colors text-sm shadow-sm"
+                                >
+                                  <span>📞</span>
+                                  <span>โทรทันที</span>
+                                </a>
+                              )}
+                              {shelter.link && (
+                                <a
+                                  href={shelter.link}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg font-medium transition-colors text-sm"
+                                >
+                                  <span>📍</span>
+                                  <span>แผนที่</span>
+                                </a>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   );
                 }
