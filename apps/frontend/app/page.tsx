@@ -37,6 +37,7 @@ interface Shelter {
   contacts: Array<{ name: string; phone: string }>;
   area: string;
   icon: string;
+  link?: string;
 }
 
 export default function Home() {
@@ -186,7 +187,7 @@ export default function Home() {
                     <p className="text-neutral-700 font-medium text-sm mb-2">
                       ผู้ประสานงาน:
                     </p>
-                    <div className="space-y-2">
+                    <div className="space-y-2 mb-4">
                       {shelter.contacts.map((contact, idx) => (
                         <div
                           key={idx}
@@ -204,6 +205,18 @@ export default function Home() {
                         </div>
                       ))}
                     </div>
+
+                    {shelter.link && (
+                      <a
+                        href={shelter.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-xl font-medium transition-colors text-sm"
+                      >
+                        <span>📍</span>
+                        <span>ดูแผนที่ / ข้อมูลเพิ่มเติม</span>
+                      </a>
+                    )}
                   </div>
                 </div>
               ))}
@@ -558,8 +571,8 @@ export default function Home() {
           <span className="text-xl shrink-0">💬</span>
           <span
             className={`whitespace-nowrap transition-all duration-300 ${isScrolled
-                ? "w-0 opacity-0 group-hover:w-auto group-hover:opacity-100"
-                : "w-auto opacity-100"
+              ? "w-0 opacity-0 group-hover:w-auto group-hover:opacity-100"
+              : "w-auto opacity-100"
               }`}
           >
             แจ้งข้อมูล / ข้อเสนอแนะ
