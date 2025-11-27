@@ -49,6 +49,7 @@ interface DonationChannel {
   description?: string;
   qrCodeUrl?: string;
   contacts?: { name: string; phone: string }[];
+  donationPoints?: string[];
 }
 
 export default function Home() {
@@ -91,6 +92,19 @@ export default function Home() {
   }, [searchTerm, selectedCategory]);
 
   const [showAllLinks, setShowAllLinks] = useState(false);
+  const [showAllDonations, setShowAllDonations] = useState(false);
+
+  const getBankInfo = (bankName: string) => {
+    const name = bankName.toLowerCase();
+    if (name.includes("กสิกร") || name.includes("kbank") || name.includes("kasikorn")) return { color: "bg-green-600", icon: "🟩", short: "KBANK" };
+    if (name.includes("ไทยพาณิชย์") || name.includes("scb")) return { color: "bg-purple-600", icon: "🟪", short: "SCB" };
+    if (name.includes("กรุงเทพ") || name.includes("bbl") || name.includes("bangkok")) return { color: "bg-blue-700", icon: "🟦", short: "BBL" };
+    if (name.includes("กรุงไทย") || name.includes("ktb")) return { color: "bg-blue-600", icon: "💎", short: "KTB" };
+    if (name.includes("กรุงศรี") || name.includes("bay") || name.includes("krungsri")) return { color: "bg-yellow-700", icon: "🟨", short: "BAY" };
+    if (name.includes("ออมสิน") || name.includes("gsb")) return { color: "bg-pink-600", icon: "🍧", short: "GSB" };
+    if (name.includes("ธ.ก.ส.") || name.includes("baac")) return { color: "bg-green-700", icon: "🌾", short: "BAAC" };
+    return { color: "bg-neutral-800", icon: "🏦", short: "Bank" };
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -625,84 +639,130 @@ export default function Home() {
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {donations.map((donation) => (
-                <div
-                  key={donation.id}
-                  className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 border border-neutral-100"
-                >
-                  <h3 className="text-xl font-bold text-neutral-900 mb-2">
-                    {donation.name}
-                  </h3>
-                  {donation.description && (
-                    <p className="text-neutral-600 text-sm mb-4">
-                      {donation.description}
-                    </p>
-                  )}
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {(showAllDonations ? donations : donations.slice(0, 6)).map((donation) => {
+                  const isMoney = !!donation.bankName;
+                  const isItems = !!donation.donationPoints;
+                  const bankInfo = donation.bankName ? getBankInfo(donation.bankName) : null;
 
-                  {donation.qrCodeUrl && (
-                    <div className="mb-4 flex justify-center">
-                      <img
-                        src={donation.qrCodeUrl}
-                        alt={`QR Code for ${donation.name}`}
-                        className="max-w-[200px] rounded-lg border border-neutral-200"
-                      />
-                    </div>
-                  )}
-
-                  {donation.bankName && (
-                    <div className="bg-neutral-50 p-4 rounded-xl mb-4">
-                      <p className="text-sm text-neutral-500 mb-1">ธนาคาร</p>
-                      <p className="font-bold text-neutral-800">{donation.bankName}</p>
-                      <div className="flex items-center gap-2 mt-2">
-                        <p className="text-xl font-mono font-bold text-blue-600">
-                          {donation.accountNumber}
-                        </p>
-                        <button
-                          onClick={() => {
-                            navigator.clipboard.writeText(donation.accountNumber || "");
-                            alert("คัดลอกเลขบัญชีแล้ว");
-                          }}
-                          className="flex items-center gap-1 text-sm bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium transition-colors shadow-sm hover:shadow-md"
-                        >
-                          <span>📋</span>
-                          <span>คัดลอก</span>
-                        </button>
-                      </div>
-                      <p className="text-sm text-neutral-600 mt-1">
-                        ชื่อบัญชี: {donation.accountName}
-                      </p>
-                    </div>
-                  )}
-
-                  {donation.contacts && (
-                    <div className="border-t border-neutral-100 pt-4">
-                      <p className="text-neutral-700 font-medium text-sm mb-2">
-                        ติดต่อสอบถาม:
-                      </p>
-                      <div className="space-y-2">
-                        {donation.contacts.map((contact, idx) => (
-                          <div
-                            key={idx}
-                            className="flex items-center justify-between text-sm"
-                          >
-                            <span className="text-neutral-600 flex-1">
-                              {contact.name}
+                  return (
+                    <div
+                      key={donation.id}
+                      className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 border border-neutral-100 flex flex-col h-full"
+                    >
+                      <div className="flex justify-between items-start mb-3">
+                        <div className="flex gap-2">
+                          {isMoney && (
+                            <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-md">
+                              💰 บริจาคเงิน
                             </span>
-                            <a
-                              href={`tel:${contact.phone}`}
-                              className="text-blue-600 font-medium hover:text-blue-700 hover:underline"
-                            >
-                              {contact.phone}
-                            </a>
-                          </div>
-                        ))}
+                          )}
+                          {isItems && (
+                            <span className="px-2 py-1 bg-orange-100 text-orange-700 text-xs font-bold rounded-md">
+                              📦 บริจาคสิ่งของ
+                            </span>
+                          )}
+                        </div>
                       </div>
+
+                      <h3 className="text-xl font-bold text-neutral-900 mb-2">
+                        {donation.name}
+                      </h3>
+
+                      {donation.description && (
+                        <p className="text-neutral-600 text-sm mb-4 flex-1">
+                          {donation.description}
+                        </p>
+                      )}
+
+                      {donation.qrCodeUrl && (
+                        <div className="mb-4 flex justify-center bg-neutral-50 p-4 rounded-xl">
+                          <img
+                            src={donation.qrCodeUrl}
+                            alt={`QR Code for ${donation.name}`}
+                            className="max-w-[180px] rounded-lg border border-neutral-200 shadow-sm"
+                          />
+                        </div>
+                      )}
+
+                      {donation.bankName && bankInfo && (
+                        <div className="bg-neutral-50 p-4 rounded-xl mb-4 border border-neutral-100">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xl">{bankInfo.icon}</span>
+                            <div>
+                              <p className="text-xs text-neutral-500 font-medium">ธนาคาร</p>
+                              <p className={`font-bold text-sm ${bankInfo.color.replace('bg-', 'text-')}`}>
+                                {donation.bankName}
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center justify-between gap-2 bg-white p-3 rounded-lg border border-neutral-200 shadow-sm">
+                            <p className="text-lg font-mono font-bold text-neutral-800 tracking-wide">
+                              {donation.accountNumber}
+                            </p>
+                            <button
+                              onClick={() => {
+                                navigator.clipboard.writeText(donation.accountNumber || "");
+                                alert("คัดลอกเลขบัญชีแล้ว");
+                              }}
+                              className="flex items-center gap-1 text-xs bg-neutral-100 hover:bg-neutral-200 text-neutral-700 px-3 py-1.5 rounded-md font-medium transition-colors"
+                            >
+                              <span>📋</span>
+                              <span>คัดลอก</span>
+                            </button>
+                          </div>
+                          <p className="text-xs text-neutral-500 mt-2 truncate">
+                            ชื่อบัญชี: {donation.accountName}
+                          </p>
+                        </div>
+                      )}
+
+                      {donation.contacts && (
+                        <div className="border-t border-neutral-100 pt-4 mt-auto">
+                          <p className="text-neutral-700 font-medium text-sm mb-2">
+                            ติดต่อสอบถาม:
+                          </p>
+                          <div className="space-y-2">
+                            {donation.contacts.map((contact, idx) => (
+                              <div
+                                key={idx}
+                                className="flex items-center justify-between text-sm"
+                              >
+                                <span className="text-neutral-600 flex-1 truncate mr-2">
+                                  {contact.name}
+                                </span>
+                                <a
+                                  href={`tel:${contact.phone}`}
+                                  className="text-blue-600 font-medium hover:text-blue-700 hover:underline whitespace-nowrap"
+                                >
+                                  {contact.phone}
+                                </a>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  )}
+                  );
+                })}
+              </div>
+
+              {donations.length > 6 && (
+                <div className="mt-8 flex justify-center">
+                  <button
+                    onClick={() => setShowAllDonations(!showAllDonations)}
+                    className="flex items-center gap-2 px-6 py-2.5 bg-white border border-neutral-200 hover:bg-neutral-50 text-neutral-700 rounded-full font-medium transition-all shadow-sm hover:shadow-md"
+                  >
+                    <span>{showAllDonations ? "ย่อรายการ" : "ดูทั้งหมด"}</span>
+                    <span className={`transform transition-transform duration-300 ${showAllDonations ? "rotate-180" : ""}`}>
+                      ▼
+                    </span>
+                  </button>
                 </div>
-              ))}
-            </div>
+              )}
+            </>
           )}
         </section>
 
