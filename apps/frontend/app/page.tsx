@@ -181,7 +181,7 @@ export default function Home() {
         </header>
 
         {/* Navigation Bar */}
-        <nav className="sticky top-0 z-40 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 shadow-xl backdrop-blur-sm border-b border-white/10">
+        <nav className="sticky top-0 z-40 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 shadow-xl backdrop-blur-sm border-b border-white/10 rounded-b-2xl">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-center gap-1 sm:gap-2 py-4 overflow-x-auto scrollbar-hide">
               <a
