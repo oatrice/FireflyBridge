@@ -182,7 +182,7 @@ export default function Home() {
             </a>
 
             <a
-              href="https://forms.gle/placeholder"
+              href="https://docs.google.com/forms/d/e/1FAIpQLSdldl2Dn-ir7jTLP1EsW1E6aYfH9dcQe0CKFD6TGv2KhwaNgw/viewform"
               target="_blank"
               rel="noopener noreferrer"
               className="group flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 text-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5"
@@ -190,10 +190,10 @@ export default function Home() {
               <span className="text-2xl">✅</span>
               <div className="text-left">
                 <div className="font-bold text-lg leading-tight">
-                  รายงานผู้ที่ปลอดภัยแล้ว
+                  กรอกรายชื่อผู้ที่ได้รับการอพยพแล้ว
                 </div>
                 <div className="text-xs text-teal-100 font-medium">
-                  (เฉพาะผู้ที่ได้รับการอพยพแล้ว)
+                  (🚫ไม่ใช่ฟอร์มขอความช่วยเหลือ)
                 </div>
               </div>
             </a>
