@@ -21,7 +21,7 @@ interface Hotline {
 }
 
 const hotlines: Hotline[] = [
-    // Emergency & Medical
+    // --- Emergency & Medical (ฉุกเฉินและการแพทย์) ---
     {
         id: "1",
         name: "เหตุด่วนเหตุร้าย",
@@ -57,7 +57,7 @@ const hotlines: Hotline[] = [
         name: "ป่อเต็กตึ๊ง",
         number: "1418",
         category: "ฉุกเฉิน",
-        categories: ["ฉุกเฉิน", "ยอดฮิต"],
+        categories: ["ฉุกเฉิน", "ยอดฮิต", "มูลนิธิ"],
         description: "แจ้งเหตุสาธารณภัย/น้ำท่วม",
         color: "bg-red-500",
         links: {
@@ -69,8 +69,9 @@ const hotlines: Hotline[] = [
         id: "5",
         name: "ศูนย์ช่วยเหลือสังคม",
         number: "1300",
-        category: "ฉุกเฉิน",
-        description: "สายด่วนภาครัฐ (พม.)",
+        category: "หน่วยงานรัฐ", // เปลี่ยนเป็นหน่วยงานรัฐตามบริบท
+        categories: ["ฉุกเฉิน", "หน่วยงานรัฐ"],
+        description: "สายด่วนภาครัฐ (พม.) / สายด่วนช่วยเหลือสังคม",
         color: "bg-red-500",
         links: {
             facebook: "https://www.facebook.com/PrdMsociety1",
@@ -124,8 +125,25 @@ const hotlines: Hotline[] = [
             website: "https://www.disaster.go.th/"
         }
     },
-
-    // Local Hatyai/Songkhla Emergency
+    {
+        id: "11",
+        name: "กู้ภัยหาดใหญ่",
+        number: "1163",
+        category: "ฉุกเฉิน",
+        categories: ["ฉุกเฉิน", "ยอดฮิต", "มูลนิธิ"],
+        description: "มูลนิธิมิตรภาพสามัคคี (ท่งเซียเซี่ยงตึ๊ง) - เฉพาะหาดใหญ่",
+        color: "bg-red-500"
+    },
+    {
+        id: "61",
+        name: "พี่ๆ ทหาร (กอ.รมน.)",
+        numbers: ["098-223-3364", "061-586-5574", "074-586-685", "074-234-145", "074-234-146", "074-234-147", "074-234-148"],
+        category: "ฉุกเฉิน",
+        description: "ช่วยเหลือผู้ประสบภัยในพื้นที่ (หมายเลขจากหลายหน่วยงาน)",
+        color: "bg-green-700"
+    },
+    
+    // --- Local Hatyai/Songkhla Emergency & Government (ท้องถิ่น/รัฐ) ---
     {
         id: "10",
         name: "เทศบาลนครหาดใหญ่",
@@ -140,199 +158,40 @@ const hotlines: Hotline[] = [
         }
     },
     {
-        id: "11",
-        name: "กู้ภัยหาดใหญ่",
-        number: "1163",
-        category: "ฉุกเฉิน",
-        categories: ["ฉุกเฉิน", "ยอดฮิต"],
-        description: "มูลนิธิมิตรภาพสามัคคี (ท่งเซียเซี่ยงตึ๊ง)",
-        color: "bg-red-500"
-    },
-    {
         id: "12",
         name: "ปภ. จังหวัดสงขลา",
-        number: "074-316-380",
-        category: "ท้องถิ่น",
-        description: "ป้องกันและบรรเทาสาธารณภัย",
+        numbers: ["074-316-380", "074-316381"], // รวมเบอร์สำนักงาน
+        category: "หน่วยงานรัฐ",
+        description: "ป้องกันและบรรเทาสาธารณภัย (สำนักงานจังหวัด)",
         color: "bg-green-500"
     },
+    {
+        id: "60",
+        name: "พมจ. สงขลา",
+        number: "081-990-4294",
+        category: "หน่วยงานรัฐ",
+        description: "พัฒนาสังคมและความมั่นคงของมนุษย์จังหวัดสงขลา",
+        color: "bg-pink-500"
+    },
+    // ปลัดอำเภอ
+    { id: "70", name: "ปลัดอำเภอหาดใหญ่", number: "063-902-9229", category: "ท้องถิ่น", description: "อำเภอหาดใหญ่", color: "bg-green-500" },
+    { id: "71", name: "ปลัดอำเภอคลองหอยโข่ง", number: "063-904-1038", category: "ท้องถิ่น", description: "อำเภอคลองหอยโข่ง", color: "bg-green-500" },
+    { id: "72", name: "ปลัดอำเภอควนเนียง", number: "095-084-9828", category: "ท้องถิ่น", description: "อำเภอควนเนียง", color: "bg-green-500" },
+    { id: "73", name: "ปลัดอำเภอกระแสสินธุ์", number: "063-903-8524", category: "ท้องถิ่น", description: "อำเภอกระแสสินธุ์", color: "bg-green-500" },
+    { id: "74", name: "ปลัดอำเภอสะบ้าย้อย", number: "098-947-4424", category: "ท้องถิ่น", description: "อำเภอสะบ้าย้อย", color: "bg-green-500" },
+    { id: "75", name: "ปลัดอำเภอสิงหนคร", number: "082-596-5156", category: "ท้องถิ่น", description: "อำเภอสิงหนคร", color: "bg-green-500" },
+    { id: "76", name: "ปลัดอำเภอรัตภูมิ", number: "064-180-7360", category: "ท้องถิ่น", description: "อำเภอรัตภูมิ", color: "bg-green-500" },
+    { id: "77", name: "ปลัดอำเภอระโนด", number: "063-902-2294", category: "ท้องถิ่น", description: "อำเภอระโนด", color: "bg-green-500" },
+    { id: "78", name: "ปลัดอำเภอเทพา", number: "089-625-4449", category: "ท้องถิ่น", description: "อำเภอเทพา", color: "bg-green-500" },
+    { id: "79", name: "ปลัดอำเภอสทิงพระ", number: "063-059-0682", category: "ท้องถิ่น", description: "อำเภอสทิงพระ", color: "bg-green-500" },
+    { id: "80", name: "ปลัดอำเภอนาหม่อม", number: "063-901-8920", category: "ท้องถิ่น", description: "อำเภอนาหม่อม", color: "bg-green-500" },
+    { id: "81", name: "ปลัดอำเภอเมืองสงขลา", number: "063-901-7646", category: "ท้องถิ่น", description: "อำเภอเมืองสงขลา", color: "bg-green-500" },
+    { id: "82", name: "ปลัดอำเภอนาทวี", number: "063-903-1568", category: "ท้องถิ่น", description: "อำเภอนาทวี", color: "bg-green-500" },
+    { id: "83", name: "ปลัดอำเภอสะเดา", number: "063-902-9449", category: "ท้องถิ่น", description: "อำเภอสะเดา", color: "bg-green-500" },
+    { id: "84", name: "ปลัดอำเภอบางกล่ำ", number: "063-903-3773", category: "ท้องถิ่น", description: "อำเภอบางกล่ำ", color: "bg-green-500" },
+    { id: "85", name: "ปลัดอำเภอจะนะ", number: "085-378-6655", category: "ท้องถิ่น", description: "อำเภอจะนะ", color: "bg-green-500" },
 
-    // Foundations (Local)
-    {
-        id: "20",
-        name: "มูลนิธิมิตรภาพสามัคคี (ท่งเซียเซี่ยงตึ๊ง)",
-        number: "074-350-955",
-        category: "มูลนิธิ",
-        description: "หาดใหญ่ - สงเคราะห์ผู้ประสบภัย",
-        color: "bg-teal-500"
-    },
-    {
-        id: "21",
-        name: "ศูนย์รับบริจาค ม.อ.",
-        numbers: ["099-405-6239", "062-235-2644"],
-        category: "มูลนิธิ",
-        description: "อาคารกิจกรรมนักศึกษาและศูนย์กีฬา ม.อ.",
-        color: "bg-teal-500",
-        links: {
-            website: "https://www.psu.ac.th/"
-        }
-    },
-    {
-        id: "22",
-        name: "หมู่บ้านเด็กโสสะหาดใหญ่",
-        number: "074-291-652",
-        category: "มูลนิธิ",
-        description: "ช่วยเหลือเด็กและครอบครัว",
-        color: "bg-teal-500",
-        links: {
-            facebook: "https://www.facebook.com/SOSThailand",
-            website: "https://www.sosthailand.org/"
-        }
-    },
-    {
-        id: "23",
-        name: "มูลนิธิชุมชนสงขลา",
-        numbers: ["074-221-286", "086-489-2086"],
-        category: "มูลนิธิ",
-        description: "พัฒนาชุมชนและสังคม",
-        color: "bg-teal-500"
-    },
-    {
-        id: "24",
-        name: "มูลนิธิจตุนิมิต",
-        number: "074-327-147",
-        category: "มูลนิธิ",
-        description: "สงเคราะห์การศึกษาและผู้ประสบภัย",
-        color: "bg-teal-500"
-    },
-    {
-        id: "35",
-        name: "มูลนิธิกระจกเงา",
-        numbers: ["02-973-2236-7", "095-631-1914"],
-        category: "มูลนิธิ",
-        categories: ["มูลนิธิ", "ยอดฮิต"],
-        description: "ศูนย์รับบริจาคและอาสาสมัคร",
-        color: "bg-teal-500",
-        links: {
-            facebook: "https://www.facebook.com/mirrorf"
-        }
-    },
-    {
-        id: "30",
-        name: "มูลนิธิร่วมกตัญญู",
-        number: "1677",
-        category: "มูลนิธิ",
-        categories: ["มูลนิธิ", "ยอดฮิต"],
-        description: "สายด่วนร่วมด้วยช่วยกัน",
-        color: "bg-teal-500",
-        links: {
-            facebook: "https://www.facebook.com/ruamkatanyu",
-        }
-    },
-    {
-        id: "37",
-        name: "มูลนิธิเพื่อการส่งเสริมและพัฒนาสังคม",
-        numbers: ["074-205-633", "061-909-1840"],
-        category: "มูลนิธิ",
-        categories: ["มูลนิธิ", "ยอดฮิต"],
-        description: "ทำงานด้านการส่งเสริมคุณภาพชีวิตและช่วยเหลือผู้ด้อยโอกาส",
-        color: "bg-teal-500",
-        links: {
-            facebook: "https://www.facebook.com/ruamkatanyu",
-        }
-    },
-    {
-        id: "32",
-        name: "มูลนิธิองค์กรทำดี (บุ๋ม ปนัดดา)",
-        numbers: ["08-6431-5579", "093-423-5159"],
-        category: "มูลนิธิ",
-        categories: ["มูลนิธิ", "ยอดฮิต"],
-        description: "ติดต่อคุณองุ่น",
-        color: "bg-teal-500",
-        links: {
-            instagram: ["https://www.instagram.com/boompanadda"]
-        }
-    },
-    {
-        id: "34",
-        name: "มูลนิธิใจถึงใจ (ฝันดี-ฝันเด่น)",
-        number: "084-448-9223",
-        category: "มูลนิธิ",
-        categories: ["มูลนิธิ", "ยอดฮิต"],
-        description: "ฝ่ายประสานงาน",
-        color: "bg-purple-500",
-        links: {
-            facebook: "https://www.facebook.com/Jaitungjai"
-        }
-    },
-
-    // Volunteers & National Foundations
-    {
-        id: "31",
-        name: "สภากาชาดไทย",
-        numbers: ["1664", "0-2254-2200"],
-        category: "การแพทย์",
-        description: "สายด่วนสภากาชาดไทย",
-        color: "bg-pink-500",
-        links: {
-            facebook: "https://www.facebook.com/ThaiRedCrossSociety",
-            website: "https://www.redcross.or.th/"
-        }
-    },
-    {
-        id: "33",
-        name: "โครงการพลังน้ำใจ/โรงครัวเปิ้ล นาคร",
-        numbers: ["06-3226-0599", "08-1413-4222", "08-2323-2345"],
-        category: "อาสาสมัคร",
-        categories: ["อาสาสมัคร", "ยอดฮิต"],
-        description: "ติดต่อคุณกุ้ง",
-        color: "bg-purple-500",
-        links: {
-            facebook: "facebook: www.facebook.com/junekasama.silachai",
-            instagram: ["https://www.instagram.com/june_kasama", "https://www.instagram.com/ple_nakorn"],
-            youtube: "www.youtube.com/plenakornChannel"
-        }
-    },
-    {
-        id: "36",
-        name: "กันจอมพลังช่วยสู้",
-        category: "อาสาสมัคร",
-        categories: ["อาสาสมัคร", "ยอดฮิต"],
-        description: "ติดตามความช่วยเหลือและประสานงาน",
-        color: "bg-purple-500",
-        links: {
-            facebook: "https://www.facebook.com/gunjompalang1"
-        }
-    },
-
-    // Utilities
-    {
-        id: "40",
-        name: "การไฟฟ้า (PEA) หาดใหญ่",
-        numbers: ["1129", "074-232-669"],
-        category: "สาธารณูปโภค",
-        description: "แจ้งไฟฟ้าขัดข้อง",
-        color: "bg-cyan-500",
-        links: {
-            facebook: "https://www.facebook.com/PeaHatyai",
-            website: "https://www.pea.co.th/",
-            line: "https://line.me/R/ti/p/@peathailand"
-        }
-    },
-    {
-        id: "41",
-        name: "การประปา (PWA) หาดใหญ่",
-        numbers: ["074-598-093", "074-252-691"],
-        category: "สาธารณูปโภค",
-        description: "แจ้งน้ำไม่ไหล/ท่อแตก",
-        color: "bg-cyan-500",
-        links: {
-            facebook: "https://www.facebook.com/pwahatyai",
-            website: "https://www.pwa.co.th/"
-        }
-    },
-
-    // Local Municipalities
+    // --- Local Municipalities (เทศบาลท้องถิ่น) ---
     {
         id: "50",
         name: "เทศบาลเมืองคอหงส์",
@@ -376,39 +235,180 @@ const hotlines: Hotline[] = [
             facebook: "https://www.facebook.com/khuanlang"
         }
     },
+    
+    // --- Utilities (สาธารณูปโภค) ---
     {
-        id: "60",
-        name: "พมจ. สงขลา",
-        number: "081-990-4294",
-        category: "หน่วยงานรัฐ",
-        description: "พัฒนาสังคมและความมั่นคงของมนุษย์",
-        color: "bg-pink-500"
+        id: "40",
+        name: "การไฟฟ้า (PEA) หาดใหญ่",
+        numbers: ["1129", "074-232-669"], // รวมเบอร์ 1129 และสำนักงาน
+        category: "สาธารณูปโภค",
+        description: "แจ้งไฟฟ้าขัดข้อง",
+        color: "bg-cyan-500",
+        links: {
+            facebook: "https://www.facebook.com/PeaHatyai",
+            website: "https://www.pea.co.th/",
+            line: "https://line.me/R/ti/p/@peathailand"
+        }
     },
     {
-        id: "61",
-        name: "พี่ๆ ทหาร",
-        numbers: ["098-223-3364", "061-586-5574", "074-586-685", "074-234-145", "074-234-146", "074-234-147", "074-234-148"],
-        category: "ฉุกเฉิน",
-        description: "ช่วยเหลือผู้ประสบภัย",
-        color: "bg-green-700"
+        id: "41",
+        name: "การประปา (PWA) หาดใหญ่",
+        numbers: ["074-598-093", "074-252-691"], // รวมเบอร์สำนักงาน
+        category: "สาธารณูปโภค",
+        description: "แจ้งน้ำไม่ไหล/ท่อแตก/น้ำประปาขัดข้อง",
+        color: "bg-cyan-500",
+        links: {
+            facebook: "https://www.facebook.com/pwahatyai",
+            website: "https://www.pwa.co.th/"
+        }
     },
-    // District Chiefs (Palad Amphoe)
-    { id: "70", name: "ปลัดอำเภอหาดใหญ่", number: "063-902-9229", category: "ท้องถิ่น", description: "อำเภอหาดใหญ่", color: "bg-green-500" },
-    { id: "71", name: "ปลัดอำเภอคลองหอยโข่ง", number: "063-904-1038", category: "ท้องถิ่น", description: "อำเภอคลองหอยโข่ง", color: "bg-green-500" },
-    { id: "72", name: "ปลัดอำเภอควนเนียง", number: "095-084-9828", category: "ท้องถิ่น", description: "อำเภอควนเนียง", color: "bg-green-500" },
-    { id: "73", name: "ปลัดอำเภอกระแสสินธุ์", number: "063-903-8524", category: "ท้องถิ่น", description: "อำเภอกระแสสินธุ์", color: "bg-green-500" },
-    { id: "74", name: "ปลัดอำเภอสะบ้าย้อย", number: "098-947-4424", category: "ท้องถิ่น", description: "อำเภอสะบ้าย้อย", color: "bg-green-500" },
-    { id: "75", name: "ปลัดอำเภอสิงหนคร", number: "082-596-5156", category: "ท้องถิ่น", description: "อำเภอสิงหนคร", color: "bg-green-500" },
-    { id: "76", name: "ปลัดอำเภอรัตภูมิ", number: "064-180-7360", category: "ท้องถิ่น", description: "อำเภอรัตภูมิ", color: "bg-green-500" },
-    { id: "77", name: "ปลัดอำเภอระโนด", number: "063-902-2294", category: "ท้องถิ่น", description: "อำเภอระโนด", color: "bg-green-500" },
-    { id: "78", name: "ปลัดอำเภอเทพา", number: "089-625-4449", category: "ท้องถิ่น", description: "อำเภอเทพา", color: "bg-green-500" },
-    { id: "79", name: "ปลัดอำเภอสทิงพระ", number: "063-059-0682", category: "ท้องถิ่น", description: "อำเภอสทิงพระ", color: "bg-green-500" },
-    { id: "80", name: "ปลัดอำเภอนาหม่อม", number: "063-901-8920", category: "ท้องถิ่น", description: "อำเภอนาหม่อม", color: "bg-green-500" },
-    { id: "81", name: "ปลัดอำเภอเมืองสงขลา", number: "063-901-7646", category: "ท้องถิ่น", description: "อำเภอเมืองสงขลา", color: "bg-green-500" },
-    { id: "82", name: "ปลัดอำเภอนาทวี", number: "063-903-1568", category: "ท้องถิ่น", description: "อำเภอนาทวี", color: "bg-grgreenay-500" },
-    { id: "83", name: "ปลัดอำเภอสะเดา", number: "063-902-9449", category: "ท้องถิ่น", description: "อำเภอสะเดา", color: "bg-green-500" },
-    { id: "84", name: "ปลัดอำเภอบางกล่ำ", number: "063-903-3773", category: "ท้องถิ่น", description: "อำเภอบางกล่ำ", color: "bg-green-500" },
-    { id: "85", name: "ปลัดอำเภอจะนะ", number: "085-378-6655", category: "ท้องถิ่น", description: "อำเภอจะนะ", color: "bg-green-500" },
+
+    // --- Foundations & Volunteers (มูลนิธิและอาสาสมัคร) ---
+    {
+        id: "30",
+        name: "มูลนิธิร่วมกตัญญู",
+        numbers: ["1677", "02-751-0951", "02-751-0952", "02-751-0953"], // รวมเบอร์ส่วนกลาง
+        category: "มูลนิธิ",
+        categories: ["มูลนิธิ", "ยอดฮิต", "ฉุกเฉิน"],
+        description: "สายด่วนร่วมด้วยช่วยกัน (24 ชม.)",
+        color: "bg-teal-500",
+        links: {
+            facebook: "https://www.facebook.com/ruamkatanyu",
+        }
+    },
+    {
+        id: "31",
+        name: "สภากาชาดไทย",
+        numbers: ["1664", "0-2254-2200"],
+        category: "มูลนิธิ",
+        categories: ["มูลนิธิ", "การแพทย์"],
+        description: "สายด่วนสภากาชาดไทย (ตลอด 24 ชม.)",
+        color: "bg-pink-500",
+        links: {
+            facebook: "https://www.facebook.com/ThaiRedCrossSociety",
+            website: "https://www.redcross.or.th/"
+        }
+    },
+    {
+        id: "32",
+        name: "มูลนิธิองค์กรทำดี (บุ๋ม ปนัดดา)",
+        numbers: ["086-431-5579", "093-423-5159"],
+        category: "มูลนิธิ",
+        categories: ["มูลนิธิ", "ยอดฮิต"],
+        description: "ติดต่อคุณองุ่น / ช่วยเหลือผู้ประสบภัย",
+        color: "bg-teal-500",
+        links: {
+            instagram: ["https://www.instagram.com/boompanadda"]
+        }
+    },
+    {
+        id: "33",
+        name: "โครงการพลังน้ำใจ/โรงครัวเปิ้ล นาคร",
+        numbers: ["06-3226-0599", "08-1413-4222", "08-2323-2345"],
+        category: "อาสาสมัคร",
+        categories: ["อาสาสมัคร", "ยอดฮิต"],
+        description: "ติดต่อคุณกุ้ง",
+        color: "bg-purple-500",
+        links: {
+            facebook: "www.facebook.com/junekasama.silachai",
+            instagram: ["https://www.instagram.com/june_kasama", "https://www.instagram.com/ple_nakorn"],
+            youtube: "www.youtube.com/plenakornChannel"
+        }
+    },
+    {
+        id: "34",
+        name: "มูลนิธิใจถึงใจ (ฝันดี-ฝันเด่น)",
+        number: "084-448-9223",
+        category: "มูลนิธิ",
+        categories: ["มูลนิธิ", "ยอดฮิต"],
+        description: "ฝ่ายประสานงาน",
+        color: "bg-purple-500",
+        links: {
+            facebook: "https://www.facebook.com/Jaitungjai"
+        }
+    },
+    {
+        id: "35",
+        name: "มูลนิธิกระจกเงา",
+        numbers: ["02-973-2236-7", "095-631-1914"],
+        category: "มูลนิธิ",
+        categories: ["มูลนิธิ", "ยอดฮิต"],
+        description: "ศูนย์รับบริจาคและอาสาสมัคร",
+        color: "bg-teal-500",
+        links: {
+            facebook: "https://www.facebook.com/mirrorf"
+        }
+    },
+    {
+        id: "36",
+        name: "กันจอมพลังช่วยสู้",
+        category: "อาสาสมัคร",
+        categories: ["อาสาสมัคร", "ยอดฮิต"],
+        description: "ติดตามความช่วยเหลือและประสานงาน",
+        color: "bg-purple-500",
+        links: {
+            facebook: "https://www.facebook.com/gunjompalang1"
+        }
+    },
+    {
+        id: "37",
+        name: "มูลนิธิเพื่อการส่งเสริมและพัฒนาสังคม",
+        numbers: ["074-205-633", "061-909-1840"],
+        category: "มูลนิธิ",
+        categories: ["มูลนิธิ", "ยอดฮิต"],
+        description: "ทำงานด้านการส่งเสริมคุณภาพชีวิตและช่วยเหลือผู้ด้อยโอกาส",
+        color: "bg-teal-500",
+        links: {
+            facebook: "https://www.facebook.com/ruamkatanyu", // ลิงก์เดิมเป็น ruamkatanyu ขอคงไว้
+        }
+    },
+    {
+        id: "20",
+        name: "มูลนิธิมิตรภาพสามัคคี (ท่งเซียเซี่ยงตึ๊ง)",
+        number: "074-350-955",
+        category: "มูลนิธิ",
+        description: "หาดใหญ่ - สงเคราะห์ผู้ประสบภัย (สำนักงาน)",
+        color: "bg-teal-500"
+    },
+    {
+        id: "21",
+        name: "ศูนย์รับบริจาค ม.อ.",
+        numbers: ["099-405-6239", "062-235-2644"],
+        category: "มูลนิธิ",
+        description: "อาคารกิจกรรมนักศึกษาและศูนย์กีฬา ม.อ.",
+        color: "bg-teal-500",
+        links: {
+            website: "https://www.psu.ac.th/"
+        }
+    },
+    {
+        id: "22",
+        name: "หมู่บ้านเด็กโสสะหาดใหญ่",
+        number: "074-291-652",
+        category: "มูลนิธิ",
+        description: "ช่วยเหลือเด็กและครอบครัว (SOS Children's Villages)",
+        color: "bg-teal-500",
+        links: {
+            facebook: "https://www.facebook.com/SOSThailand",
+            website: "https://www.sosthailand.org/"
+        }
+    },
+    {
+        id: "23",
+        name: "มูลนิธิชุมชนสงขลา",
+        numbers: ["074-221-286", "086-489-2086"],
+        category: "มูลนิธิ",
+        description: "พัฒนาชุมชนและสังคม",
+        color: "bg-teal-500"
+    },
+    {
+        id: "24",
+        name: "มูลนิธิจตุนิมิต",
+        number: "074-327-147",
+        category: "มูลนิธิ",
+        description: "สงเคราะห์การศึกษาและผู้ประสบภัย",
+        color: "bg-teal-500"
+    },
 ];
 
 const externalLinks = [
