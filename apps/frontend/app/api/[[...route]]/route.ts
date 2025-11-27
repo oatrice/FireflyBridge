@@ -142,7 +142,7 @@ const hotlines: Hotline[] = [
         description: "ช่วยเหลือผู้ประสบภัยในพื้นที่ (หมายเลขจากหลายหน่วยงาน)",
         color: "bg-green-700"
     },
-    
+
     // --- Local Hatyai/Songkhla Emergency & Government (ท้องถิ่น/รัฐ) ---
     {
         id: "10",
@@ -235,7 +235,7 @@ const hotlines: Hotline[] = [
             facebook: "https://www.facebook.com/khuanlang"
         }
     },
-    
+
     // --- Utilities (สาธารณูปโภค) ---
     {
         id: "40",
@@ -547,6 +547,10 @@ interface DonationChannel {
     description?: string;
     qrCodeUrl?: string;
     contacts?: { name: string; phone: string }[];
+    donationPoints?: string[]; // จุดรับบริจาคสิ่งของ
+    taxReceiptEmail?: string; // อีเมลสำหรับขอใบเสร็จ
+    taxReceiptInfo?: string; // ข้อมูลที่ต้องส่งเพื่อขอใบเสร็จ
+    additionalInfo?: string; // ข้อมูลเพิ่มเติม
 }
 
 const donations: DonationChannel[] = [
@@ -569,6 +573,26 @@ const donations: DonationChannel[] = [
         qrCodeUrl: "/images/skru-donation.jpg",
         contacts: [
             { name: "กองพัฒนานักศึกษา", phone: "098-514-9295" }
+        ]
+    },
+    {
+        id: "3",
+        name: "จุฬาฯ เพื่อนพึ่ง (ภาฯ) ช่อง 7 รวมใจ ฝ่าภัยน้ำท่วมใต้",
+        description: "จุฬาลงกรณ์มหาวิทยาลัย ร่วมกับ มูลนิธิอาสาเพื่อนพึ่ง (ภาฯ) ยามยาก สภากาชาดไทย และ Ch7HD",
+        bankName: "ธนาคารกรุงเทพ สาขาสยามสแควร์",
+        accountNumber: "152-4-87883-0",
+        accountName: "จุฬาลงกรณ์มหาวิทยาลัย (เพื่อรับเงินบริจาค)",
+        qrCodeUrl: "/images/chula-donation.jpg",
+        donationPoints: [
+            "สยามสแควร์ (Siam Square)",
+            "จามจุรีสแควร์ (ChamChuri Square)"
+        ],
+        taxReceiptEmail: "ofas.ar@chula.ac.th",
+        taxReceiptInfo: "ส่งหลักฐานการโอน + ระบุ 'รวมใจ ฝ่าภัยน้ำท่วมใต้' พร้อมชื่อ-นามสกุล / ที่อยู่ / เบอร์โทร / เลขบัตรประชาชน",
+        additionalInfo: "ความร่วมมือในการจัดส่งโดย ไปรษณีย์ไทย และ กองทัพอากาศ",
+        contacts: [
+            { name: "คุณพรประภา เสวกวิหารี", phone: "0-2218-0168" },
+            { name: "คุณอัจฉรา เพ่งเล็งผล", phone: "0-2218-0176" }
         ]
     }
 ];
