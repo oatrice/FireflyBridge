@@ -521,7 +521,7 @@ export default function Home() {
                         {paginatedShelters.map((shelter) => (
                           <div
                             key={shelter.id}
-                            className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 border border-neutral-100"
+                            className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 border border-neutral-100 flex flex-col h-full"
                           >
                             <div className="flex items-start gap-4 mb-4">
                               <div className="text-4xl">{shelter.icon}</div>
@@ -541,7 +541,7 @@ export default function Home() {
                               </div>
                             </div>
 
-                            <div className="border-t border-neutral-100 pt-4">
+                            <div className="border-t border-neutral-100 pt-4 flex flex-col flex-1">
                               {shelter.contacts.length > 0 ? (
                                 <>
                                   <p className="text-neutral-700 font-medium text-sm mb-2">
@@ -573,7 +573,7 @@ export default function Home() {
                               )}
 
                               {/* Quick Actions */}
-                              <div className="flex gap-2">
+                              <div className="flex gap-2 mt-auto">
                                 {shelter.contacts.length > 0 && (
                                   <a
                                     href={`tel:${shelter.contacts[0].phone}`}
