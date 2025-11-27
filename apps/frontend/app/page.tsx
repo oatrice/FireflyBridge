@@ -99,6 +99,9 @@ export default function Home() {
   const [donationSearchTerm, setDonationSearchTerm] = useState("");
   const [donationFilter, setDonationFilter] = useState("ทั้งหมด");
   const [donationSortBy, setDonationSortBy] = useState<"name" | "bank">("name");
+  const [qrModalOpen, setQrModalOpen] = useState(false);
+  const [qrModalImage, setQrModalImage] = useState("");
+  const [qrModalTitle, setQrModalTitle] = useState("");
 
   const getBankInfo = (bankName: string) => {
     const name = bankName.toLowerCase();
@@ -829,12 +832,20 @@ export default function Home() {
                             )}
 
                             {donation.qrCodeUrl && (
-                              <div className="mb-4 flex justify-center bg-neutral-50 p-4 rounded-xl">
+                              <div className="mb-4 flex justify-center bg-neutral-50 p-4 rounded-xl group relative">
                                 <img
                                   src={donation.qrCodeUrl}
                                   alt={`QR Code for ${donation.name}`}
-                                  className="max-w-[180px] rounded-lg border border-neutral-200 shadow-sm"
+                                  onClick={() => {
+                                    setQrModalImage(donation.qrCodeUrl!);
+                                    setQrModalTitle(donation.name);
+                                    setQrModalOpen(true);
+                                  }}
+                                  className="max-w-[180px] rounded-lg border border-neutral-200 shadow-sm hover:scale-250 hover:shadow-xl transition-all duration-300 cursor-pointer"
                                 />
+                                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-black/75 text-white text-xs px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
+                                  🔍 คลิกเพื่อขยาย
+                                </div>
                               </div>
                             )}
 
@@ -1385,6 +1396,39 @@ export default function Home() {
           </span>
         </a>
       </div >
+
+      {/* QR Code Modal */}
+      {qrModalOpen && (
+        <div
+          className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
+          onClick={() => setQrModalOpen(false)}
+        >
+          <div className="relative max-w-4xl w-full">
+            <button
+              onClick={() => setQrModalOpen(false)}
+              className="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors text-4xl font-light"
+            >
+              ×
+            </button>
+            <div className="bg-white rounded-2xl p-8 shadow-2xl">
+              <h3 className="text-2xl font-bold text-neutral-800 mb-4 text-center">
+                {qrModalTitle}
+              </h3>
+              <div className="flex justify-center">
+                <img
+                  src={qrModalImage}
+                  alt={qrModalTitle}
+                  className="max-w-full max-h-[70vh] rounded-lg shadow-lg"
+                  onClick={(e) => e.stopPropagation()}
+                />
+              </div>
+              <p className="text-center text-neutral-500 text-sm mt-4">
+                คลิกนอกกรอบเพื่อปิด
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </main >
   );
 }
