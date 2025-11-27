@@ -811,20 +811,15 @@ export default function Home() {
                               </p>
                             )}
 
-                            <div className="mb-4 flex justify-center bg-neutral-50 p-4 rounded-xl">
-                              {donation.qrCodeUrl ? (
+                            {donation.qrCodeUrl && (
+                              <div className="mb-4 flex justify-center bg-neutral-50 p-4 rounded-xl">
                                 <img
                                   src={donation.qrCodeUrl}
                                   alt={`QR Code for ${donation.name}`}
                                   className="max-w-[180px] rounded-lg border border-neutral-200 shadow-sm"
                                 />
-                              ) : (
-                                <div className="w-full max-w-[180px] aspect-square bg-white rounded-lg border-2 border-dashed border-neutral-300 flex flex-col items-center justify-center text-neutral-400 gap-2">
-                                  <span className="text-4xl">🖼️</span>
-                                  <span className="text-xs font-medium">ไม่มีรูป QR Code</span>
-                                </div>
-                              )}
-                            </div>
+                              </div>
+                            )}
 
                             {donation.bankName && bankInfo ? (
                               <div className="bg-neutral-50 p-4 rounded-xl mb-4 border border-neutral-100">
