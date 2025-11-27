@@ -61,6 +61,13 @@ export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState("ยอดฮิต");
   const [isScrolled, setIsScrolled] = useState(false);
 
+  // Shelter-specific states
+  const [shelterSearchTerm, setShelterSearchTerm] = useState("");
+  const [selectedArea, setSelectedArea] = useState("ทั้งหมด");
+  const [shelterViewMode, setShelterViewMode] = useState<"grid" | "list">("grid");
+  const [shelterSortBy, setShelterSortBy] = useState<"name" | "area">("area");
+  const [expandedAreas, setExpandedAreas] = useState<Set<string>>(new Set());
+
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 100);
@@ -221,9 +228,12 @@ export default function Home() {
         </nav>
 
         <section id="shelters" className="mt-8 scroll-mt-20">
-          <h2 className="text-2xl font-bold text-neutral-800 mb-6 flex items-center">
+          <h2 className="text-2xl font-bold text-neutral-800 mb-2 flex items-center">
             🏠 ศูนย์พักพิง (Shelters)
           </h2>
+          <p className="text-neutral-600 text-sm mb-6">
+            แสดง {shelters.length} ศูนย์พักพิง
+          </p>
 
           {loading ? (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -235,65 +245,314 @@ export default function Home() {
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {shelters.map((shelter) => (
-                <div
-                  key={shelter.id}
-                  className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 border border-neutral-100"
-                >
-                  <div className="flex items-start gap-4 mb-4">
-                    <div className="text-4xl">{shelter.icon}</div>
-                    <div className="flex-1">
-                      <h3 className="text-lg font-bold text-neutral-900 mb-1">
-                        {shelter.name}
-                      </h3>
-                      <p className="text-neutral-600 text-sm mb-1">
-                        📍 {shelter.location}
-                      </p>
-                      <p className="text-green-600 text-sm font-medium">
-                        ✅ {shelter.status}
-                      </p>
-                    </div>
+            <>
+              {/* Search and Filter Controls */}
+              <div className="mb-8 space-y-4">
+                {/* Search Bar */}
+                <div className="relative">
+                  <input
+                    type="text"
+                    placeholder="ค้นหาศูนย์พักพิง, สถานที่, เบอร์โทร..."
+                    value={shelterSearchTerm}
+                    onChange={(e) => setShelterSearchTerm(e.target.value)}
+                    className="w-full px-4 py-3 pl-12 rounded-xl border-2 border-blue-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-neutral-900 placeholder-neutral-400 shadow-sm"
+                  />
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xl">
+                    🔍
+                  </span>
+                  {shelterSearchTerm && (
+                    <button
+                      onClick={() => setShelterSearchTerm("")}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+
+                {/* Area Filter + View Mode + Sort */}
+                <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+                  {/* Area Filters */}
+                  <div className="flex flex-wrap gap-2">
+                    {(() => {
+                      const areas = ["ทั้งหมด", ...Array.from(new Set(shelters.map(s => s.area)))];
+                      return areas.map((area) => {
+                        const count = area === "ทั้งหมด"
+                          ? shelters.length
+                          : shelters.filter(s => s.area === area).length;
+                        return (
+                          <button
+                            key={area}
+                            onClick={() => setSelectedArea(area)}
+                            className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${selectedArea === area
+                                ? "bg-blue-600 text-white shadow-md"
+                                : "bg-white text-neutral-600 hover:bg-neutral-100 border border-neutral-200"
+                              }`}
+                          >
+                            {area} ({count})
+                          </button>
+                        );
+                      });
+                    })()}
                   </div>
 
-                  <div className="border-t border-neutral-100 pt-4">
-                    <p className="text-neutral-700 font-medium text-sm mb-2">
-                      ผู้ประสานงาน:
-                    </p>
-                    <div className="space-y-2 mb-4">
-                      {shelter.contacts.map((contact, idx) => (
+                  {/* View Mode & Sort Controls */}
+                  <div className="flex gap-2 items-center">
+                    {/* View Mode Toggle */}
+                    <div className="flex bg-white rounded-lg border border-neutral-200 p-1">
+                      <button
+                        onClick={() => setShelterViewMode("grid")}
+                        className={`px-3 py-1.5 rounded text-sm font-medium transition-all ${shelterViewMode === "grid"
+                            ? "bg-blue-600 text-white"
+                            : "text-neutral-600 hover:text-neutral-900"
+                          }`}
+                        title="Grid View"
+                      >
+                        🗂️ Grid
+                      </button>
+                      <button
+                        onClick={() => setShelterViewMode("list")}
+                        className={`px-3 py-1.5 rounded text-sm font-medium transition-all ${shelterViewMode === "list"
+                            ? "bg-blue-600 text-white"
+                            : "text-neutral-600 hover:text-neutral-900"
+                          }`}
+                        title="List View"
+                      >
+                        📋 List
+                      </button>
+                    </div>
+
+                    {/* Sort Dropdown */}
+                    <select
+                      value={shelterSortBy}
+                      onChange={(e) => setShelterSortBy(e.target.value as "name" | "area")}
+                      className="px-3 py-2 rounded-lg border border-neutral-200 bg-white text-sm font-medium text-neutral-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                    >
+                      <option value="area">เรียงตามพื้นที่</option>
+                      <option value="name">เรียงตามชื่อ</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {(() => {
+                // Filter shelters
+                const filteredShelters = shelters.filter((shelter) => {
+                  const matchesSearch =
+                    shelter.name.toLowerCase().includes(shelterSearchTerm.toLowerCase()) ||
+                    shelter.location.toLowerCase().includes(shelterSearchTerm.toLowerCase()) ||
+                    shelter.area.toLowerCase().includes(shelterSearchTerm.toLowerCase()) ||
+                    shelter.contacts.some(c => c.phone.includes(shelterSearchTerm));
+                  const matchesArea = selectedArea === "ทั้งหมด" || shelter.area === selectedArea;
+                  return matchesSearch && matchesArea;
+                });
+
+                // Sort shelters
+                const sortedShelters = [...filteredShelters].sort((a, b) => {
+                  if (shelterSortBy === "area") {
+                    return a.area.localeCompare(b.area, 'th') || a.name.localeCompare(b.name, 'th');
+                  } else {
+                    return a.name.localeCompare(b.name, 'th');
+                  }
+                });
+
+                // Group by area
+                const groupedShelters = sortedShelters.reduce((acc, shelter) => {
+                  if (!acc[shelter.area]) {
+                    acc[shelter.area] = [];
+                  }
+                  acc[shelter.area].push(shelter);
+                  return acc;
+                }, {} as Record<string, Shelter[]>);
+
+                if (sortedShelters.length === 0) {
+                  return (
+                    <div className="col-span-full flex flex-col items-center justify-center py-16 px-4">
+                      <div className="text-6xl mb-4">🔍</div>
+                      <h3 className="text-xl font-bold text-neutral-800 mb-2">
+                        ไม่พบข้อมูล
+                      </h3>
+                      <p className="text-neutral-500 text-center max-w-md">
+                        ไม่พบศูนย์พักพิงที่ตรงกับคำค้นหา "{shelterSearchTerm}"
+                        {selectedArea !== "ทั้งหมด" && ` ในพื้นที่ "${selectedArea}"`}
+                      </p>
+                      <button
+                        onClick={() => {
+                          setShelterSearchTerm("");
+                          setSelectedArea("ทั้งหมด");
+                        }}
+                        className="mt-6 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+                      >
+                        ล้างการค้นหา
+                      </button>
+                    </div>
+                  );
+                }
+
+                // Render based on view mode
+                if (shelterViewMode === "list") {
+                  // List View - Compact
+                  return (
+                    <div className="space-y-2">
+                      {sortedShelters.map((shelter) => (
                         <div
-                          key={idx}
-                          className="flex items-center justify-between text-sm"
+                          key={shelter.id}
+                          className="bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-300 border border-neutral-100 hover:border-blue-200"
                         >
-                          <span className="text-neutral-600 flex-1">
-                            {contact.name}
-                          </span>
-                          <a
-                            href={`tel:${contact.phone}`}
-                            className="text-blue-600 font-medium hover:text-blue-700 hover:underline"
-                          >
-                            {contact.phone}
-                          </a>
+                          <div className="flex items-center justify-between gap-4">
+                            <div className="flex items-center gap-3 flex-1 min-w-0">
+                              <div className="text-2xl flex-shrink-0">{shelter.icon}</div>
+                              <div className="flex-1 min-w-0">
+                                <h3 className="text-base font-bold text-neutral-900 truncate">
+                                  {shelter.name}
+                                </h3>
+                                <p className="text-neutral-600 text-sm truncate">
+                                  📍 {shelter.location}
+                                </p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2 flex-shrink-0">
+                              <span className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-medium">
+                                {shelter.area}
+                              </span>
+                              {shelter.contacts.length > 0 && (
+                                <a
+                                  href={`tel:${shelter.contacts[0].phone}`}
+                                  className="flex items-center gap-1 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg text-sm font-medium transition-colors shadow-sm"
+                                  title={`โทร ${shelter.contacts[0].name}`}
+                                >
+                                  <span>📞</span>
+                                  <span className="hidden sm:inline">โทร</span>
+                                </a>
+                              )}
+                            </div>
+                          </div>
                         </div>
                       ))}
                     </div>
+                  );
+                } else {
+                  // Grid View with Grouping - Detailed
+                  return (
+                    <div className="space-y-6">
+                      {Object.entries(groupedShelters).map(([area, sheltersInArea]) => {
+                        const isExpanded = expandedAreas.has(area);
+                        return (
+                          <div key={area} className="border border-neutral-200 rounded-2xl overflow-hidden bg-white shadow-sm">
+                            {/* Area Header */}
+                            <button
+                              onClick={() => {
+                                const newExpanded = new Set(expandedAreas);
+                                if (isExpanded) {
+                                  newExpanded.delete(area);
+                                } else {
+                                  newExpanded.add(area);
+                                }
+                                setExpandedAreas(newExpanded);
+                              }}
+                              className="w-full px-6 py-4 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 transition-all flex items-center justify-between"
+                            >
+                              <div className="flex items-center gap-3">
+                                <span className="text-2xl">{isExpanded ? "▼" : "▶"}</span>
+                                <h3 className="text-lg font-bold text-neutral-800">
+                                  {area}
+                                </h3>
+                                <span className="px-3 py-1 bg-blue-600 text-white rounded-full text-sm font-medium">
+                                  {sheltersInArea.length} ศูนย์
+                                </span>
+                              </div>
+                            </button>
 
-                    {shelter.link && (
-                      <a
-                        href={shelter.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-xl font-medium transition-colors text-sm"
-                      >
-                        <span>📍</span>
-                        <span>ดูแผนที่ / ข้อมูลเพิ่มเติม</span>
-                      </a>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
+                            {/* Area Content */}
+                            {isExpanded && (
+                              <div className="p-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
+                                {sheltersInArea.map((shelter) => (
+                                  <div
+                                    key={shelter.id}
+                                    className="bg-neutral-50 rounded-xl p-5 hover:bg-white hover:shadow-md transition-all duration-300 border border-neutral-100"
+                                  >
+                                    <div className="flex items-start gap-4 mb-4">
+                                      <div className="text-4xl">{shelter.icon}</div>
+                                      <div className="flex-1">
+                                        <h4 className="text-lg font-bold text-neutral-900 mb-1">
+                                          {shelter.name}
+                                        </h4>
+                                        <p className="text-neutral-600 text-sm mb-1">
+                                          📍 {shelter.location}
+                                        </p>
+                                        <p className="text-green-600 text-sm font-medium">
+                                          ✅ {shelter.status}
+                                        </p>
+                                      </div>
+                                    </div>
+
+                                    <div className="border-t border-neutral-200 pt-4">
+                                      {shelter.contacts.length > 0 ? (
+                                        <>
+                                          <p className="text-neutral-700 font-medium text-sm mb-2">
+                                            ผู้ประสานงาน:
+                                          </p>
+                                          <div className="space-y-2 mb-4">
+                                            {shelter.contacts.map((contact, idx) => (
+                                              <div
+                                                key={idx}
+                                                className="flex items-center justify-between text-sm"
+                                              >
+                                                <span className="text-neutral-600 flex-1">
+                                                  {contact.name}
+                                                </span>
+                                                <a
+                                                  href={`tel:${contact.phone}`}
+                                                  className="text-blue-600 font-medium hover:text-blue-700 hover:underline"
+                                                >
+                                                  {contact.phone}
+                                                </a>
+                                              </div>
+                                            ))}
+                                          </div>
+                                        </>
+                                      ) : (
+                                        <p className="text-neutral-500 text-sm mb-4">
+                                          ไม่มีข้อมูลผู้ประสานงาน
+                                        </p>
+                                      )}
+
+                                      {/* Quick Actions */}
+                                      <div className="flex gap-2">
+                                        {shelter.contacts.length > 0 && (
+                                          <a
+                                            href={`tel:${shelter.contacts[0].phone}`}
+                                            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-colors text-sm shadow-sm"
+                                          >
+                                            <span>📞</span>
+                                            <span>โทรทันที</span>
+                                          </a>
+                                        )}
+                                        {shelter.link && (
+                                          <a
+                                            href={shelter.link}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg font-medium transition-colors text-sm"
+                                          >
+                                            <span>📍</span>
+                                            <span>แผนที่</span>
+                                          </a>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  );
+                }
+              })()}
+            </>
           )}
         </section>
 
