@@ -775,7 +775,7 @@ export default function Home() {
                     <div className="mb-4 text-sm text-neutral-600">
                       แสดง {sortedDonations.length} จาก {donations.length} ช่องทาง
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="columns-1 md:columns-2 gap-6 space-y-6">
                       {(showAllDonations ? sortedDonations : sortedDonations.slice(0, 6)).map((donation) => {
                         const isMoney = !!donation.bankName || !!donation.acceptsMoney;
                         const isItems = !!donation.donationPoints;
@@ -784,7 +784,7 @@ export default function Home() {
                         return (
                           <div
                             key={donation.id}
-                            className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 border border-neutral-100 flex flex-col h-full"
+                            className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 border border-neutral-100 flex flex-col break-inside-avoid mb-6"
                           >
                             <div className="flex justify-between items-start mb-3">
                               <div className="flex gap-2">
