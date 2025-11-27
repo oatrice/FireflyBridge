@@ -46,6 +46,16 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("ยอดฮิต");
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 100);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -542,10 +552,18 @@ export default function Home() {
           href="https://forms.gle/Wov1KL5bVdajnvkM7"
           target="_blank"
           rel="noopener noreferrer"
-          className="fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 font-medium z-50"
+          className={`fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 font-medium z-50 overflow-hidden group ${isScrolled ? "px-3 py-3 w-12 hover:w-auto hover:px-6" : "px-6 py-3"
+            }`}
         >
-          <span className="text-xl">💬</span>
-          <span>แจ้งข้อมูล / ข้อเสนอแนะ</span>
+          <span className="text-xl shrink-0">💬</span>
+          <span
+            className={`whitespace-nowrap transition-all duration-300 ${isScrolled
+                ? "w-0 opacity-0 group-hover:w-auto group-hover:opacity-100"
+                : "w-auto opacity-100"
+              }`}
+          >
+            แจ้งข้อมูล / ข้อเสนอแนะ
+          </span>
         </a>
       </div >
     </main >
