@@ -1147,6 +1147,185 @@ const donations: DonationChannel[] = [
         accountNumber: "0203-9475-1679",
         accountName: "สมาคมชาวปักษ์ใต้ ในพระบรมราชูปถัมภ์",
         additionalInfo: "สิ่งที่เปิดรับ: ข้าวสาร, อาหารแห้ง, ของใช้จำเป็น"
+    },
+    {
+        id: "7",
+        name: "สภากาชาดไทย (เพื่อภัยพิบัติ)",
+        description: "บริจาคเพื่อช่วยเหลือผู้ประสบภัยพิบัติ",
+        bankName: "ธนาคารไทยพาณิชย์ (SCB)",
+        accountNumber: "045-3-04637-0",
+        accountName: "สภากาชาดไทย เพื่อภัยพิบัติ (กระแสรายวัน)",
+        acceptsMoney: true,
+        donationPoints: [
+            "สภากาชาดไทย ถนนอังรีดูนังต์ เขตปทุมวัน (ใกล้ MRT สามย่าน / BTS ศาลาแดง)"
+        ],
+        additionalInfo: "รับบริจาคเสื้อผ้า เครื่องใช้ไฟฟ้า และของใช้"
+    },
+    {
+        id: "8",
+        name: "โรงพยาบาลหาดใหญ่ (บัญชีฟื้นฟู)",
+        description: "บริจาคเพื่อช่วยเหลือผู้ประสบภัยและฟื้นฟูโรงพยาบาล",
+        bankName: "ธนาคารกรุงไทย (KTB)",
+        accountNumber: "936-0-33879-6",
+        accountName: "เงินบริจาค โรงพยาบาลหาดใหญ่",
+        acceptsMoney: true
+    },
+    {
+        id: "9",
+        name: "มูลนิธิ บีเจซี บิ๊กซี",
+        description: "บริจาคเงินและสิ่งของช่วยเหลือผู้ประสบภัย",
+        bankName: "ธนาคารกสิกรไทย (KBANK)",
+        accountNumber: "033-8-08520-6",
+        accountName: "มูลนิธิ บีเจซี บิ๊กซี",
+        acceptsMoney: true,
+        donationPoints: [
+            "บิ๊กซี สาขาที่ร่วมรายการ"
+        ],
+        additionalInfo: "รับบริจาค: น้ำดื่ม, อาหารแห้ง, ยารักษาโรค, ผ้าอ้อมสำเร็จรูป, อุปกรณ์ทำความสะอาดบ้าน"
+    },
+    {
+        id: "10",
+        name: "โรงพยาบาลหาดใหญ่ (มูลนิธิ)",
+        description: "มูลนิธิโรงพยาบาลหาดใหญ่",
+        bankName: "ธนาคารกรุงไทย (KTB)",
+        accountNumber: "936-0-08501-4",
+        accountName: "มูลนิธิโรงพยาบาลหาดใหญ่",
+        acceptsMoney: true
+    },
+    {
+        id: "11",
+        name: "โรงพยาบาลหาดใหญ่ (บัญชีกรุงเทพ)",
+        description: "มูลนิธิโรงพยาบาลหาดใหญ่ สาขารักการ",
+        bankName: "ธนาคารกรุงเทพ (BBL)",
+        accountNumber: "593-7-06506-7",
+        accountName: "มูลนิธิโรงพยาบาลหาดใหญ่",
+        acceptsMoney: true
+    },
+    {
+        id: "12",
+        name: "โรงพยาบาลสงขลานครินทร์ (ม.อ.)",
+        description: "มูลนิธิโรงพยาบาลสงขลานครินทร์",
+        bankName: "ธนาคารไทยพาณิชย์ (SCB)",
+        accountNumber: "565-2-09777-0",
+        accountName: "มูลนิธิโรงพยาบาลสงขลานครินทร์",
+        acceptsMoney: true
+    },
+    {
+        id: "13",
+        name: "โรงพยาบาลสงขลานครินทร์ (บัญชีกรุงเทพ)",
+        description: "มูลนิธิโรงพยาบาลสงขลานครินทร์ สาขา ม.อ.",
+        bankName: "ธนาคารกรุงเทพ (BBL)",
+        accountNumber: "641-0-15655-5",
+        accountName: "มูลนิธิโรงพยาบาลสงขลานครินทร์",
+        acceptsMoney: true
+    },
+    {
+        id: "14",
+        name: "โรงพยาบาลสงขลา",
+        description: "บริจาคช่วยเหลือโรงพยาบาลสงขลา",
+        bankName: "ธนาคารกรุงไทย (KTB)",
+        accountNumber: "989-8-49173-6",
+        accountName: "บัญชีเงินบริจาคของโรงพยาบาลสงขลา",
+        acceptsMoney: true
+    },
+    {
+        id: "15",
+        name: "โรงพยาบาลจะนะ",
+        description: "มูลนิธิโรงพยาบาลจะนะ",
+        bankName: "ธนาคารออมสิน (GSB)",
+        accountNumber: "020105189292",
+        accountName: "มูลนิธิโรงพยาบาลจะนะ",
+        acceptsMoney: true
+    },
+    {
+        id: "16",
+        name: "โรงพยาบาลจะนะ (บัญชีกรุงไทย)",
+        description: "เงินบริจาคโรงพยาบาลจะนะ",
+        bankName: "ธนาคารกรุงไทย (KTB)",
+        accountNumber: "6781748750",
+        accountName: "เงินบริจาคโรงพยาบาลจะนะ",
+        acceptsMoney: true
+    },
+    {
+        id: "17",
+        name: "โรงพยาบาลเทพา",
+        description: "บริจาคช่วยเหลือโรงพยาบาลเทพา",
+        bankName: "ธนาคารกรุงไทย (KTB)",
+        accountNumber: "928-0-68637-2",
+        accountName: "บัญชีเงินบริจาคของโรงพยาบาลเทพา",
+        acceptsMoney: true
+    },
+    {
+        id: "18",
+        name: "โรงพยาบาลสะเดา",
+        description: "บริจาคช่วยเหลือโรงพยาบาลสะเดา",
+        bankName: "ธนาคารกรุงไทย (KTB)",
+        accountNumber: "369-0-61260-8",
+        accountName: "บัญชีเงินบริจาคของโรงพยาบาลสะเดา",
+        acceptsMoney: true
+    },
+    {
+        id: "19",
+        name: "โรงพยาบาลนาหม่อม",
+        description: "บริจาคช่วยเหลือโรงพยาบาลนาหม่อม",
+        bankName: "ธนาคารกรุงไทย (KTB)",
+        accountNumber: "879-0-31360-7",
+        accountName: "เงินบริจาคโรงพยาบาลนาหม่อม",
+        acceptsMoney: true
+    },
+    {
+        id: "20",
+        name: "โรงพยาบาลกระแสสินธุ์",
+        description: "บริจาคช่วยเหลือโรงพยาบาลกระแสสินธุ์",
+        bankName: "ธนาคารกรุงไทย (KTB)",
+        accountNumber: "923-0-41546-4",
+        accountName: "เงินบริจาคของ (รพ.กระแสสินธุ์)",
+        acceptsMoney: true
+    },
+    {
+        id: "21",
+        name: "โรงพยาบาลควนเนียง",
+        description: "บริจาคช่วยเหลือโรงพยาบาลควนเนียง",
+        bankName: "ธนาคารออมสิน (GSB)",
+        accountNumber: "020004390421",
+        accountName: "เงินบริจาคโรงพยาบาลควนเนียง",
+        acceptsMoney: true
+    },
+    {
+        id: "22",
+        name: "โรงพยาบาลบางกล่ำ",
+        description: "บริจาคช่วยเหลือโรงพยาบาลบางกล่ำ",
+        bankName: "ธนาคารกรุงไทย (KTB)",
+        accountNumber: "902-0-69775-7",
+        accountName: "เงินบริจาคโรงพยาบาลบางกล่ำ",
+        acceptsMoney: true
+    },
+    {
+        id: "23",
+        name: "โรงพยาบาลรัตภูมิ",
+        description: "บริจาคช่วยเหลือโรงพยาบาลรัตภูมิ",
+        bankName: "ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร (ธ.ก.ส.)",
+        accountNumber: "020-1-34465-195",
+        accountName: "เงินบริจาคโรงพยาบาลรัตภูมิ",
+        acceptsMoney: true
+    },
+    {
+        id: "24",
+        name: "โรงพยาบาลสะบ้าย้อย",
+        description: "บริจาคช่วยเหลือโรงพยาบาลสะบ้าย้อย",
+        bankName: "ธนาคารกรุงไทย (KTB)",
+        accountNumber: "928-0-92859-7",
+        accountName: "เงินบริจาค ร.พ.สะบ้าย้อย",
+        acceptsMoney: true
+    },
+    {
+        id: "25",
+        name: "โรงพยาบาลสมเด็จพระบรมราชินีนาถ (นาทวี)",
+        description: "บริจาคช่วยเหลือโรงพยาบาลสมเด็จฯนาทวี",
+        bankName: "ธนาคารกรุงไทย (KTB)",
+        accountNumber: "928-0-295691",
+        accountName: "เงินบริจาค รพ.สมเด็จฯนาทวี",
+        acceptsMoney: true
     }
 ];
 
