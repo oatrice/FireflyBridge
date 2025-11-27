@@ -181,42 +181,46 @@ export default function Home() {
         </header>
 
         {/* Navigation Bar */}
-        <nav className="sticky top-0 z-40 bg-gradient-to-r from-blue-600 to-indigo-600 shadow-lg">
+        <nav className="sticky top-0 z-40 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 shadow-xl backdrop-blur-sm border-b border-white/10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-center gap-2 sm:gap-4 py-3 overflow-x-auto">
+            <div className="flex items-center justify-center gap-1 sm:gap-2 py-4 overflow-x-auto scrollbar-hide">
               <a
                 href="#shelters"
-                className="flex items-center gap-2 px-3 sm:px-4 py-2 text-white hover:bg-white/20 rounded-lg transition-all duration-200 whitespace-nowrap text-sm sm:text-base font-medium"
+                className="group flex items-center gap-2 px-4 sm:px-5 py-2.5 text-white/90 hover:text-white hover:bg-white/20 rounded-xl transition-all duration-300 whitespace-nowrap text-sm sm:text-base font-semibold relative overflow-hidden"
               >
-                <span>🏠</span>
-                <span>ศูนย์พักพิง</span>
+                <span className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-all duration-300 rounded-xl"></span>
+                <span className="relative text-xl">🏠</span>
+                <span className="relative">ศูนย์พักพิง</span>
               </a>
               <a
                 href="#donations"
-                className="flex items-center gap-2 px-3 sm:px-4 py-2 text-white hover:bg-white/20 rounded-lg transition-all duration-200 whitespace-nowrap text-sm sm:text-base font-medium"
+                className="group flex items-center gap-2 px-4 sm:px-5 py-2.5 text-white/90 hover:text-white hover:bg-white/20 rounded-xl transition-all duration-300 whitespace-nowrap text-sm sm:text-base font-semibold relative overflow-hidden"
               >
-                <span>❤️</span>
-                <span>รับบริจาค</span>
+                <span className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-all duration-300 rounded-xl"></span>
+                <span className="relative text-xl">❤️</span>
+                <span className="relative">รับบริจาค</span>
               </a>
               <a
                 href="#external"
-                className="flex items-center gap-2 px-3 sm:px-4 py-2 text-white hover:bg-white/20 rounded-lg transition-all duration-200 whitespace-nowrap text-sm sm:text-base font-medium"
+                className="group flex items-center gap-2 px-4 sm:px-5 py-2.5 text-white/90 hover:text-white hover:bg-white/20 rounded-xl transition-all duration-300 whitespace-nowrap text-sm sm:text-base font-semibold relative overflow-hidden"
               >
-                <span>🔗</span>
-                <span>แพลตฟอร์ม</span>
+                <span className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-all duration-300 rounded-xl"></span>
+                <span className="relative text-xl">🔗</span>
+                <span className="relative">แพลตฟอร์ม</span>
               </a>
               <a
                 href="#hotlines"
-                className="flex items-center gap-2 px-3 sm:px-4 py-2 text-white hover:bg-white/20 rounded-lg transition-all duration-200 whitespace-nowrap text-sm sm:text-base font-medium"
+                className="group flex items-center gap-2 px-4 sm:px-5 py-2.5 text-white/90 hover:text-white hover:bg-white/20 rounded-xl transition-all duration-300 whitespace-nowrap text-sm sm:text-base font-semibold relative overflow-hidden"
               >
-                <span>📞</span>
-                <span>เบอร์ฉุกเฉิน</span>
+                <span className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-all duration-300 rounded-xl"></span>
+                <span className="relative text-xl">📞</span>
+                <span className="relative">เบอร์ฉุกเฉิน</span>
               </a>
             </div>
           </div>
         </nav>
 
-        <section id="shelters" className="scroll-mt-20">
+        <section id="shelters" className="mt-8 scroll-mt-20">
           <h2 className="text-2xl font-bold text-neutral-800 mb-6 flex items-center">
             🏠 ศูนย์พักพิง (Shelters)
           </h2>
