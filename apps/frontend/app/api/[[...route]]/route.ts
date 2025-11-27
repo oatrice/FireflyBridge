@@ -1015,6 +1015,7 @@ interface DonationChannel {
     taxReceiptEmail?: string; // อีเมลสำหรับขอใบเสร็จ
     taxReceiptInfo?: string; // ข้อมูลที่ต้องส่งเพื่อขอใบเสร็จ
     additionalInfo?: string; // ข้อมูลเพิ่มเติม
+    acceptsMoney?: boolean;
 }
 
 const donations: DonationChannel[] = [
@@ -1023,6 +1024,7 @@ const donations: DonationChannel[] = [
         name: "มหาวิทยาลัยสงขลานครินทร์ (Prince of Songkla University)",
         description: "เพื่อช่วยเหลือผู้ประสบอุทกภัย (บริจาคผ่าน QR Code เท่านั้น)",
         qrCodeUrl: "/images/psu-donation-qr.png",
+        acceptsMoney: true,
         contacts: [
             { name: "คุณเยาวลักษณ์ คุณาวรกุล", phone: "087-287-8713" }
         ]

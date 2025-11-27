@@ -50,6 +50,7 @@ interface DonationChannel {
   qrCodeUrl?: string;
   contacts?: { name: string; phone: string }[];
   donationPoints?: string[];
+  acceptsMoney?: boolean;
 }
 
 export default function Home() {
@@ -642,7 +643,7 @@ export default function Home() {
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {(showAllDonations ? donations : donations.slice(0, 6)).map((donation) => {
-                  const isMoney = !!donation.bankName;
+                  const isMoney = !!donation.bankName || !!donation.acceptsMoney;
                   const isItems = !!donation.donationPoints;
                   const bankInfo = donation.bankName ? getBankInfo(donation.bankName) : null;
 
