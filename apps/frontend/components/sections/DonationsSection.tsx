@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import type { DonationChannel } from "@/lib/types";
 import { getBankInfo } from "@/lib/utils/bankInfo";
 
@@ -115,8 +116,8 @@ export default function DonationsSection({ donations, loading }: DonationsSectio
                                         key={filter}
                                         onClick={() => setDonationFilter(filter)}
                                         className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${donationFilter === filter
-                                                ? "bg-pink-600 text-white shadow-md"
-                                                : "bg-white text-neutral-600 hover:bg-neutral-100 border border-neutral-200"
+                                            ? "bg-pink-600 text-white shadow-md"
+                                            : "bg-white text-neutral-600 hover:bg-neutral-100 border border-neutral-200"
                                             }`}
                                     >
                                         {filter} ({count})
@@ -202,15 +203,17 @@ export default function DonationsSection({ donations, loading }: DonationsSectio
 
                                         {donation.qrCodeUrl && (
                                             <div className="mb-4 flex justify-center bg-neutral-50 p-4 rounded-xl group relative">
-                                                <img
+                                                <Image
                                                     src={donation.qrCodeUrl}
                                                     alt={`QR Code for ${donation.name}`}
+                                                    width={180}
+                                                    height={180}
                                                     onClick={() => {
                                                         setQrModalImage(donation.qrCodeUrl!);
                                                         setQrModalTitle(donation.name);
                                                         setQrModalOpen(true);
                                                     }}
-                                                    className="max-w-[180px] rounded-lg border border-neutral-200 shadow-sm hover:scale-250 hover:shadow-xl transition-all duration-300 cursor-pointer"
+                                                    className="rounded-lg border border-neutral-200 shadow-sm hover:scale-105 hover:shadow-xl transition-all duration-300 cursor-pointer object-contain bg-white"
                                                 />
                                                 <div className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-black/75 text-white text-xs px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
                                                     🔍 คลิกเพื่อขยาย
@@ -326,10 +329,12 @@ export default function DonationsSection({ donations, loading }: DonationsSectio
                                 {qrModalTitle}
                             </h3>
                             <div className="flex justify-center">
-                                <img
+                                <Image
                                     src={qrModalImage}
                                     alt={qrModalTitle}
-                                    className="max-w-full max-h-[70vh] rounded-lg shadow-lg"
+                                    width={600}
+                                    height={600}
+                                    className="max-w-full max-h-[70vh] w-auto h-auto rounded-lg shadow-lg object-contain"
                                     onClick={(e) => e.stopPropagation()}
                                 />
                             </div>
