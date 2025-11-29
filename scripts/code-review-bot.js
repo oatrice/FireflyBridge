@@ -107,7 +107,7 @@ async function getPRDetails() {
     };
 }
 
-async function generateReview(prDetails, testResults, coverageData) {
+async function generateReview(prDetails, testResults, coverageData, uncoveredAreas) {
     const reviewScope = prDetails.commitInfo
         ? `Commit เดียว (${prDetails.commitInfo.sha}): ${prDetails.commitInfo.message}`
         : 'ทั้ง Pull Request';
@@ -132,6 +132,23 @@ async function generateReview(prDetails, testResults, coverageData) {
         testCoverageInfo += `- Branches: ${coverageData.branches}%\n`;
         testCoverageInfo += `- Functions: ${coverageData.functions}%\n`;
         testCoverageInfo += `- Lines: ${coverageData.lines}%\n`;
+    }
+
+    // Add uncovered areas details
+    if (uncoveredAreas && uncoveredAreas.length > 0) {
+        testCoverageInfo += `\nUncovered Code Areas (ที่ควรเพิ่ม Tests):\n`;
+        uncoveredAreas.forEach(area => {
+            testCoverageInfo += `\nFile: ${area.file}\n`;
+            if (area.uncoveredFunctions.length > 0) {
+                testCoverageInfo += `  Functions ที่ยังไม่มี test:\n`;
+                area.uncoveredFunctions.forEach(fn => {
+                    testCoverageInfo += `    - ${fn.name} (line ${fn.line})\n`;
+                });
+            }
+            if (area.uncoveredLines.length > 0) {
+                testCoverageInfo += `  Lines ที่ยังไม่ถูก cover: ${area.uncoveredLines.join(', ')}\n`;
+            }
+        });
     }
 
     const prompt = `
@@ -309,6 +326,71 @@ async function runTestCoverage() {
     }
 }
 
+async function analyzeDetailedCoverage() {
+    const fs = require('fs');
+    const path = require('path');
+
+    try {
+        console.log('Analyzing detailed coverage...');
+        const detailedCoveragePath = path.join(process.cwd(), 'coverage', 'coverage-final.json');
+
+        if (!fs.existsSync(detailedCoveragePath)) {
+            console.warn('Detailed coverage file not found');
+            return null;
+        }
+
+        const coverageData = JSON.parse(fs.readFileSync(detailedCoveragePath, 'utf8'));
+        const uncoveredAreas = [];
+
+        // Analyze each file
+        for (const [filePath, fileData] of Object.entries(coverageData)) {
+            // Skip node_modules and test files
+            if (filePath.includes('node_modules') || filePath.includes('.test.') || filePath.includes('__tests__')) {
+                continue;
+            }
+
+            const fileName = path.basename(filePath);
+            const uncoveredLines = [];
+            const uncoveredFunctions = [];
+
+            // Find uncovered lines
+            if (fileData.s && fileData.statementMap) {
+                for (const [stmtId, count] of Object.entries(fileData.s)) {
+                    if (count === 0 && fileData.statementMap[stmtId]) {
+                        const loc = fileData.statementMap[stmtId].start;
+                        uncoveredLines.push(loc.line);
+                    }
+                }
+            }
+
+            // Find uncovered functions
+            if (fileData.f && fileData.fnMap) {
+                for (const [fnId, count] of Object.entries(fileData.f)) {
+                    if (count === 0 && fileData.fnMap[fnId]) {
+                        const fnName = fileData.fnMap[fnId].name || 'anonymous';
+                        const loc = fileData.fnMap[fnId].loc.start;
+                        uncoveredFunctions.push({ name: fnName, line: loc.line });
+                    }
+                }
+            }
+
+            // Only include files with uncovered code
+            if (uncoveredLines.length > 0 || uncoveredFunctions.length > 0) {
+                uncoveredAreas.push({
+                    file: fileName,
+                    uncoveredLines: uncoveredLines.slice(0, 10), // Limit to first 10
+                    uncoveredFunctions: uncoveredFunctions.slice(0, 5), // Limit to first 5
+                });
+            }
+        }
+
+        return uncoveredAreas.slice(0, 5); // Return top 5 files with most issues
+    } catch (error) {
+        console.error('Error analyzing detailed coverage:', error.message);
+        return null;
+    }
+}
+
 function formatTestAndCoverageReport(testResults, coverage) {
     let report = '\n\n---\n\n## 🧪 Test Results\n\n';
 
@@ -377,8 +459,11 @@ async function main() {
         console.log('Reading test coverage...');
         const coverageData = await runTestCoverage();
 
+        console.log('Analyzing uncovered code areas...');
+        const uncoveredAreas = await analyzeDetailedCoverage();
+
         console.log('Generating review...');
-        const review = await generateReview(prDetails, testResults, coverageData);
+        const review = await generateReview(prDetails, testResults, coverageData, uncoveredAreas);
 
         console.log('Posting comment...');
         await postComment(review, testResults, coverageData);

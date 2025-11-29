@@ -29,7 +29,7 @@ jobs:
         run: pnpm install
 
       - name: Run Unit Tests
-        run: pnpm --filter frontend test --coverage --coverageReporters=json-summary --json --outputFile=test-results.json || true
+        run: pnpm --filter frontend test --coverage --coverageReporters=json-summary --coverageReporters=json --json --outputFile=test-results.json || true
 
       - name: Upload Test Results
         if: always()
@@ -44,7 +44,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
-          path: apps/frontend/coverage/coverage-summary.json
+          path: |
+            apps/frontend/coverage/coverage-summary.json
+            apps/frontend/coverage/coverage-final.json
           retention-days: 1
 
   review:
