@@ -11,6 +11,7 @@ const SheltersSection = dynamic(() => import("@/components/sections/SheltersSect
 const DonationsSection = dynamic(() => import("@/components/sections/DonationsSection"));
 const ExternalLinksSection = dynamic(() => import("@/components/sections/ExternalLinksSection"));
 const HotlinesSection = dynamic(() => import("@/components/sections/HotlinesSection"));
+const DeployInfo = dynamic(() => import("@/components/ui/DeployInfo"));
 
 export default function Home() {
   const [hotlines, setHotlines] = useState<Hotline[]>([]);
@@ -116,6 +117,11 @@ export default function Home() {
             <p className="text-neutral-500 text-xs mt-4">
               © 2025 Firefly Bridge - Joint Command Center
             </p>
+
+            {/* Deploy Information */}
+            <div className="mt-4 pt-4 border-t border-neutral-100">
+              <DeployInfo />
+            </div>
           </div>
         </footer>
 
@@ -130,8 +136,8 @@ export default function Home() {
           <span className="text-xl shrink-0">💬</span>
           <span
             className={`whitespace-nowrap transition-all duration-300 ${isScrolled
-                ? "w-0 opacity-0 group-hover:w-auto group-hover:opacity-100"
-                : "w-auto opacity-100"
+              ? "w-0 opacity-0 group-hover:w-auto group-hover:opacity-100"
+              : "w-auto opacity-100"
               }`}
           >
             แจ้งข้อมูล / ข้อเสนอแนะ
