@@ -4,7 +4,7 @@ const https = require('https');
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const LLM_API_KEY = process.env.LLM_API_KEY;
 const LLM_API_ENDPOINT = process.env.LLM_API_ENDPOINT;
-const LLM_MODEL = process.env.LLM_MODEL || 'gemini-1.5-flash-001';
+const LLM_MODEL = process.env.LLM_MODEL || 'gemini-1.5-flash-latest';
 const PR_NUMBER = process.env.PR_NUMBER;
 const REPO_OWNER = process.env.REPO_OWNER;
 const REPO_NAME = process.env.REPO_NAME;
@@ -65,16 +65,12 @@ async function getPRDetails() {
             Accept: 'application/vnd.github.v3.diff',
         },
     };
-    const diffData = await request(prUrl, diffOptions); // request returns body string for non-json if parse fails, but here we expect string for diff? 
-    // Actually my request helper tries to parse JSON. Diff is text.
-    // Let's adjust request helper or just handle it. 
-    // For simplicity, let's assume the helper might fail to parse diff as JSON and return body string, which is what we want.
+    const diffData = await request(prUrl, diffOptions);
 
     return {
         title: prData.title,
         description: prData.body,
-        diff: diffData, // This might be an object if it parsed as JSON, but diff is usually text. 
-        // If my helper parses "diff --git..." it will fail JSON.parse and return string. Correct.
+        diff: diffData,
     };
 }
 
@@ -136,21 +132,26 @@ REMINDER: All generated content must be in Thai. Focus on clarity, accuracy, and
             },
         };
 
-        // Note: For Gemini via URL param key, we don't need Bearer auth in header usually, 
-        // but the request helper is generic. 
-        // We'll use a custom call here or adapt the helper. 
-        // Let's just use the helper but override headers if needed.
-        // Actually, `request` helper takes url, options, data. 
-        // Wait, the helper implementation:
-        // function request(url, options, data) { ... https.request(url, options ... }
-        // https.request(url, options) is valid in Node.
-
-        const response = await request(url, options, payload);
-
-        if (response.candidates && response.candidates.length > 0) {
-            return response.candidates[0].content.parts[0].text;
-        } else {
-            throw new Error(`Gemini API Error: ${JSON.stringify(response)}`);
+        try {
+            const response = await request(url, options, payload);
+            if (response.candidates && response.candidates.length > 0) {
+                return response.candidates[0].content.parts[0].text;
+            } else {
+                throw new Error(`Gemini API Error: ${JSON.stringify(response)}`);
+            }
+        } catch (error) {
+            // If 404, try to list models to help debug
+            if (error.message.includes('404')) {
+                console.log('Model not found. Listing available models...');
+                try {
+                    const listUrl = `https://generativelanguage.googleapis.com/v1beta/models?key=${LLM_API_KEY}`;
+                    const listResponse = await request(listUrl, { method: 'GET' });
+                    console.log('Available Models:', JSON.stringify(listResponse, null, 2));
+                } catch (listError) {
+                    console.error('Failed to list models:', listError);
+                }
+            }
+            throw error;
         }
 
     } else {
