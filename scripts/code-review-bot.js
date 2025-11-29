@@ -107,10 +107,32 @@ async function getPRDetails() {
     };
 }
 
-async function generateReview(prDetails) {
+async function generateReview(prDetails, testResults, coverageData) {
     const reviewScope = prDetails.commitInfo
         ? `Commit เดียว (${prDetails.commitInfo.sha}): ${prDetails.commitInfo.message}`
         : 'ทั้ง Pull Request';
+
+    // Format test and coverage info for AI
+    let testCoverageInfo = '\n';
+    if (testResults) {
+        const status = testResults.success ? 'PASSED ✅' : 'FAILED ❌';
+        testCoverageInfo += `\nTest Results: ${status}\n`;
+        testCoverageInfo += `- Passed: ${testResults.numPassedTests}/${testResults.numTotalTests}\n`;
+        if (testResults.numFailedTests > 0) {
+            testCoverageInfo += `- Failed: ${testResults.numFailedTests}\n`;
+        }
+        if (testResults.numPendingTests > 0) {
+            testCoverageInfo += `- Pending: ${testResults.numPendingTests}\n`;
+        }
+    }
+
+    if (coverageData) {
+        testCoverageInfo += `\nCode Coverage:\n`;
+        testCoverageInfo += `- Statements: ${coverageData.statements}%\n`;
+        testCoverageInfo += `- Branches: ${coverageData.branches}%\n`;
+        testCoverageInfo += `- Functions: ${coverageData.functions}%\n`;
+        testCoverageInfo += `- Lines: ${coverageData.lines}%\n`;
+    }
 
     const prompt = `
 Please process the following Pull Request (PR) details. Your task is to act as an AI Code Review Assistant and generate a comprehensive review summary strictly in Thai. The review must be structured and follow all the requested sections to facilitate quick and clear understanding for contributors and reviewers.
@@ -127,6 +149,7 @@ Associated Issue(s): ${prDetails.description}
 Diff/Code Changes:
 ${typeof prDetails.diff === 'string' ? prDetails.diff.substring(0, 30000) : 'Diff too large or unavailable'} 
 (Note: Diff truncated to fit context window if necessary)
+${testCoverageInfo}
 
 🤖 Code Review Output Structure (Must be in Thai):
 You must generate the response by filling out the following sections in the specified structure:
@@ -139,6 +162,13 @@ Detail the key files and code sections that were modified. List the most signifi
 
 🚨 ความเสี่ยงที่อาจเกิดขึ้น (Risks):
 Identify potential bugs, regressions, performance bottlenecks, or security vulnerabilities introduced by these changes. If the risks are minimal, state that clearly.
+
+🧪 การทดสอบและ Coverage (Testing & Coverage Analysis):
+Analyze the test results and coverage data provided above. Comment on:
+- Whether the test coverage is adequate for the changes made
+- If there are critical paths that lack test coverage
+- Suggestions for additional test cases if needed
+- Overall quality of testing approach
 
 ⚖️ ระดับความสำคัญ (Level):
 Rate the overall significance/impact of the PR (e.g., Critical, Major, Moderate, Minor). Justify the rating briefly.
@@ -341,14 +371,14 @@ async function main() {
         console.log('Fetching PR details...');
         const prDetails = await getPRDetails();
 
-        console.log('Generating review...');
-        const review = await generateReview(prDetails);
-
         console.log('Reading test results...');
         const testResults = await readTestResults();
 
         console.log('Reading test coverage...');
         const coverageData = await runTestCoverage();
+
+        console.log('Generating review...');
+        const review = await generateReview(prDetails, testResults, coverageData);
 
         console.log('Posting comment...');
         await postComment(review, testResults, coverageData);
