@@ -1,9 +1,7 @@
-# Pull Request
-
-## 📋 Summary
+# 📋 Summary
 <!-- Brief description of changes -->
 
-## 🎯 Type
+# 🎯 Type
 - [ ] 🐛 Bug fix
 - [ ] ✨ New feature
 - [ ] ⚡ Performance improvement
@@ -12,13 +10,13 @@
 - [ ] 🎨 UI/Style
 - [ ] 💥 Breaking change
 
-## 📝 Changes
+# 📝 Changes
 <!-- Describe what changed -->
 
-## 🧪 Testing
+# 🧪 Testing
 - [ ] Manual testing completed
 
-## 🚀 Migration/Deployment
+# 🚀 Migration/Deployment
 - [ ] Database migration required
 - [ ] Environment variables updated
 - [ ] Dependencies installed
@@ -27,7 +25,7 @@
 # Migration commands if applicable
 ```
 
-## 🔗 Related Issues
+# 🔗 Related Issues
 <!-- Link to related issues or PRs -->
 - Closes #<!-- issue number -->
 - Related to #<!-- issue number -->
