@@ -36,13 +36,14 @@ export default function ExternalLinksSection({ externalLinks, loading }: Externa
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {(showAllLinks ? externalLinks : externalLinks.slice(0, 6)).map((link) => (
+                {(showAllLinks ? externalLinks : externalLinks.slice(0, 6)).map((link, i) => (
                     <a
                         key={link.id}
                         href={link.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="group bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 border border-neutral-100 hover:border-blue-200 hover:bg-blue-50/30"
+                        className={`group bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 border border-neutral-100 hover:border-blue-200 hover:bg-blue-50/30 ${i >= 6 ? "animate-fade-in-up" : ""
+                            }`}
                     >
                         <div className="flex items-start gap-4">
                             <div className="text-4xl">{link.icon}</div>
@@ -79,7 +80,7 @@ export default function ExternalLinksSection({ externalLinks, loading }: Externa
                 <div className="mt-8 flex justify-center">
                     <button
                         onClick={() => setShowAllLinks(!showAllLinks)}
-                        className="flex items-center gap-2 px-6 py-2.5 bg-white border border-neutral-200 hover:bg-neutral-50 text-neutral-700 rounded-full font-medium transition-all shadow-sm hover:shadow-md"
+                        className="flex items-center gap-2 px-6 py-2.5 bg-white border border-neutral-200 hover:bg-neutral-50 text-neutral-700 rounded-full font-medium transition-all shadow-sm hover:shadow-md active:scale-95"
                     >
                         <span>{showAllLinks ? "ย่อรายการ" : "ดูทั้งหมด"}</span>
                         <span
