@@ -210,7 +210,100 @@ REMINDER: All generated content must be in Thai. Focus on clarity, accuracy, and
     }
 }
 
-async function postComment(review) {
+async function runTestCoverage() {
+    const { exec } = require('child_process');
+    const { promisify } = require('util');
+    const execAsync = promisify(exec);
+
+    try {
+        console.log('Running test coverage...');
+        const { stdout } = await execAsync('cd apps/frontend && pnpm test -- --coverage --json --silent', {
+            maxBuffer: 1024 * 1024 * 10, // 10MB buffer
+        });
+
+        // Parse JSON output from Jest
+        const lines = stdout.trim().split('\n');
+        const jsonLine = lines.find(line => line.startsWith('{'));
+
+        if (!jsonLine) {
+            console.warn('Could not find JSON output from test coverage');
+            return null;
+        }
+
+        const result = JSON.parse(jsonLine);
+
+        if (result.coverageMap) {
+            // Calculate total coverage
+            const coverage = result.coverageMap;
+            let totalStatements = 0, coveredStatements = 0;
+            let totalBranches = 0, coveredBranches = 0;
+            let totalFunctions = 0, coveredFunctions = 0;
+            let totalLines = 0, coveredLines = 0;
+
+            Object.values(coverage).forEach(file => {
+                if (file.s) {
+                    totalStatements += Object.keys(file.s).length;
+                    coveredStatements += Object.values(file.s).filter(v => v > 0).length;
+                }
+                if (file.b) {
+                    Object.values(file.b).forEach(branches => {
+                        totalBranches += branches.length;
+                        coveredBranches += branches.filter(v => v > 0).length;
+                    });
+                }
+                if (file.f) {
+                    totalFunctions += Object.keys(file.f).length;
+                    coveredFunctions += Object.values(file.f).filter(v => v > 0).length;
+                }
+                if (file.l) {
+                    totalLines += Object.keys(file.l).length;
+                    coveredLines += Object.values(file.l).filter(v => v > 0).length;
+                }
+            });
+
+            return {
+                statements: totalStatements > 0 ? ((coveredStatements / totalStatements) * 100).toFixed(2) : 0,
+                branches: totalBranches > 0 ? ((coveredBranches / totalBranches) * 100).toFixed(2) : 0,
+                functions: totalFunctions > 0 ? ((coveredFunctions / totalFunctions) * 100).toFixed(2) : 0,
+                lines: totalLines > 0 ? ((coveredLines / totalLines) * 100).toFixed(2) : 0,
+                testsPassed: result.numPassedTests || 0,
+                testsTotal: result.numTotalTests || 0,
+            };
+        }
+
+        return null;
+    } catch (error) {
+        console.error('Error running test coverage:', error.message);
+        return null;
+    }
+}
+
+function formatCoverageReport(coverage) {
+    if (!coverage) {
+        return '\n\n---\n\n## 🧪 Test Coverage\n\n⚠️ Could not retrieve test coverage data.\n';
+    }
+
+    return `
+
+---
+
+## 🧪 Test Coverage
+
+| Metric | Coverage |
+|--------|----------|
+| **Statements** | ${coverage.statements}% |
+| **Branches** | ${coverage.branches}% |
+| **Functions** | ${coverage.functions}% |
+| **Lines** | ${coverage.lines}% |
+
+**Tests:** ${coverage.testsPassed}/${coverage.testsTotal} passed
+`;
+}
+
+async function postComment(review, coverageData) {
+    const coverageReport = formatCoverageReport(coverageData);
+    const fullComment = review + coverageReport;
+
     const options = {
         method: 'POST',
         headers: {
@@ -221,7 +314,7 @@ async function postComment(review) {
     };
 
     const url = `${GITHUB_API_BASE}/repos/${REPO_OWNER}/${REPO_NAME}/issues/${PR_NUMBER}/comments`;
-    await request(url, options, { body: review });
+    await request(url, options, { body: fullComment });
 }
 
 async function main() {
@@ -232,8 +325,11 @@ async function main() {
         console.log('Generating review...');
         const review = await generateReview(prDetails);
 
+        console.log('Running test coverage...');
+        const coverageData = await runTestCoverage();
+
         console.log('Posting comment...');
-        await postComment(review);
+        await postComment(review, coverageData);
 
         console.log('Done!');
     } catch (error) {
