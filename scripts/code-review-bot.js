@@ -210,6 +210,34 @@ REMINDER: All generated content must be in Thai. Focus on clarity, accuracy, and
     }
 }
 
+async function readTestResults() {
+    const fs = require('fs');
+    const path = require('path');
+
+    try {
+        console.log('Reading test results from artifact...');
+        const testResultsPath = path.join(process.cwd(), 'test-results', 'test-results.json');
+
+        if (!fs.existsSync(testResultsPath)) {
+            console.warn('Test results file not found at:', testResultsPath);
+            return null;
+        }
+
+        const testData = JSON.parse(fs.readFileSync(testResultsPath, 'utf8'));
+
+        return {
+            success: testData.success || false,
+            numTotalTests: testData.numTotalTests || 0,
+            numPassedTests: testData.numPassedTests || 0,
+            numFailedTests: testData.numFailedTests || 0,
+            numPendingTests: testData.numPendingTests || 0,
+        };
+    } catch (error) {
+        console.error('Error reading test results:', error.message);
+        return null;
+    }
+}
+
 async function runTestCoverage() {
     const fs = require('fs');
     const path = require('path');
@@ -244,33 +272,49 @@ async function runTestCoverage() {
     }
 }
 
-function formatCoverageReport(coverage) {
-    if (!coverage) {
-        return '\n\n---\n\n## 🧪 Test Coverage\n\n⚠️ Could not retrieve test coverage data.\n';
+function formatTestAndCoverageReport(testResults, coverage) {
+    let report = '\n\n---\n\n## 🧪 Test Results\n\n';
+
+    if (testResults) {
+        const status = testResults.success ? '✅ PASSED' : '❌ FAILED';
+        const emoji = testResults.success ? '✅' : '❌';
+
+        report += `**Status:** ${status}\n\n`;
+        report += `| Metric | Count |\n`;
+        report += `|--------|-------|\n`;
+        report += `| ${emoji} **Passed** | ${testResults.numPassedTests} |\n`;
+
+        if (testResults.numFailedTests > 0) {
+            report += `| ❌ **Failed** | ${testResults.numFailedTests} |\n`;
+        }
+        if (testResults.numPendingTests > 0) {
+            report += `| ⏸️ **Pending** | ${testResults.numPendingTests} |\n`;
+        }
+
+        report += `| 📊 **Total** | ${testResults.numTotalTests} |\n`;
+    } else {
+        report += '⚠️ Could not retrieve test results.\n';
     }
 
-    const testsInfo = coverage.testsPassed === 'N/A'
-        ? ''
-        : `\n**Tests:** ${coverage.testsPassed}/${coverage.testsTotal} passed`;
+    report += '\n## 📊 Coverage Report\n\n';
 
-    return `
+    if (coverage) {
+        report += `| Metric | Coverage |\n`;
+        report += `|--------|----------|\n`;
+        report += `| **Statements** | ${coverage.statements}% |\n`;
+        report += `| **Branches** | ${coverage.branches}% |\n`;
+        report += `| **Functions** | ${coverage.functions}% |\n`;
+        report += `| **Lines** | ${coverage.lines}% |\n`;
+    } else {
+        report += '⚠️ Could not retrieve coverage data.\n';
+    }
 
----
-
-## 🧪 Test Coverage
-
-| Metric | Coverage |
-|--------|----------|
-| **Statements** | ${coverage.statements}% |
-| **Branches** | ${coverage.branches}% |
-| **Functions** | ${coverage.functions}% |
-| **Lines** | ${coverage.lines}% |${testsInfo}
-`;
+    return report;
 }
 
-async function postComment(review, coverageData) {
-    const coverageReport = formatCoverageReport(coverageData);
-    const fullComment = review + coverageReport;
+async function postComment(review, testResults, coverageData) {
+    const testAndCoverageReport = formatTestAndCoverageReport(testResults, coverageData);
+    const fullComment = review + testAndCoverageReport;
 
     const options = {
         method: 'POST',
@@ -293,11 +337,14 @@ async function main() {
         console.log('Generating review...');
         const review = await generateReview(prDetails);
 
-        console.log('Running test coverage...');
+        console.log('Reading test results...');
+        const testResults = await readTestResults();
+
+        console.log('Reading test coverage...');
         const coverageData = await runTestCoverage();
 
         console.log('Posting comment...');
-        await postComment(review, coverageData);
+        await postComment(review, testResults, coverageData);
 
         console.log('Done!');
     } catch (error) {
