@@ -16,8 +16,17 @@
 <!-- Describe what changed -->
 
 ## 🧪 Testing
-- [ ] Manual testing completed
-
+- [x] Manual testing completed
+  - ✅ Build สำเร็จ (`pnpm build`)
+  - ✅ Production server รันได้ (`pnpm start`)
+  - ✅ แสดง environment badge ถูกต้อง (Development)
+  - ✅ แสดงวันที่ภาษาไทยถูกต้อง
+  - ✅ แสดง Git commit hash (local) สำหรับ local development
+  - ✅ Component ทำงานได้ทุก environment
+- [x] Unit testing completed (`pnpm test`)
+  - ✅ `DeployInfo` component renders correctly in Production (hides git hash)
+  - ✅ `DeployInfo` component renders correctly in Preview (shows git hash)
+  - ✅ `DeployInfo` component renders correctly in Development (shows local)
 ## 🚀 Migration/Deployment
 - [ ] Database migration required
 - [ ] Environment variables updated
