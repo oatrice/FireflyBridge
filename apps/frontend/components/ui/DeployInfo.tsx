@@ -67,10 +67,12 @@ export default function DeployInfo({ }: DeployInfoProps) {
 
     return (
         <div className="flex flex-col items-center gap-2 text-xs text-neutral-500">
-            {/* Environment Badge */}
-            <div className={`px-3 py-1 rounded-full border ${envBadge.color} font-medium`}>
-                {envBadge.label}
-            </div>
+            {/* Environment Badge - Hide in Production */}
+            {!isProduction && (
+                <div className={`px-3 py-1 rounded-full border ${envBadge.color} font-medium`}>
+                    {envBadge.label}
+                </div>
+            )}
 
             {/* Version with Build Number */}
             {appVersion && (
