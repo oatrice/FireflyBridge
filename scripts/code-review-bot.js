@@ -3,8 +3,8 @@ const https = require('https');
 // Configuration
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const LLM_API_KEY = process.env.LLM_API_KEY;
-const LLM_API_ENDPOINT = process.env.LLM_API_ENDPOINT || 'https://api.openai.com/v1/chat/completions';
-const LLM_MODEL = process.env.LLM_MODEL || 'gpt-4o';
+const LLM_API_ENDPOINT = process.env.LLM_API_ENDPOINT;
+const LLM_MODEL = process.env.LLM_MODEL || 'gemini-1.5-flash-001';
 const PR_NUMBER = process.env.PR_NUMBER;
 const REPO_OWNER = process.env.REPO_OWNER;
 const REPO_NAME = process.env.REPO_NAME;
@@ -155,6 +155,7 @@ REMINDER: All generated content must be in Thai. Focus on clarity, accuracy, and
 
     } else {
         // OpenAI Compatible
+        const endpoint = LLM_API_ENDPOINT || 'https://api.openai.com/v1/chat/completions';
         const payload = {
             model: LLM_MODEL,
             messages: [
@@ -171,7 +172,7 @@ REMINDER: All generated content must be in Thai. Focus on clarity, accuracy, and
             },
         };
 
-        const response = await request(LLM_API_ENDPOINT, options, payload);
+        const response = await request(endpoint, options, payload);
         return response.choices[0].message.content;
     }
 }
