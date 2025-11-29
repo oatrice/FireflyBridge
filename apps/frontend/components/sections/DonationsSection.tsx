@@ -295,7 +295,12 @@ export default function DonationsSection({ donations, loading }: DonationsSectio
                         {filteredDonations.length > 6 && (
                             <div className="mt-8 flex justify-center">
                                 <button
-                                    onClick={() => setShowAllDonations(!showAllDonations)}
+                                    onClick={() => {
+                                        if (showAllDonations) {
+                                            document.getElementById("donations")?.scrollIntoView({ behavior: "smooth" });
+                                        }
+                                        setShowAllDonations(!showAllDonations);
+                                    }}
                                     className="flex items-center gap-2 px-6 py-2.5 bg-white border border-neutral-200 hover:bg-neutral-50 text-neutral-700 rounded-full font-medium transition-all shadow-sm hover:shadow-md active:scale-95"
                                 >
                                     <span>{showAllDonations ? "ย่อรายการ" : "ดูทั้งหมด"}</span>

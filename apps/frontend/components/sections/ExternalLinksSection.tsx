@@ -79,7 +79,12 @@ export default function ExternalLinksSection({ externalLinks, loading }: Externa
             {externalLinks.length > 6 && (
                 <div className="mt-8 flex justify-center">
                     <button
-                        onClick={() => setShowAllLinks(!showAllLinks)}
+                        onClick={() => {
+                            if (showAllLinks) {
+                                document.getElementById("external")?.scrollIntoView({ behavior: "smooth" });
+                            }
+                            setShowAllLinks(!showAllLinks);
+                        }}
                         className="flex items-center gap-2 px-6 py-2.5 bg-white border border-neutral-200 hover:bg-neutral-50 text-neutral-700 rounded-full font-medium transition-all shadow-sm hover:shadow-md active:scale-95"
                     >
                         <span>{showAllLinks ? "ย่อรายการ" : "ดูทั้งหมด"}</span>
