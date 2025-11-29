@@ -28,3 +28,9 @@ Thumbs.db
 *.swo
 .vercel
 .env*.local
+
+# Neon
+.neon
+
+# Supabase
+supabase/
