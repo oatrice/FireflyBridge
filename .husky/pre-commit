@@ -1,1 +1,2 @@
 pnpm --filter frontend test
+pnpm test scripts/__tests__

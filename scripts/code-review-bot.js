@@ -62,8 +62,12 @@ async function getPRDetails() {
     let diffData;
     let commitInfo = null;
 
-    if (COMMIT_SHA) {
+    // Validate and log COMMIT_SHA
+    console.log('COMMIT_SHA environment variable:', COMMIT_SHA);
+
+    if (COMMIT_SHA && COMMIT_SHA !== 'undefined' && COMMIT_SHA.trim() !== '') {
         // Review specific commit only
+        console.log(`📝 Reviewing COMMIT DIFF ONLY for SHA: ${COMMIT_SHA}`);
         const commitUrl = `${GITHUB_API_BASE}/repos/${REPO_OWNER}/${REPO_NAME}/commits/${COMMIT_SHA}`;
         const diffOptions = {
             ...options,
@@ -80,8 +84,10 @@ async function getPRDetails() {
             sha: commitData.sha.substring(0, 7),
             message: commitData.commit.message,
         };
+        console.log(`✅ Fetched commit diff for: ${commitInfo.sha} - ${commitInfo.message}`);
     } else {
         // Review entire PR (fallback)
+        console.log('📋 Reviewing ENTIRE PR DIFF (no valid COMMIT_SHA provided)');
         const diffOptions = {
             ...options,
             headers: {
@@ -90,6 +96,7 @@ async function getPRDetails() {
             },
         };
         diffData = await request(prUrl, diffOptions);
+        console.log('✅ Fetched PR diff');
     }
 
     return {
@@ -100,10 +107,49 @@ async function getPRDetails() {
     };
 }
 
-async function generateReview(prDetails) {
+async function generateReview(prDetails, testResults, coverageData, uncoveredAreas) {
     const reviewScope = prDetails.commitInfo
         ? `Commit เดียว (${prDetails.commitInfo.sha}): ${prDetails.commitInfo.message}`
         : 'ทั้ง Pull Request';
+
+    // Format test and coverage info for AI
+    let testCoverageInfo = '\n';
+    if (testResults) {
+        const status = testResults.success ? 'PASSED ✅' : 'FAILED ❌';
+        testCoverageInfo += `\nTest Results: ${status}\n`;
+        testCoverageInfo += `- Passed: ${testResults.numPassedTests}/${testResults.numTotalTests}\n`;
+        if (testResults.numFailedTests > 0) {
+            testCoverageInfo += `- Failed: ${testResults.numFailedTests}\n`;
+        }
+        if (testResults.numPendingTests > 0) {
+            testCoverageInfo += `- Pending: ${testResults.numPendingTests}\n`;
+        }
+    }
+
+    if (coverageData) {
+        testCoverageInfo += `\nCode Coverage:\n`;
+        testCoverageInfo += `- Statements: ${coverageData.statements}%\n`;
+        testCoverageInfo += `- Branches: ${coverageData.branches}%\n`;
+        testCoverageInfo += `- Functions: ${coverageData.functions}%\n`;
+        testCoverageInfo += `- Lines: ${coverageData.lines}%\n`;
+    }
+
+    // Add uncovered areas details
+    if (uncoveredAreas && uncoveredAreas.length > 0) {
+        testCoverageInfo += `\nUncovered Code Areas (ที่ควรเพิ่ม Tests):\n`;
+        uncoveredAreas.forEach(area => {
+            testCoverageInfo += `\nFile: ${area.file}\n`;
+            if (area.uncoveredFunctions.length > 0) {
+                testCoverageInfo += `  Functions ที่ยังไม่มี test:\n`;
+                area.uncoveredFunctions.forEach(fn => {
+                    testCoverageInfo += `    - ${fn.name} (line ${fn.line})\n`;
+                });
+            }
+            if (area.uncoveredLines.length > 0) {
+                testCoverageInfo += `  Lines ที่ยังไม่ถูก cover: ${area.uncoveredLines.join(', ')}\n`;
+            }
+        });
+    }
 
     const prompt = `
 Please process the following Pull Request (PR) details. Your task is to act as an AI Code Review Assistant and generate a comprehensive review summary strictly in Thai. The review must be structured and follow all the requested sections to facilitate quick and clear understanding for contributors and reviewers.
@@ -120,6 +166,7 @@ Associated Issue(s): ${prDetails.description}
 Diff/Code Changes:
 ${typeof prDetails.diff === 'string' ? prDetails.diff.substring(0, 30000) : 'Diff too large or unavailable'} 
 (Note: Diff truncated to fit context window if necessary)
+${testCoverageInfo}
 
 🤖 Code Review Output Structure (Must be in Thai):
 You must generate the response by filling out the following sections in the specified structure:
@@ -132,6 +179,13 @@ Detail the key files and code sections that were modified. List the most signifi
 
 🚨 ความเสี่ยงที่อาจเกิดขึ้น (Risks):
 Identify potential bugs, regressions, performance bottlenecks, or security vulnerabilities introduced by these changes. If the risks are minimal, state that clearly.
+
+🧪 การทดสอบและ Coverage (Testing & Coverage Analysis):
+Analyze the test results and coverage data provided above. Comment on:
+- Whether the test coverage is adequate for the changes made
+- If there are critical paths that lack test coverage
+- Suggestions for additional test cases if needed
+- Overall quality of testing approach
 
 ⚖️ ระดับความสำคัญ (Level):
 Rate the overall significance/impact of the PR (e.g., Critical, Major, Moderate, Minor). Justify the rating briefly.
@@ -210,7 +264,177 @@ REMINDER: All generated content must be in Thai. Focus on clarity, accuracy, and
     }
 }
 
-async function postComment(review) {
+async function readTestResults() {
+    const fs = require('fs');
+    const path = require('path');
+
+    try {
+        console.log('Reading test results from artifact...');
+        const testResultsPath = path.join(process.cwd(), 'test-results', 'test-results.json');
+
+        if (!fs.existsSync(testResultsPath)) {
+            console.warn('Test results file not found at:', testResultsPath);
+            return null;
+        }
+
+        const testData = JSON.parse(fs.readFileSync(testResultsPath, 'utf8'));
+
+        return {
+            success: testData.success || false,
+            numTotalTests: testData.numTotalTests || 0,
+            numPassedTests: testData.numPassedTests || 0,
+            numFailedTests: testData.numFailedTests || 0,
+            numPendingTests: testData.numPendingTests || 0,
+        };
+    } catch (error) {
+        console.error('Error reading test results:', error.message);
+        return null;
+    }
+}
+
+async function runTestCoverage() {
+    const fs = require('fs');
+    const path = require('path');
+
+    try {
+        console.log('Reading test coverage from artifact...');
+        const coveragePath = path.join(process.cwd(), 'coverage', 'coverage-summary.json');
+
+        if (!fs.existsSync(coveragePath)) {
+            console.warn('Coverage file not found at:', coveragePath);
+            return null;
+        }
+
+        const coverageData = JSON.parse(fs.readFileSync(coveragePath, 'utf8'));
+
+        if (coverageData.total) {
+            const total = coverageData.total;
+            return {
+                statements: total.statements?.pct?.toFixed(2) || 0,
+                branches: total.branches?.pct?.toFixed(2) || 0,
+                functions: total.functions?.pct?.toFixed(2) || 0,
+                lines: total.lines?.pct?.toFixed(2) || 0,
+                testsPassed: 'N/A', // Not available in summary
+                testsTotal: 'N/A',
+            };
+        }
+
+        return null;
+    } catch (error) {
+        console.error('Error reading test coverage:', error.message);
+        return null;
+    }
+}
+
+async function analyzeDetailedCoverage() {
+    const fs = require('fs');
+    const path = require('path');
+
+    try {
+        console.log('Analyzing detailed coverage...');
+        const detailedCoveragePath = path.join(process.cwd(), 'coverage', 'coverage-final.json');
+
+        if (!fs.existsSync(detailedCoveragePath)) {
+            console.warn('Detailed coverage file not found');
+            return null;
+        }
+
+        const coverageData = JSON.parse(fs.readFileSync(detailedCoveragePath, 'utf8'));
+        const uncoveredAreas = [];
+
+        // Analyze each file
+        for (const [filePath, fileData] of Object.entries(coverageData)) {
+            // Skip node_modules and test files
+            if (filePath.includes('node_modules') || filePath.includes('.test.') || filePath.includes('__tests__')) {
+                continue;
+            }
+
+            const fileName = path.basename(filePath);
+            const uncoveredLines = [];
+            const uncoveredFunctions = [];
+
+            // Find uncovered lines
+            if (fileData.s && fileData.statementMap) {
+                for (const [stmtId, count] of Object.entries(fileData.s)) {
+                    if (count === 0 && fileData.statementMap[stmtId]) {
+                        const loc = fileData.statementMap[stmtId].start;
+                        uncoveredLines.push(loc.line);
+                    }
+                }
+            }
+
+            // Find uncovered functions
+            if (fileData.f && fileData.fnMap) {
+                for (const [fnId, count] of Object.entries(fileData.f)) {
+                    if (count === 0 && fileData.fnMap[fnId]) {
+                        const fnName = fileData.fnMap[fnId].name || 'anonymous';
+                        const loc = fileData.fnMap[fnId].loc.start;
+                        uncoveredFunctions.push({ name: fnName, line: loc.line });
+                    }
+                }
+            }
+
+            // Only include files with uncovered code
+            if (uncoveredLines.length > 0 || uncoveredFunctions.length > 0) {
+                uncoveredAreas.push({
+                    file: fileName,
+                    uncoveredLines: uncoveredLines.slice(0, 10), // Limit to first 10
+                    uncoveredFunctions: uncoveredFunctions.slice(0, 5), // Limit to first 5
+                });
+            }
+        }
+
+        return uncoveredAreas.slice(0, 5); // Return top 5 files with most issues
+    } catch (error) {
+        console.error('Error analyzing detailed coverage:', error.message);
+        return null;
+    }
+}
+
+function formatTestAndCoverageReport(testResults, coverage) {
+    let report = '\n\n---\n\n## 🧪 Test Results\n\n';
+
+    if (testResults) {
+        const status = testResults.success ? '✅ PASSED' : '❌ FAILED';
+        const emoji = testResults.success ? '✅' : '❌';
+
+        report += `**Status:** ${status}\n\n`;
+        report += `| Metric | Count |\n`;
+        report += `|--------|-------|\n`;
+        report += `| ${emoji} **Passed** | ${testResults.numPassedTests} |\n`;
+
+        if (testResults.numFailedTests > 0) {
+            report += `| ❌ **Failed** | ${testResults.numFailedTests} |\n`;
+        }
+        if (testResults.numPendingTests > 0) {
+            report += `| ⏸️ **Pending** | ${testResults.numPendingTests} |\n`;
+        }
+
+        report += `| 📊 **Total** | ${testResults.numTotalTests} |\n`;
+    } else {
+        report += '⚠️ Could not retrieve test results.\n';
+    }
+
+    report += '\n## 📊 Coverage Report\n\n';
+
+    if (coverage) {
+        report += `| Metric | Coverage |\n`;
+        report += `|--------|----------|\n`;
+        report += `| **Statements** | ${coverage.statements}% |\n`;
+        report += `| **Branches** | ${coverage.branches}% |\n`;
+        report += `| **Functions** | ${coverage.functions}% |\n`;
+        report += `| **Lines** | ${coverage.lines}% |\n`;
+    } else {
+        report += '⚠️ Could not retrieve coverage data.\n';
+    }
+
+    return report;
+}
+
+async function postComment(review, testResults, coverageData) {
+    const testAndCoverageReport = formatTestAndCoverageReport(testResults, coverageData);
+    const fullComment = review + testAndCoverageReport;
+
     const options = {
         method: 'POST',
         headers: {
@@ -221,7 +445,7 @@ async function postComment(review) {
     };
 
     const url = `${GITHUB_API_BASE}/repos/${REPO_OWNER}/${REPO_NAME}/issues/${PR_NUMBER}/comments`;
-    await request(url, options, { body: review });
+    await request(url, options, { body: fullComment });
 }
 
 async function main() {
@@ -229,11 +453,20 @@ async function main() {
         console.log('Fetching PR details...');
         const prDetails = await getPRDetails();
 
+        console.log('Reading test results...');
+        const testResults = await readTestResults();
+
+        console.log('Reading test coverage...');
+        const coverageData = await runTestCoverage();
+
+        console.log('Analyzing uncovered code areas...');
+        const uncoveredAreas = await analyzeDetailedCoverage();
+
         console.log('Generating review...');
-        const review = await generateReview(prDetails);
+        const review = await generateReview(prDetails, testResults, coverageData, uncoveredAreas);
 
         console.log('Posting comment...');
-        await postComment(review);
+        await postComment(review, testResults, coverageData);
 
         console.log('Done!');
     } catch (error) {
@@ -242,4 +475,19 @@ async function main() {
     }
 }
 
-main();
+// Export functions for testing
+module.exports = {
+    request,
+    getPRDetails,
+    generateReview,
+    readTestResults,
+    runTestCoverage,
+    formatTestAndCoverageReport,
+    postComment,
+    main,
+};
+
+// Only run main if this file is executed directly
+if (require.main === module) {
+    main();
+}

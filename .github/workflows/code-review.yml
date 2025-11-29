@@ -9,8 +9,51 @@ permissions:
   pull-requests: write
 
 jobs:
-  review:
+  test:
+    name: Unit Tests
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Run Unit Tests
+        run: pnpm --filter frontend test --coverage --coverageReporters=json-summary --coverageReporters=json --json --outputFile=test-results.json || true
+
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: apps/frontend/test-results.json
+          retention-days: 1
+
+      - name: Upload Coverage Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: |
+            apps/frontend/coverage/coverage-summary.json
+            apps/frontend/coverage/coverage-final.json
+          retention-days: 1
+
+  review:
+    name: AI Code Review
+    runs-on: ubuntu-latest
+    needs: test
+    if: always()
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -19,6 +62,20 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+
+      - name: Download Coverage Report
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-report
+          path: ./coverage
+        continue-on-error: true
+
+      - name: Download Test Results
+        uses: actions/download-artifact@v4
+        with:
+          name: test-results
+          path: ./test-results
+        continue-on-error: true
 
       - name: Run AI Code Review
         env:
@@ -29,5 +86,5 @@ jobs:
           PR_NUMBER: ${{ github.event.pull_request.number }}
           REPO_OWNER: ${{ github.repository_owner }}
           REPO_NAME: ${{ github.event.repository.name }}
-          COMMIT_SHA: ${{ github.event.after }}
+          COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
         run: node scripts/code-review-bot.js
