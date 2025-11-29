@@ -6,6 +6,7 @@ export default function DeployInfo({ }: DeployInfoProps) {
     const buildTime = process.env.NEXT_PUBLIC_BUILD_TIME;
     const gitCommitSha = process.env.NEXT_PUBLIC_GIT_COMMIT_SHA;
     const vercelEnv = process.env.NEXT_PUBLIC_VERCEL_ENV;
+    const appVersion = process.env.NEXT_PUBLIC_APP_VERSION;
 
     // Format Thai date
     const formatThaiDate = (isoString: string | undefined): string => {
@@ -50,6 +51,14 @@ export default function DeployInfo({ }: DeployInfoProps) {
             <div className={`px-3 py-1 rounded-full border ${envBadge.color} font-medium`}>
                 {envBadge.label}
             </div>
+
+            {/* Version */}
+            {appVersion && (
+                <div className="flex items-center gap-1 font-semibold text-neutral-700">
+                    <span>🏷️</span>
+                    <span>Version {appVersion}</span>
+                </div>
+            )}
 
             {/* Deploy Time */}
             <div className="flex items-center gap-1">
