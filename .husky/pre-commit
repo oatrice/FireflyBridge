@@ -1,1 +1,1 @@
-pnpm test
+pnpm --filter frontend test
