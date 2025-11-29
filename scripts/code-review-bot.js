@@ -211,69 +211,35 @@ REMINDER: All generated content must be in Thai. Focus on clarity, accuracy, and
 }
 
 async function runTestCoverage() {
-    const { exec } = require('child_process');
-    const { promisify } = require('util');
-    const execAsync = promisify(exec);
+    const fs = require('fs');
+    const path = require('path');
 
     try {
-        console.log('Running test coverage...');
-        const { stdout } = await execAsync('cd apps/frontend && pnpm test -- --coverage --json --silent', {
-            maxBuffer: 1024 * 1024 * 10, // 10MB buffer
-        });
+        console.log('Reading test coverage from artifact...');
+        const coveragePath = path.join(process.cwd(), 'coverage', 'coverage-summary.json');
 
-        // Parse JSON output from Jest
-        const lines = stdout.trim().split('\n');
-        const jsonLine = lines.find(line => line.startsWith('{'));
-
-        if (!jsonLine) {
-            console.warn('Could not find JSON output from test coverage');
+        if (!fs.existsSync(coveragePath)) {
+            console.warn('Coverage file not found at:', coveragePath);
             return null;
         }
 
-        const result = JSON.parse(jsonLine);
+        const coverageData = JSON.parse(fs.readFileSync(coveragePath, 'utf8'));
 
-        if (result.coverageMap) {
-            // Calculate total coverage
-            const coverage = result.coverageMap;
-            let totalStatements = 0, coveredStatements = 0;
-            let totalBranches = 0, coveredBranches = 0;
-            let totalFunctions = 0, coveredFunctions = 0;
-            let totalLines = 0, coveredLines = 0;
-
-            Object.values(coverage).forEach(file => {
-                if (file.s) {
-                    totalStatements += Object.keys(file.s).length;
-                    coveredStatements += Object.values(file.s).filter(v => v > 0).length;
-                }
-                if (file.b) {
-                    Object.values(file.b).forEach(branches => {
-                        totalBranches += branches.length;
-                        coveredBranches += branches.filter(v => v > 0).length;
-                    });
-                }
-                if (file.f) {
-                    totalFunctions += Object.keys(file.f).length;
-                    coveredFunctions += Object.values(file.f).filter(v => v > 0).length;
-                }
-                if (file.l) {
-                    totalLines += Object.keys(file.l).length;
-                    coveredLines += Object.values(file.l).filter(v => v > 0).length;
-                }
-            });
-
+        if (coverageData.total) {
+            const total = coverageData.total;
             return {
-                statements: totalStatements > 0 ? ((coveredStatements / totalStatements) * 100).toFixed(2) : 0,
-                branches: totalBranches > 0 ? ((coveredBranches / totalBranches) * 100).toFixed(2) : 0,
-                functions: totalFunctions > 0 ? ((coveredFunctions / totalFunctions) * 100).toFixed(2) : 0,
-                lines: totalLines > 0 ? ((coveredLines / totalLines) * 100).toFixed(2) : 0,
-                testsPassed: result.numPassedTests || 0,
-                testsTotal: result.numTotalTests || 0,
+                statements: total.statements?.pct?.toFixed(2) || 0,
+                branches: total.branches?.pct?.toFixed(2) || 0,
+                functions: total.functions?.pct?.toFixed(2) || 0,
+                lines: total.lines?.pct?.toFixed(2) || 0,
+                testsPassed: 'N/A', // Not available in summary
+                testsTotal: 'N/A',
             };
         }
 
         return null;
     } catch (error) {
-        console.error('Error running test coverage:', error.message);
+        console.error('Error reading test coverage:', error.message);
         return null;
     }
 }
@@ -282,6 +248,10 @@ function formatCoverageReport(coverage) {
     if (!coverage) {
         return '\n\n---\n\n## 🧪 Test Coverage\n\n⚠️ Could not retrieve test coverage data.\n';
     }
+
+    const testsInfo = coverage.testsPassed === 'N/A'
+        ? ''
+        : `\n**Tests:** ${coverage.testsPassed}/${coverage.testsTotal} passed`;
 
     return `
 
@@ -294,9 +264,7 @@ function formatCoverageReport(coverage) {
 | **Statements** | ${coverage.statements}% |
 | **Branches** | ${coverage.branches}% |
 | **Functions** | ${coverage.functions}% |
-| **Lines** | ${coverage.lines}% |
-
-**Tests:** ${coverage.testsPassed}/${coverage.testsTotal} passed
+| **Lines** | ${coverage.lines}% |${testsInfo}
 `;
 }
 
