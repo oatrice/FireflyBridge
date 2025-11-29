@@ -8,6 +8,20 @@ export default function DeployInfo({ }: DeployInfoProps) {
     const vercelEnv = process.env.NEXT_PUBLIC_VERCEL_ENV;
     const appVersion = process.env.NEXT_PUBLIC_APP_VERSION;
 
+    // Generate build number from timestamp (YYYYMMDD-HHMM)
+    const getBuildNumber = (isoString: string | undefined): string => {
+        if (!isoString) return "unknown";
+
+        const date = new Date(isoString);
+        const year = date.getFullYear();
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const day = date.getDate().toString().padStart(2, '0');
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+
+        return `${year}${month}${day}-${hours}${minutes}`;
+    };
+
     // Format Thai date
     const formatThaiDate = (isoString: string | undefined): string => {
         if (!isoString) return "ไม่ทราบวันที่";
@@ -40,8 +54,14 @@ export default function DeployInfo({ }: DeployInfoProps) {
     };
 
     const envBadge = getEnvBadge();
-    const shortSha = gitCommitSha && gitCommitSha !== 'local' ? gitCommitSha.substring(0, 7) : gitCommitSha;
-    const commitUrl = gitCommitSha && gitCommitSha !== 'local'
+    const buildNumber = getBuildNumber(buildTime);
+    const isProduction = vercelEnv === 'production';
+
+    // Only show Git hash in non-production environments
+    const shortSha = !isProduction && gitCommitSha && gitCommitSha !== 'local'
+        ? gitCommitSha.substring(0, 7)
+        : null;
+    const commitUrl = shortSha
         ? `https://github.com/oatrice/FireflyBridge/commit/${gitCommitSha}`
         : null;
 
@@ -52,11 +72,11 @@ export default function DeployInfo({ }: DeployInfoProps) {
                 {envBadge.label}
             </div>
 
-            {/* Version */}
+            {/* Version with Build Number */}
             {appVersion && (
                 <div className="flex items-center gap-1 font-semibold text-neutral-700">
                     <span>🏷️</span>
-                    <span>Version {appVersion}</span>
+                    <span>Version {appVersion} (Build {buildNumber})</span>
                 </div>
             )}
 
@@ -66,7 +86,7 @@ export default function DeployInfo({ }: DeployInfoProps) {
                 <span>Deploy: {formatThaiDate(buildTime)}</span>
             </div>
 
-            {/* Git Commit */}
+            {/* Git Commit - Only in non-production */}
             {shortSha && (
                 <div className="flex items-center gap-1">
                     <span>📝</span>
@@ -82,6 +102,14 @@ export default function DeployInfo({ }: DeployInfoProps) {
                     ) : (
                         <span className="font-mono">{shortSha}</span>
                     )}
+                </div>
+            )}
+
+            {/* Show local indicator in development */}
+            {!isProduction && gitCommitSha === 'local' && (
+                <div className="flex items-center gap-1 text-neutral-400">
+                    <span>💻</span>
+                    <span className="font-mono">local</span>
                 </div>
             )}
         </div>
