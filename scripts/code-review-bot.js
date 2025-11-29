@@ -62,8 +62,12 @@ async function getPRDetails() {
     let diffData;
     let commitInfo = null;
 
-    if (COMMIT_SHA) {
+    // Validate and log COMMIT_SHA
+    console.log('COMMIT_SHA environment variable:', COMMIT_SHA);
+
+    if (COMMIT_SHA && COMMIT_SHA !== 'undefined' && COMMIT_SHA.trim() !== '') {
         // Review specific commit only
+        console.log(`📝 Reviewing COMMIT DIFF ONLY for SHA: ${COMMIT_SHA}`);
         const commitUrl = `${GITHUB_API_BASE}/repos/${REPO_OWNER}/${REPO_NAME}/commits/${COMMIT_SHA}`;
         const diffOptions = {
             ...options,
@@ -80,8 +84,10 @@ async function getPRDetails() {
             sha: commitData.sha.substring(0, 7),
             message: commitData.commit.message,
         };
+        console.log(`✅ Fetched commit diff for: ${commitInfo.sha} - ${commitInfo.message}`);
     } else {
         // Review entire PR (fallback)
+        console.log('📋 Reviewing ENTIRE PR DIFF (no valid COMMIT_SHA provided)');
         const diffOptions = {
             ...options,
             headers: {
@@ -90,6 +96,7 @@ async function getPRDetails() {
             },
         };
         diffData = await request(prUrl, diffOptions);
+        console.log('✅ Fetched PR diff');
     }
 
     return {
@@ -353,4 +360,19 @@ async function main() {
     }
 }
 
-main();
+// Export functions for testing
+module.exports = {
+    request,
+    getPRDetails,
+    generateReview,
+    readTestResults,
+    runTestCoverage,
+    formatTestAndCoverageReport,
+    postComment,
+    main,
+};
+
+// Only run main if this file is executed directly
+if (require.main === module) {
+    main();
+}
