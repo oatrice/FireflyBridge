@@ -111,7 +111,7 @@ Provide a more in-depth explanation of why these changes were made and how they 
 Offer constructive suggestions for improvement, such as better practices, cleanup, simplification, or potential future refactoring.
 
 ❓ ถาม-ตอบ (Human Ask/Bot Reply):
-Crucially, add a final note that allows for follow-up. State clearly: "หากมีข้อสงสัยหรือต้องการรายละเอียดเชิงลึกในส่วนใดเพิ่มเติม สามารถถามคำถามเฉพาะเจาะจงได้เลย"
+Crucially, add a final note that allows for follow-up. State clearly: "หากมีข้อสงสัยหรือต้องการรายละเอียดเชิงลึกในส่วนใดเพิ่มเติม สามารถถามคำถามเฉพาะเจาะจงได้เลย โดยพิมพ์ @ai-reviewer <คำถามของคุณ>"
 
 REMINDER: All generated content must be in Thai. Focus on clarity, accuracy, and ease of reading for technical contributors.
 `;

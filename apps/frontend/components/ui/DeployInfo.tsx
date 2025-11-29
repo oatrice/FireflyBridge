@@ -80,12 +80,6 @@ export default function DeployInfo({ }: DeployInfoProps) {
                 </div>
             )}
 
-            {/* Deploy Time */}
-            <div className="flex items-center gap-1">
-                <span>🕒</span>
-                <span>Deploy: {formatThaiDate(buildTime)}</span>
-            </div>
-
             {/* Git Commit - Only in non-production */}
             {shortSha && (
                 <div className="flex items-center gap-1">

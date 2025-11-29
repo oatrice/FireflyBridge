@@ -28,9 +28,6 @@ describe('DeployInfo', () => {
         // Build number for 2025-11-29T12:00:00.000Z should be 20251129-1900 (assuming local time conversion, but let's check partial match)
         expect(screen.getByText(/Version 1.0.0/)).toBeInTheDocument()
 
-        // Check Date
-        expect(screen.getByText(/Deploy:/)).toBeInTheDocument()
-
         // CRITICAL: Should NOT show Git hash in production
         expect(screen.queryByText('abcdef1')).not.toBeInTheDocument()
     })
