@@ -6,13 +6,15 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev:frontend": "pnpm --filter frontend dev",
-    "dev:backend": "pnpm --filter backend dev"
+    "dev:backend": "pnpm --filter backend dev",
+    "prepare": "husky"
   },
   "keywords": [],
   "author": "",
   "license": "MIT",
   "packageManager": "pnpm@10.23.0",
   "devDependencies": {
-    "@next/bundle-analyzer": "^16.0.5"
+    "@next/bundle-analyzer": "^16.0.5",
+    "husky": "^9.1.7"
   }
 }
