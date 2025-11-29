@@ -21,8 +21,8 @@ describe('DeployInfo', () => {
 
         render(<DeployInfo />)
 
-        // Check Badge
-        expect(screen.getByText('Production')).toBeInTheDocument()
+        // Check Badge - Should NOT show in production
+        expect(screen.queryByText('Production')).not.toBeInTheDocument()
 
         // Check Version and Build Number
         // Build number for 2025-11-29T12:00:00.000Z should be 20251129-1900 (assuming local time conversion, but let's check partial match)
