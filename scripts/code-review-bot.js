@@ -8,6 +8,7 @@ const LLM_MODEL = process.env.LLM_MODEL || 'gemini-2.0-flash-001';
 const PR_NUMBER = process.env.PR_NUMBER;
 const REPO_OWNER = process.env.REPO_OWNER;
 const REPO_NAME = process.env.REPO_NAME;
+const COMMIT_SHA = process.env.COMMIT_SHA; // New: for reviewing specific commit
 
 if (!GITHUB_TOKEN || !LLM_API_KEY || !PR_NUMBER || !REPO_OWNER || !REPO_NAME) {
     console.error('Missing required environment variables.');
@@ -57,26 +58,57 @@ async function getPRDetails() {
     const prUrl = `${GITHUB_API_BASE}/repos/${REPO_OWNER}/${REPO_NAME}/pulls/${PR_NUMBER}`;
     const prData = await request(prUrl, options);
 
-    // Get Diff
-    const diffOptions = {
-        ...options,
-        headers: {
-            ...options.headers,
-            Accept: 'application/vnd.github.v3.diff',
-        },
-    };
-    const diffData = await request(prUrl, diffOptions);
+    // Get Diff - either from specific commit or entire PR
+    let diffData;
+    let commitInfo = null;
+
+    if (COMMIT_SHA) {
+        // Review specific commit only
+        const commitUrl = `${GITHUB_API_BASE}/repos/${REPO_OWNER}/${REPO_NAME}/commits/${COMMIT_SHA}`;
+        const diffOptions = {
+            ...options,
+            headers: {
+                ...options.headers,
+                Accept: 'application/vnd.github.v3.diff',
+            },
+        };
+        diffData = await request(commitUrl, diffOptions);
+
+        // Get commit message for context
+        const commitData = await request(commitUrl, options);
+        commitInfo = {
+            sha: commitData.sha.substring(0, 7),
+            message: commitData.commit.message,
+        };
+    } else {
+        // Review entire PR (fallback)
+        const diffOptions = {
+            ...options,
+            headers: {
+                ...options.headers,
+                Accept: 'application/vnd.github.v3.diff',
+            },
+        };
+        diffData = await request(prUrl, diffOptions);
+    }
 
     return {
         title: prData.title,
         description: prData.body,
         diff: diffData,
+        commitInfo,
     };
 }
 
 async function generateReview(prDetails) {
+    const reviewScope = prDetails.commitInfo
+        ? `Commit เดียว (${prDetails.commitInfo.sha}): ${prDetails.commitInfo.message}`
+        : 'ทั้ง Pull Request';
+
     const prompt = `
 Please process the following Pull Request (PR) details. Your task is to act as an AI Code Review Assistant and generate a comprehensive review summary strictly in Thai. The review must be structured and follow all the requested sections to facilitate quick and clear understanding for contributors and reviewers.
+
+**ขอบเขตการ Review: ${reviewScope}**
 
 Input PR Details:
 PR Title: ${prDetails.title}
