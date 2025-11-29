@@ -166,7 +166,7 @@ export default function DonationsSection({ donations, loading }: DonationsSectio
                             แสดง {sortedDonations.length} จาก {donations.length} ช่องทาง
                         </div>
                         <div className="columns-1 md:columns-2 gap-6 space-y-6">
-                            {(showAllDonations ? sortedDonations : sortedDonations.slice(0, 6)).map((donation) => {
+                            {(showAllDonations ? sortedDonations : sortedDonations.slice(0, 6)).map((donation, i) => {
                                 const isMoney = !!donation.bankName || !!donation.acceptsMoney;
                                 const isItems = !!donation.donationPoints;
                                 const bankInfo = donation.bankName ? getBankInfo(donation.bankName) : null;
@@ -174,7 +174,8 @@ export default function DonationsSection({ donations, loading }: DonationsSectio
                                 return (
                                     <div
                                         key={donation.id}
-                                        className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 border border-neutral-100 flex flex-col break-inside-avoid mb-6"
+                                        className={`bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 border border-neutral-100 flex flex-col break-inside-avoid mb-6 ${i >= 6 ? "animate-fade-in-up" : ""
+                                            }`}
                                     >
                                         <div className="flex justify-between items-start mb-3">
                                             <div className="flex gap-2">
@@ -294,8 +295,13 @@ export default function DonationsSection({ donations, loading }: DonationsSectio
                         {filteredDonations.length > 6 && (
                             <div className="mt-8 flex justify-center">
                                 <button
-                                    onClick={() => setShowAllDonations(!showAllDonations)}
-                                    className="flex items-center gap-2 px-6 py-2.5 bg-white border border-neutral-200 hover:bg-neutral-50 text-neutral-700 rounded-full font-medium transition-all shadow-sm hover:shadow-md"
+                                    onClick={() => {
+                                        if (showAllDonations) {
+                                            document.getElementById("donations")?.scrollIntoView({ behavior: "smooth" });
+                                        }
+                                        setShowAllDonations(!showAllDonations);
+                                    }}
+                                    className="flex items-center gap-2 px-6 py-2.5 bg-white border border-neutral-200 hover:bg-neutral-50 text-neutral-700 rounded-full font-medium transition-all shadow-sm hover:shadow-md active:scale-95"
                                 >
                                     <span>{showAllDonations ? "ย่อรายการ" : "ดูทั้งหมด"}</span>
                                     <span
