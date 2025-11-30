@@ -90,7 +90,9 @@ async function runTests() {
     })();
 
     await test("No gaps in displayOrder sequence", () => {
-        const orders = popularHotlines.map(h => h.displayOrder).sort((a, b) => a - b);
+        const orders = popularHotlines
+            .map(h => h.displayOrder || 0)
+            .sort((a, b) => a - b);
         for (let i = 0; i < orders.length; i++) {
             if (orders[i] !== i + 1) return false;
         }
