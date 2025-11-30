@@ -209,6 +209,7 @@ export default function DonationsSection({ donations, loading }: DonationsSectio
                                                     alt={`QR Code for ${donation.name}`}
                                                     width={180}
                                                     height={180}
+                                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                                                     onClick={() => {
                                                         setQrModalImage(donation.qrCodeUrl!);
                                                         setQrModalTitle(donation.name);
