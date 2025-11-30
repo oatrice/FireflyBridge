@@ -131,7 +131,7 @@ const hotlines = [
         description: "มูลนิธิมิตรภาพสามัคคี (ท่งเซียเซี่ยงตึ๊ง) - เฉพาะหาดใหญ่",
         color: "bg-red-500",
         isPopular: true,
-        displayOrder: 10
+        displayOrder: 11
     },
     {
         name: "พี่ๆ ทหาร (กอ.รมน.)",
@@ -140,7 +140,7 @@ const hotlines = [
         description: "ช่วยเหลือผู้ประสบภัยในพื้นที่ (หมายเลขจากหลายหน่วยงาน)",
         color: "bg-green-700",
         isPopular: true,
-        displayOrder: 11
+        displayOrder: 61
     },
     {
         name: "เทศบาลนครหาดใหญ่",
@@ -154,7 +154,7 @@ const hotlines = [
             line: "https://line.me/R/ti/p/@hatyaicity"
         },
         isPopular: true,
-        displayOrder: 12
+        displayOrder: 10
     },
     {
         name: "ปภ. จังหวัดสงขลา",
@@ -163,7 +163,7 @@ const hotlines = [
         description: "ป้องกันและบรรเทาสาธารณภัย (สำนักงานจังหวัด)",
         color: "bg-green-500",
         isPopular: true,
-        displayOrder: 13
+        displayOrder: 12
     },
     {
         name: "พมจ. สงขลา",
@@ -172,7 +172,7 @@ const hotlines = [
         description: "พัฒนาสังคมและความมั่นคงของมนุษย์จังหวัดสงขลา",
         color: "bg-pink-500",
         isPopular: true,
-        displayOrder: 14
+        displayOrder: 60
     },
     { name: "ปลัดอำเภอหาดใหญ่", numbers: ["063-902-9229"], category: "ท้องถิ่น", description: "อำเภอหาดใหญ่", color: "bg-green-500" },
     { name: "ปลัดอำเภอคลองหอยโข่ง", numbers: ["063-904-1038"], category: "ท้องถิ่น", description: "อำเภอคลองหอยโข่ง", color: "bg-green-500" },
@@ -262,7 +262,7 @@ const hotlines = [
             facebook: "https://www.facebook.com/ruamkatanyu",
         },
         isPopular: true,
-        displayOrder: 15
+        displayOrder: 30
     },
     {
         name: "สภากาชาดไทย",
@@ -275,7 +275,7 @@ const hotlines = [
             website: "https://www.redcross.or.th/"
         },
         isPopular: true,
-        displayOrder: 16
+        displayOrder: 31
     },
     {
         name: "มูลนิธิองค์กรทำดี (บุ๋ม ปนัดดา)",
@@ -287,7 +287,7 @@ const hotlines = [
             instagram: ["https://www.instagram.com/boompanadda"]
         },
         isPopular: true,
-        displayOrder: 17
+        displayOrder: 32
     },
     {
         name: "โครงการพลังน้ำใจ/โรงครัวเปิ้ล นาคร",
@@ -301,7 +301,7 @@ const hotlines = [
             youtube: "www.youtube.com/plenakornChannel"
         },
         isPopular: true,
-        displayOrder: 18
+        displayOrder: 33
     },
     {
         name: "มูลนิธิใจถึงใจ (ฝันดี-ฝันเด่น)",
@@ -313,7 +313,7 @@ const hotlines = [
             facebook: "https://www.facebook.com/Jaitungjai"
         },
         isPopular: true,
-        displayOrder: 19
+        displayOrder: 34
     },
     {
         name: "มูลนิธิกระจกเงา",
@@ -325,7 +325,7 @@ const hotlines = [
             facebook: "https://www.facebook.com/mirrorf"
         },
         isPopular: true,
-        displayOrder: 20
+        displayOrder: 35
     },
     {
         name: "กันจอมพลังช่วยสู้",
@@ -337,7 +337,7 @@ const hotlines = [
             facebook: "https://www.facebook.com/gunjompalang1"
         },
         isPopular: true,
-        displayOrder: 21
+        displayOrder: 36
     },
     {
         name: "มูลนิธิเพื่อการส่งเสริมและพัฒนาสังคม",
@@ -349,7 +349,7 @@ const hotlines = [
             facebook: "https://www.facebook.com/ruamkatanyu",
         },
         isPopular: true,
-        displayOrder: 22
+        displayOrder: 37
     },
     {
         name: "มูลนิธิมิตรภาพสามัคคี (ท่งเซียเซี่ยงตึ๊ง)",
@@ -400,7 +400,7 @@ const hotlines = [
         description: "กด 5 - ศูนย์กลางช่วยเหลือผู้ประสบอุทกภัย",
         color: "bg-red-500",
         isPopular: true,
-        displayOrder: 23
+        displayOrder: 100
     },
     {
         name: "ศูนย์เตือนภัยพิบัติแห่งชาติ (ICT)",
@@ -451,7 +451,7 @@ const hotlines = [
         description: "อพยพพื้นที่เสี่ยงและช่วยเหลือทางน้ำ",
         color: "bg-blue-700",
         isPopular: true,
-        displayOrder: 24
+        displayOrder: 107
     },
     {
         name: "การรถไฟแห่งประเทศไทย",
