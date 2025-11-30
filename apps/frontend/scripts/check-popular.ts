@@ -26,7 +26,8 @@ async function checkPopular() {
 
         console.log(`Found ${sorted.length} popular hotlines (sorted by displayOrder):\n`);
         sorted.forEach(h => {
-            console.log(`[${h.displayOrder || 0}] ${h.name} (${h.numbers.join(", ")})`);
+            const numbers = h.numbers && h.numbers.length > 0 ? h.numbers.join(", ") : "No phone number";
+            console.log(`[${h.displayOrder || 0}] ${h.name} (${numbers})`);
         });
 
         if (sorted.length === 0) {
