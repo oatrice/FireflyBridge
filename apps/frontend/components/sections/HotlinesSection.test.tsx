@@ -109,12 +109,70 @@ describe('HotlinesSection', () => {
         expect(screen.queryByText('Emergency 1')).not.toBeInTheDocument()
     })
 
-    it('shows no results message', () => {
+    it('clears search from no results state', () => {
         render(<HotlinesSection hotlines={mockHotlines} loading={false} />)
 
         const searchInput = screen.getByPlaceholderText(/ค้นหาเบอร์โทร/i)
         fireEvent.change(searchInput, { target: { value: 'NonExistent' } })
 
         expect(screen.getByText(/ไม่พบข้อมูล/)).toBeInTheDocument()
+
+        const clearBtn = screen.getByRole('button', { name: 'ล้างการค้นหา' })
+        fireEvent.click(clearBtn)
+
+        expect(screen.queryByText(/ไม่พบข้อมูล/)).not.toBeInTheDocument()
+        expect(screen.getByText('Emergency 1')).toBeInTheDocument()
+    })
+
+    it('sorts popular hotlines by displayOrder', () => {
+        // Mock data with displayOrder and required fields
+        const popularHotlines = [
+            {
+                id: '1',
+                name: 'B Hotline',
+                category: 'ยอดฮิต',
+                description: 'B desc',
+                color: 'bg-red-500',
+                isPopular: true,
+                displayOrder: 2
+            },
+            {
+                id: '2',
+                name: 'A Hotline',
+                category: 'ยอดฮิต',
+                description: 'A desc',
+                color: 'bg-red-500',
+                isPopular: true,
+                displayOrder: 1
+            },
+        ]
+        render(<HotlinesSection hotlines={popularHotlines} loading={false} />)
+
+        // Default category is "ยอดฮิต", should be sorted by displayOrder
+        // A should come before B (displayOrder 1 < 2)
+        const names = screen.getAllByText(/^[AB] Hotline$/)
+        expect(names[0]).toHaveTextContent('A Hotline')
+        expect(names[1]).toHaveTextContent('B Hotline')
+    })
+
+    it('disables pagination buttons correctly', () => {
+        render(<HotlinesSection hotlines={mockHotlines} loading={false} />)
+
+        // Switch to "ทั้งหมด" to have multiple pages
+        const allBtn = screen.getByRole('button', { name: 'ทั้งหมด' })
+        fireEvent.click(allBtn)
+
+        // Page 1: Previous disabled, Next enabled
+        const prevBtn = screen.getByRole('button', { name: /ก่อนหน้า/i })
+        const nextBtn = screen.getByRole('button', { name: /ถัดไป/i })
+
+        expect(prevBtn).toBeDisabled()
+        expect(nextBtn).toBeEnabled()
+
+        // Go to Page 2 (Last page)
+        fireEvent.click(nextBtn)
+
+        expect(prevBtn).toBeEnabled()
+        expect(nextBtn).toBeDisabled()
     })
 })
