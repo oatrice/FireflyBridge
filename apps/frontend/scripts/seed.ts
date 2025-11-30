@@ -13,7 +13,7 @@ if (!process.env.DATABASE_URL) {
 const sql = neon(process.env.DATABASE_URL);
 const db = drizzle(sql, { schema });
 
-const hotlines = [
+export const hotlines = [
     {
         name: "เหตุด่วนเหตุร้าย",
         numbers: ["191"],
