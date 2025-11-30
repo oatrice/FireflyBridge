@@ -56,8 +56,8 @@ export default function AdminPage() {
         <div className="p-8">
             <div className="flex justify-between items-center mb-8">
                 <div>
-                    <h1 className="text-3xl font-bold mb-2">Admin Dashboard</h1>
-                    <p className="text-gray-600">Welcome, {user.name} ({user.email})</p>
+                    <h1 className="text-3xl font-bold mb-2 text-gray-900 dark:text-gray-100">Admin Dashboard</h1>
+                    <p className="text-gray-900 dark:text-gray-300">Welcome, {user.name} ({user.email})</p>
                 </div>
                 <button
                     onClick={handleSignOut}
@@ -68,19 +68,19 @@ export default function AdminPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-white p-6 rounded-xl shadow-sm border border-neutral-200">
-                    <h3 className="font-bold text-lg mb-2">Hotlines</h3>
-                    <p className="text-neutral-500 mb-4">Manage emergency numbers</p>
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-neutral-200 dark:border-gray-700">
+                    <h3 className="font-bold text-lg mb-2 text-gray-900 dark:text-gray-100">Hotlines</h3>
+                    <p className="text-neutral-700 dark:text-neutral-300 mb-4">Manage emergency numbers</p>
                     <Link href="/admin/hotlines" className="text-blue-600 hover:underline">Manage &rarr;</Link>
                 </div>
-                <div className="bg-white p-6 rounded-xl shadow-sm border border-neutral-200">
-                    <h3 className="font-bold text-lg mb-2">Shelters</h3>
-                    <p className="text-neutral-500 mb-4">Manage shelter locations</p>
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-neutral-200 dark:border-gray-700">
+                    <h3 className="font-bold text-lg mb-2 text-gray-900 dark:text-gray-100">Shelters</h3>
+                    <p className="text-neutral-700 dark:text-neutral-300 mb-4">Manage shelter locations</p>
                     <Link href="/admin/shelters" className="text-blue-600 hover:underline">Manage &rarr;</Link>
                 </div>
-                <div className="bg-white p-6 rounded-xl shadow-sm border border-neutral-200">
-                    <h3 className="font-bold text-lg mb-2">Donations</h3>
-                    <p className="text-neutral-500 mb-4">Manage donation channels</p>
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-neutral-200 dark:border-gray-700">
+                    <h3 className="font-bold text-lg mb-2 text-gray-900 dark:text-gray-100">Donations</h3>
+                    <p className="text-neutral-700 dark:text-neutral-300 mb-4">Manage donation channels</p>
                     <Link href="/admin/donations" className="text-blue-600 hover:underline">Manage &rarr;</Link>
                 </div>
             </div>
