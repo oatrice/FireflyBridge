@@ -1,5 +1,5 @@
 import { describe, expect, it, beforeAll } from "bun:test";
-import { hotlines } from "../../scripts/seed";
+import { hotlines } from "../../scripts/data";
 
 /**
  * Unit Tests for Popular Hotlines Feature
