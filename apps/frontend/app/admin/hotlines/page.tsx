@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { AdminModal } from "@/components/ui/AdminModal";
 
 interface Hotline {
     id: string;
@@ -207,89 +208,87 @@ export default function AdminHotlinesPage() {
             </div>
 
             {/* Dialog */}
-            {isDialogOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                    <div className="bg-white rounded-xl max-w-md w-full p-6">
-                        <h2 className="text-xl font-bold mb-4 text-gray-900">
-                            {editingHotline ? "Edit Hotline" : "Add New Hotline"}
-                        </h2>
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-900">Name</label>
-                                <input
-                                    type="text"
-                                    required
-                                    value={formData.name}
-                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    className="mt-1 block w-full rounded-md border-gray-400 shadow-sm focus:border-blue-700 focus:ring-blue-700 border p-2 text-gray-900 placeholder-gray-600"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-900">Numbers (comma separated)</label>
-                                <input
-                                    type="text"
-                                    required
-                                    value={formData.numbers}
-                                    onChange={(e) => setFormData({ ...formData, numbers: e.target.value })}
-                                    className="mt-1 block w-full rounded-md border-gray-400 shadow-sm focus:border-blue-700 focus:ring-blue-700 border p-2 text-gray-900 placeholder-gray-600"
-                                    placeholder="02-123-4567, 191"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-900">Category</label>
-                                <select
-                                    value={formData.category}
-                                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                                    className="mt-1 block w-full rounded-md border-gray-400 shadow-sm focus:border-blue-700 focus:ring-blue-700 border p-2 text-gray-900"
-                                >
-                                    <option value="general">General</option>
-                                    <option value="emergency">Emergency</option>
-                                    <option value="medical">Medical</option>
-                                    <option value="utilities">Utilities</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-900">Description</label>
-                                <textarea
-                                    value={formData.description}
-                                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                    className="mt-1 block w-full rounded-md border-gray-400 shadow-sm focus:border-blue-700 focus:ring-blue-700 border p-2 text-gray-900 placeholder-gray-600"
-                                    rows={3}
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-900">Color</label>
-                                <select
-                                    value={formData.color}
-                                    onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                                    className="mt-1 block w-full rounded-md border-gray-400 shadow-sm focus:border-blue-700 focus:ring-blue-700 border p-2 text-gray-900"
-                                >
-                                    <option value="blue">Blue</option>
-                                    <option value="red">Red</option>
-                                    <option value="green">Green</option>
-                                    <option value="yellow">Yellow</option>
-                                    <option value="purple">Purple</option>
-                                </select>
-                            </div>
-                            <div className="flex justify-end gap-3 mt-6">
-                                <button
-                                    type="button"
-                                    onClick={closeDialog}
-                                    className="px-4 py-2 text-sm font-medium text-gray-900 bg-gray-200 hover:bg-gray-300 rounded-md"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="px-4 py-2 text-sm font-medium text-white bg-blue-700 hover:bg-blue-800 rounded-md"
-                                >
-                                    Save
-                                </button>
-                            </div>
-                        </form>
+            {/* Dialog */}
+            <AdminModal
+                isOpen={isDialogOpen}
+                onClose={closeDialog}
+                title={editingHotline ? "Edit Hotline" : "Add New Hotline"}
+            >
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-900">Name</label>
+                        <input
+                            type="text"
+                            required
+                            value={formData.name}
+                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                            className="mt-1 block w-full rounded-md border-gray-400 shadow-sm focus:border-blue-700 focus:ring-blue-700 border p-2 text-gray-900 placeholder-gray-600"
+                        />
                     </div>
-                </div>
-            )}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-900">Numbers (comma separated)</label>
+                        <input
+                            type="text"
+                            required
+                            value={formData.numbers}
+                            onChange={(e) => setFormData({ ...formData, numbers: e.target.value })}
+                            className="mt-1 block w-full rounded-md border-gray-400 shadow-sm focus:border-blue-700 focus:ring-blue-700 border p-2 text-gray-900 placeholder-gray-600"
+                            placeholder="02-123-4567, 191"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-900">Category</label>
+                        <select
+                            value={formData.category}
+                            onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                            className="mt-1 block w-full rounded-md border-gray-400 shadow-sm focus:border-blue-700 focus:ring-blue-700 border p-2 text-gray-900"
+                        >
+                            <option value="general">General</option>
+                            <option value="emergency">Emergency</option>
+                            <option value="medical">Medical</option>
+                            <option value="utilities">Utilities</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-900">Description</label>
+                        <textarea
+                            value={formData.description}
+                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                            className="mt-1 block w-full rounded-md border-gray-400 shadow-sm focus:border-blue-700 focus:ring-blue-700 border p-2 text-gray-900 placeholder-gray-600"
+                            rows={3}
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-900">Color</label>
+                        <select
+                            value={formData.color}
+                            onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+                            className="mt-1 block w-full rounded-md border-gray-400 shadow-sm focus:border-blue-700 focus:ring-blue-700 border p-2 text-gray-900"
+                        >
+                            <option value="blue">Blue</option>
+                            <option value="red">Red</option>
+                            <option value="green">Green</option>
+                            <option value="yellow">Yellow</option>
+                            <option value="purple">Purple</option>
+                        </select>
+                    </div>
+                    <div className="flex justify-end gap-3 mt-6">
+                        <button
+                            type="button"
+                            onClick={closeDialog}
+                            className="px-4 py-2 text-sm font-medium text-gray-900 bg-gray-200 hover:bg-gray-300 rounded-md"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="submit"
+                            className="px-4 py-2 text-sm font-medium text-white bg-blue-700 hover:bg-blue-800 rounded-md"
+                        >
+                            Save
+                        </button>
+                    </div>
+                </form>
+            </AdminModal>
         </div>
     );
 }

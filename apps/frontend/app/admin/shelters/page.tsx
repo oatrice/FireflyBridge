@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { AdminModal } from "@/components/ui/AdminModal";
 
 interface Shelter {
     id: number;
@@ -221,121 +222,120 @@ export default function AdminSheltersPage() {
             </div>
 
             {/* Dialog */}
-            {isDialogOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-y-auto">
-                    <div className="bg-white rounded-xl max-w-lg w-full p-6 my-8">
-                        <h2 className="text-xl font-bold mb-4">
-                            {editingShelter ? "Edit Shelter" : "Add New Shelter"}
-                        </h2>
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-900">Name</label>
-                                <input
-                                    type="text"
-                                    required
-                                    value={formData.name}
-                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border p-2"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-900">Location (Map Link or Address)</label>
-                                <input
-                                    type="text"
-                                    required
-                                    value={formData.location}
-                                    onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border p-2"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-900">Area</label>
-                                <input
-                                    type="text"
-                                    value={formData.area}
-                                    onChange={(e) => setFormData({ ...formData, area: e.target.value })}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border p-2"
-                                    placeholder="e.g. Hat Yai"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-900">Status</label>
-                                <select
-                                    value={formData.status}
-                                    onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border p-2"
-                                >
-                                    <option value="open">Open</option>
-                                    <option value="full">Full</option>
-                                    <option value="closed">Closed</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-900 mb-2">Contacts</label>
-                                {formData.contacts.map((contact, index) => (
-                                    <div key={index} className="flex gap-2 mb-2">
-                                        <input
-                                            type="text"
-                                            placeholder="Name"
-                                            value={contact.name}
-                                            onChange={(e) => handleContactChange(index, "name", e.target.value)}
-                                            className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border p-2 text-sm"
-                                        />
-                                        <input
-                                            type="text"
-                                            placeholder="Phone"
-                                            value={contact.phone}
-                                            onChange={(e) => handleContactChange(index, "phone", e.target.value)}
-                                            className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border p-2 text-sm"
-                                        />
-                                        <button
-                                            type="button"
-                                            onClick={() => removeContact(index)}
-                                            className="text-red-700 hover:text-red-900 px-2"
-                                        >
-                                            &times;
-                                        </button>
-                                    </div>
-                                ))}
-                                <button
-                                    type="button"
-                                    onClick={addContact}
-                                    className="text-sm text-blue-700 hover:text-blue-900"
-                                >
-                                    + Add Contact
-                                </button>
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-900">Link (Optional)</label>
-                                <input
-                                    type="text"
-                                    value={formData.link}
-                                    onChange={(e) => setFormData({ ...formData, link: e.target.value })}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border p-2"
-                                />
-                            </div>
-
-                            <div className="flex justify-end gap-3 mt-6">
-                                <button
-                                    type="button"
-                                    onClick={closeDialog}
-                                    className="px-4 py-2 text-sm font-medium text-gray-900 bg-gray-100 hover:bg-gray-200 rounded-md"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="px-4 py-2 text-sm font-medium text-white bg-blue-700 hover:bg-blue-800 rounded-md"
-                                >
-                                    Save
-                                </button>
-                            </div>
-                        </form>
+            {/* Dialog */}
+            <AdminModal
+                isOpen={isDialogOpen}
+                onClose={closeDialog}
+                title={editingShelter ? "Edit Shelter" : "Add New Shelter"}
+                maxWidth="max-w-lg"
+            >
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-900">Name</label>
+                        <input
+                            type="text"
+                            required
+                            value={formData.name}
+                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                            className="mt-1 block w-full rounded-md border-gray-400 shadow-sm focus:border-blue-700 focus:ring-blue-700 border p-2 text-gray-900 placeholder-gray-600"
+                        />
                     </div>
-                </div>
-            )}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-900">Location (Map Link or Address)</label>
+                        <input
+                            type="text"
+                            required
+                            value={formData.location}
+                            onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                            className="mt-1 block w-full rounded-md border-gray-400 shadow-sm focus:border-blue-700 focus:ring-blue-700 border p-2 text-gray-900 placeholder-gray-600"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-900">Area</label>
+                        <input
+                            type="text"
+                            value={formData.area}
+                            onChange={(e) => setFormData({ ...formData, area: e.target.value })}
+                            className="mt-1 block w-full rounded-md border-gray-400 shadow-sm focus:border-blue-700 focus:ring-blue-700 border p-2 text-gray-900 placeholder-gray-600"
+                            placeholder="e.g. Hat Yai"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-900">Status</label>
+                        <select
+                            value={formData.status}
+                            onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                            className="mt-1 block w-full rounded-md border-gray-400 shadow-sm focus:border-blue-700 focus:ring-blue-700 border p-2 text-gray-900"
+                        >
+                            <option value="open">Open</option>
+                            <option value="full">Full</option>
+                            <option value="closed">Closed</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-900 mb-2">Contacts</label>
+                        {formData.contacts.map((contact, index) => (
+                            <div key={index} className="flex gap-2 mb-2">
+                                <input
+                                    type="text"
+                                    placeholder="Name"
+                                    value={contact.name}
+                                    onChange={(e) => handleContactChange(index, "name", e.target.value)}
+                                    className="flex-1 rounded-md border-gray-400 shadow-sm focus:border-blue-700 focus:ring-blue-700 border p-2 text-sm text-gray-900 placeholder-gray-600"
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="Phone"
+                                    value={contact.phone}
+                                    onChange={(e) => handleContactChange(index, "phone", e.target.value)}
+                                    className="flex-1 rounded-md border-gray-400 shadow-sm focus:border-blue-700 focus:ring-blue-700 border p-2 text-sm text-gray-900 placeholder-gray-600"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => removeContact(index)}
+                                    className="text-red-700 hover:text-red-900 px-2"
+                                >
+                                    &times;
+                                </button>
+                            </div>
+                        ))}
+                        <button
+                            type="button"
+                            onClick={addContact}
+                            className="text-sm text-blue-700 hover:text-blue-900"
+                        >
+                            + Add Contact
+                        </button>
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-900">Link (Optional)</label>
+                        <input
+                            type="text"
+                            value={formData.link}
+                            onChange={(e) => setFormData({ ...formData, link: e.target.value })}
+                            className="mt-1 block w-full rounded-md border-gray-400 shadow-sm focus:border-blue-700 focus:ring-blue-700 border p-2 text-gray-900 placeholder-gray-600"
+                        />
+                    </div>
+
+                    <div className="flex justify-end gap-3 mt-6">
+                        <button
+                            type="button"
+                            onClick={closeDialog}
+                            className="px-4 py-2 text-sm font-medium text-gray-900 bg-gray-200 hover:bg-gray-300 rounded-md"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="submit"
+                            className="px-4 py-2 text-sm font-medium text-white bg-blue-700 hover:bg-blue-800 rounded-md"
+                        >
+                            Save
+                        </button>
+                    </div>
+                </form>
+            </AdminModal>
         </div>
     );
 }
