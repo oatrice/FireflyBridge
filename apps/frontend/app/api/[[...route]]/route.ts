@@ -4,7 +4,7 @@ import { db } from "@/db";
 import { hotlines, externalLinks, shelters, donations } from "@/db/schema";
 
 export const runtime = "edge";
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 
 const app = new Elysia({ prefix: "/api" })
     .use(cors())
