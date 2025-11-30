@@ -210,7 +210,7 @@ export default function AdminHotlinesPage() {
             {isDialogOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
                     <div className="bg-white rounded-xl max-w-md w-full p-6">
-                        <h2 className="text-xl font-bold mb-4">
+                        <h2 className="text-xl font-bold mb-4 text-gray-900">
                             {editingHotline ? "Edit Hotline" : "Add New Hotline"}
                         </h2>
                         <form onSubmit={handleSubmit} className="space-y-4">
@@ -221,7 +221,7 @@ export default function AdminHotlinesPage() {
                                     required
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border p-2"
+                                    className="mt-1 block w-full rounded-md border-gray-400 shadow-sm focus:border-blue-700 focus:ring-blue-700 border p-2 text-gray-900 placeholder-gray-600"
                                 />
                             </div>
                             <div>
@@ -231,7 +231,7 @@ export default function AdminHotlinesPage() {
                                     required
                                     value={formData.numbers}
                                     onChange={(e) => setFormData({ ...formData, numbers: e.target.value })}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border p-2"
+                                    className="mt-1 block w-full rounded-md border-gray-400 shadow-sm focus:border-blue-700 focus:ring-blue-700 border p-2 text-gray-900 placeholder-gray-600"
                                     placeholder="02-123-4567, 191"
                                 />
                             </div>
@@ -240,7 +240,7 @@ export default function AdminHotlinesPage() {
                                 <select
                                     value={formData.category}
                                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border p-2"
+                                    className="mt-1 block w-full rounded-md border-gray-400 shadow-sm focus:border-blue-700 focus:ring-blue-700 border p-2 text-gray-900"
                                 >
                                     <option value="general">General</option>
                                     <option value="emergency">Emergency</option>
@@ -253,7 +253,7 @@ export default function AdminHotlinesPage() {
                                 <textarea
                                     value={formData.description}
                                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border p-2"
+                                    className="mt-1 block w-full rounded-md border-gray-400 shadow-sm focus:border-blue-700 focus:ring-blue-700 border p-2 text-gray-900 placeholder-gray-600"
                                     rows={3}
                                 />
                             </div>
@@ -262,7 +262,7 @@ export default function AdminHotlinesPage() {
                                 <select
                                     value={formData.color}
                                     onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border p-2"
+                                    className="mt-1 block w-full rounded-md border-gray-400 shadow-sm focus:border-blue-700 focus:ring-blue-700 border p-2 text-gray-900"
                                 >
                                     <option value="blue">Blue</option>
                                     <option value="red">Red</option>
@@ -275,7 +275,7 @@ export default function AdminHotlinesPage() {
                                 <button
                                     type="button"
                                     onClick={closeDialog}
-                                    className="px-4 py-2 text-sm font-medium text-gray-900 bg-gray-100 hover:bg-gray-200 rounded-md"
+                                    className="px-4 py-2 text-sm font-medium text-gray-900 bg-gray-200 hover:bg-gray-300 rounded-md"
                                 >
                                     Cancel
                                 </button>
