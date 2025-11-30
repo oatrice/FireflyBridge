@@ -79,7 +79,6 @@ export async function PUT(req: Request) {
                 category,
                 description,
                 color,
-                updatedAt: new Date(),
             })
             .where(eq(hotlines.id, id))
             .returning();

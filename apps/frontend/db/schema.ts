@@ -58,6 +58,7 @@ export const hotlines = pgTable("hotlines", {
     color: text("color"),
     links: jsonb("links"), // Store social links as JSON
     createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 // Shelters
@@ -71,6 +72,7 @@ export const shelters = pgTable("shelters", {
     icon: text("icon"),
     link: text("link"),
     createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 // Donation Channels
@@ -86,6 +88,7 @@ export const donations = pgTable("donations", {
     donationPoints: text("donation_points").array(),
     acceptsMoney: boolean("accepts_money").default(true),
     createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 // External Links
@@ -97,6 +100,7 @@ export const externalLinks = pgTable("external_links", {
     category: text("category"),
     icon: text("icon"),
     createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 // Rescue Cases (Migrated from SQL)
