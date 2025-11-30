@@ -22,9 +22,7 @@ const hotlines = [
         color: "bg-red-500",
         links: {
             website: "https://www.royalthaipolice.go.th/"
-        },
-        isPopular: true,
-        displayOrder: 1
+        }
     },
     {
         name: "เจ็บป่วยฉุกเฉิน",
@@ -34,18 +32,14 @@ const hotlines = [
         color: "bg-pink-500",
         links: {
             website: "https://www.niems.go.th/"
-        },
-        isPopular: true,
-        displayOrder: 2
+        }
     },
     {
         name: "ดับเพลิง/สัตว์ร้าย",
         numbers: ["199"],
         category: "ดับเพลิง",
         description: "แจ้งเหตุไฟไหม้ หรือสัตว์มีพิษเข้าบ้าน",
-        color: "bg-orange-500",
-        isPopular: true,
-        displayOrder: 3
+        color: "bg-orange-500"
     },
     {
         name: "ป่อเต็กตึ๊ง",
@@ -58,7 +52,7 @@ const hotlines = [
             website: "https://www.pohtecktung.org/"
         },
         isPopular: true,
-        displayOrder: 4
+        displayOrder: 1
     },
     {
         name: "ศูนย์ช่วยเหลือสังคม",
@@ -69,9 +63,7 @@ const hotlines = [
         links: {
             facebook: "https://www.facebook.com/PrdMsociety1",
             website: "https://www.m-society.go.th/"
-        },
-        isPopular: true,
-        displayOrder: 5
+        }
     },
     {
         name: "ตำรวจทางหลวง",
@@ -82,9 +74,7 @@ const hotlines = [
         links: {
             facebook: "https://www.facebook.com/highway1193",
             website: "https://hwpd.cib.go.th/"
-        },
-        isPopular: true,
-        displayOrder: 6
+        }
     },
     {
         name: "กรมเจ้าท่า",
@@ -94,9 +84,7 @@ const hotlines = [
         color: "bg-blue-500",
         links: {
             website: "https://md.go.th/"
-        },
-        isPopular: true,
-        displayOrder: 7
+        }
     },
     {
         name: "ศูนย์ ปภ. (สายด่วน)",
@@ -108,9 +96,7 @@ const hotlines = [
             facebook: "https://www.facebook.com/DDPMNews",
             website: "https://www.disaster.go.th/",
             line: "https://line.me/R/ti/p/@1784ddpm"
-        },
-        isPopular: true,
-        displayOrder: 8
+        }
     },
     {
         name: "สำนักงาน ปภ.",
@@ -120,9 +106,7 @@ const hotlines = [
         color: "bg-indigo-500",
         links: {
             website: "https://www.disaster.go.th/"
-        },
-        isPopular: true,
-        displayOrder: 9
+        }
     },
     {
         name: "กู้ภัยหาดใหญ่",
@@ -131,16 +115,14 @@ const hotlines = [
         description: "มูลนิธิมิตรภาพสามัคคี (ท่งเซียเซี่ยงตึ๊ง) - เฉพาะหาดใหญ่",
         color: "bg-red-500",
         isPopular: true,
-        displayOrder: 11
+        displayOrder: 2
     },
     {
         name: "พี่ๆ ทหาร (กอ.รมน.)",
         numbers: ["098-223-3364", "061-586-5574", "074-586-685", "074-234-145", "074-234-146", "074-234-147", "074-234-148"],
         category: "ฉุกเฉิน",
         description: "ช่วยเหลือผู้ประสบภัยในพื้นที่ (หมายเลขจากหลายหน่วยงาน)",
-        color: "bg-green-700",
-        isPopular: true,
-        displayOrder: 61
+        color: "bg-green-700"
     },
     {
         name: "เทศบาลนครหาดใหญ่",
@@ -152,27 +134,21 @@ const hotlines = [
             facebook: "https://www.facebook.com/PR.Hatyaicity",
             website: "https://www.hatyaicity.go.th/",
             line: "https://line.me/R/ti/p/@hatyaicity"
-        },
-        isPopular: true,
-        displayOrder: 10
+        }
     },
     {
         name: "ปภ. จังหวัดสงขลา",
         numbers: ["074-316-380", "074-316381"],
         category: "หน่วยงานรัฐ",
         description: "ป้องกันและบรรเทาสาธารณภัย (สำนักงานจังหวัด)",
-        color: "bg-green-500",
-        isPopular: true,
-        displayOrder: 12
+        color: "bg-green-500"
     },
     {
         name: "พมจ. สงขลา",
         numbers: ["081-990-4294"],
         category: "หน่วยงานรัฐ",
         description: "พัฒนาสังคมและความมั่นคงของมนุษย์จังหวัดสงขลา",
-        color: "bg-pink-500",
-        isPopular: true,
-        displayOrder: 60
+        color: "bg-pink-500"
     },
     { name: "ปลัดอำเภอหาดใหญ่", numbers: ["063-902-9229"], category: "ท้องถิ่น", description: "อำเภอหาดใหญ่", color: "bg-green-500" },
     { name: "ปลัดอำเภอคลองหอยโข่ง", numbers: ["063-904-1038"], category: "ท้องถิ่น", description: "อำเภอคลองหอยโข่ง", color: "bg-green-500" },
@@ -262,7 +238,7 @@ const hotlines = [
             facebook: "https://www.facebook.com/ruamkatanyu",
         },
         isPopular: true,
-        displayOrder: 30
+        displayOrder: 3
     },
     {
         name: "สภากาชาดไทย",
@@ -273,9 +249,7 @@ const hotlines = [
         links: {
             facebook: "https://www.facebook.com/ThaiRedCrossSociety",
             website: "https://www.redcross.or.th/"
-        },
-        isPopular: true,
-        displayOrder: 31
+        }
     },
     {
         name: "มูลนิธิองค์กรทำดี (บุ๋ม ปนัดดา)",
@@ -287,7 +261,7 @@ const hotlines = [
             instagram: ["https://www.instagram.com/boompanadda"]
         },
         isPopular: true,
-        displayOrder: 32
+        displayOrder: 4
     },
     {
         name: "โครงการพลังน้ำใจ/โรงครัวเปิ้ล นาคร",
@@ -301,7 +275,7 @@ const hotlines = [
             youtube: "www.youtube.com/plenakornChannel"
         },
         isPopular: true,
-        displayOrder: 33
+        displayOrder: 5
     },
     {
         name: "มูลนิธิใจถึงใจ (ฝันดี-ฝันเด่น)",
@@ -313,7 +287,7 @@ const hotlines = [
             facebook: "https://www.facebook.com/Jaitungjai"
         },
         isPopular: true,
-        displayOrder: 34
+        displayOrder: 6
     },
     {
         name: "มูลนิธิกระจกเงา",
@@ -325,7 +299,7 @@ const hotlines = [
             facebook: "https://www.facebook.com/mirrorf"
         },
         isPopular: true,
-        displayOrder: 35
+        displayOrder: 7
     },
     {
         name: "กันจอมพลังช่วยสู้",
@@ -337,7 +311,7 @@ const hotlines = [
             facebook: "https://www.facebook.com/gunjompalang1"
         },
         isPopular: true,
-        displayOrder: 36
+        displayOrder: 8
     },
     {
         name: "มูลนิธิเพื่อการส่งเสริมและพัฒนาสังคม",
@@ -349,7 +323,7 @@ const hotlines = [
             facebook: "https://www.facebook.com/ruamkatanyu",
         },
         isPopular: true,
-        displayOrder: 37
+        displayOrder: 9
     },
     {
         name: "มูลนิธิมิตรภาพสามัคคี (ท่งเซียเซี่ยงตึ๊ง)",
@@ -398,9 +372,7 @@ const hotlines = [
         numbers: ["1111"],
         category: "ฉุกเฉิน",
         description: "กด 5 - ศูนย์กลางช่วยเหลือผู้ประสบอุทกภัย",
-        color: "bg-red-500",
-        isPopular: true,
-        displayOrder: 100
+        color: "bg-red-500"
     },
     {
         name: "ศูนย์เตือนภัยพิบัติแห่งชาติ (ICT)",
@@ -449,9 +421,7 @@ const hotlines = [
         numbers: ["1696"],
         category: "ฉุกเฉิน",
         description: "อพยพพื้นที่เสี่ยงและช่วยเหลือทางน้ำ",
-        color: "bg-blue-700",
-        isPopular: true,
-        displayOrder: 107
+        color: "bg-blue-700"
     },
     {
         name: "การรถไฟแห่งประเทศไทย",
