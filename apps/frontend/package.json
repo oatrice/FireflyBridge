@@ -9,6 +9,7 @@
     "lint": "eslint",
     "analyze": "ANALYZE=true next build --webpack",
     "test": "jest",
+    "test:hotlines": "bun test app/api/hotlines.bun.test.ts",
     "db:push": "drizzle-kit push",
     "db:seed": "tsx scripts/seed.ts"
   },

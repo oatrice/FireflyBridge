@@ -1,22 +1,38 @@
 import * as dotenv from "dotenv";
-dotenv.config({ path: ".env.local" });
-import { db } from "../db";
-import { sql } from "drizzle-orm";
+dotenv.config({ path: ".env.local", override: true });
+
+import { Pool } from "@neondatabase/serverless";
+import { drizzle } from "drizzle-orm/neon-serverless";
+import * as schema from "../db/schema";
+
+if (!process.env.DATABASE_URL) {
+    throw new Error("DATABASE_URL is required");
+}
+
+console.log("Checking data in database...");
+console.log("URL Host:", new URL(process.env.DATABASE_URL).host);
+
+const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+const db = drizzle(pool, { schema });
 
 async function main() {
-    console.log("Checking data counts...");
+    try {
+        const sheltersCount = await db.select().from(schema.shelters);
+        console.log(`Shelters found: ${sheltersCount.length}`);
+        if (sheltersCount.length > 0) {
+            console.log("Sample Shelter:", sheltersCount[0].name);
+        }
 
-    const tables = ['hotlines', 'shelters', 'donations', 'external_links'];
+        const hotlinesCount = await db.select().from(schema.hotlines);
+        console.log(`Hotlines found: ${hotlinesCount.length}`);
 
-    for (const table of tables) {
-        const result = await db.execute(sql.raw(`SELECT COUNT(*) as count FROM "${table}"`));
-        console.log(`${table}: ${result.rows[0].count} rows`);
+        const usersCount = await db.select().from(schema.user);
+        console.log(`Users found: ${usersCount.length}`);
+
+    } catch (error) {
+        console.error("Error checking data:", error);
     }
-
     process.exit(0);
 }
 
-main().catch((err) => {
-    console.error(err);
-    process.exit(1);
-});
+main();
