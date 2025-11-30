@@ -45,6 +45,7 @@ export default function HotlinesSection({ hotlines, loading }: HotlinesSectionPr
             hotline.description.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesCategory =
             selectedCategory === "All" ||
+            (selectedCategory === "ยอดฮิต" && hotline.isPopular) ||
             hotline.category === selectedCategory ||
             (hotline.categories && hotline.categories.includes(selectedCategory));
         return matchesSearch && matchesCategory;
@@ -98,9 +99,9 @@ export default function HotlinesSection({ hotlines, loading }: HotlinesSectionPr
                             key={category}
                             onClick={() => setSelectedCategory(category === "ทั้งหมด" ? "All" : category)}
                             className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${(category === "ทั้งหมด" && selectedCategory === "All") ||
-                                    selectedCategory === category
-                                    ? "bg-blue-600 text-white"
-                                    : "bg-white text-neutral-600 hover:bg-neutral-100 border border-neutral-200"
+                                selectedCategory === category
+                                ? "bg-blue-600 text-white"
+                                : "bg-white text-neutral-600 hover:bg-neutral-100 border border-neutral-200"
                                 }`}
                         >
                             {category}
@@ -272,8 +273,8 @@ export default function HotlinesSection({ hotlines, loading }: HotlinesSectionPr
                                     onClick={() => setHotlinePage((prev) => Math.max(1, prev - 1))}
                                     disabled={hotlinePage === 1}
                                     className={`px-4 py-2 rounded-lg font-medium transition-all ${hotlinePage === 1
-                                            ? "bg-neutral-100 text-neutral-400 cursor-not-allowed"
-                                            : "bg-white border border-neutral-200 text-neutral-700 hover:bg-neutral-50"
+                                        ? "bg-neutral-100 text-neutral-400 cursor-not-allowed"
+                                        : "bg-white border border-neutral-200 text-neutral-700 hover:bg-neutral-50"
                                         }`}
                                 >
                                     ← ก่อนหน้า
@@ -291,8 +292,8 @@ export default function HotlinesSection({ hotlines, loading }: HotlinesSectionPr
                                                     key={page}
                                                     onClick={() => setHotlinePage(page)}
                                                     className={`w-10 h-10 rounded-lg font-medium transition-all ${hotlinePage === page
-                                                            ? "bg-blue-600 text-white shadow-md"
-                                                            : "bg-white border border-neutral-200 text-neutral-700 hover:bg-neutral-50"
+                                                        ? "bg-blue-600 text-white shadow-md"
+                                                        : "bg-white border border-neutral-200 text-neutral-700 hover:bg-neutral-50"
                                                         }`}
                                                 >
                                                     {page}
@@ -313,8 +314,8 @@ export default function HotlinesSection({ hotlines, loading }: HotlinesSectionPr
                                     onClick={() => setHotlinePage((prev) => Math.min(totalPages, prev + 1))}
                                     disabled={hotlinePage === totalPages}
                                     className={`px-4 py-2 rounded-lg font-medium transition-all ${hotlinePage === totalPages
-                                            ? "bg-neutral-100 text-neutral-400 cursor-not-allowed"
-                                            : "bg-white border border-neutral-200 text-neutral-700 hover:bg-neutral-50"
+                                        ? "bg-neutral-100 text-neutral-400 cursor-not-allowed"
+                                        : "bg-white border border-neutral-200 text-neutral-700 hover:bg-neutral-50"
                                         }`}
                                 >
                                     ถัดไป →

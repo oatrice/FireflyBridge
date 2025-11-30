@@ -57,6 +57,7 @@ export const hotlines = pgTable("hotlines", {
     description: text("description"),
     color: text("color"),
     links: jsonb("links"), // Store social links as JSON
+    isPopular: boolean("is_popular").default(false),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),
 });
