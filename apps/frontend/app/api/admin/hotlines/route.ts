@@ -79,6 +79,7 @@ export async function PUT(req: Request) {
                 category,
                 description,
                 color,
+                updatedAt: new Date(),
             })
             .where(eq(hotlines.id, id))
             .returning();
@@ -104,7 +105,7 @@ export async function DELETE(req: Request) {
             return NextResponse.json({ error: "ID is required" }, { status: 400 });
         }
 
-        await db.delete(hotlines).where(eq(hotlines.id, id));
+        await db.delete(hotlines).where(eq(hotlines.id, Number(id)));
 
         return NextResponse.json({ success: true });
     } catch (error) {
