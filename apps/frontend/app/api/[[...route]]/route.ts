@@ -3,7 +3,7 @@ import { cors } from "@elysiajs/cors";
 import { db } from "@/db";
 import { hotlines, externalLinks, shelters, donations } from "@/db/schema";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const app = new Elysia({ prefix: "/api" })
