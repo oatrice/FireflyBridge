@@ -21,12 +21,15 @@ async function checkPopular() {
     try {
         const popularHotlines = await db.select().from(schema.hotlines).where(eq(schema.hotlines.isPopular, true));
 
-        console.log(`Found ${popularHotlines.length} popular hotlines:`);
-        popularHotlines.forEach(h => {
-            console.log(`- ${h.name} (${h.numbers.join(", ")})`);
+        // Sort by displayOrder
+        const sorted = popularHotlines.sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+
+        console.log(`Found ${sorted.length} popular hotlines (sorted by displayOrder):\n`);
+        sorted.forEach(h => {
+            console.log(`[${h.displayOrder || 0}] ${h.name} (${h.numbers.join(", ")})`);
         });
 
-        if (popularHotlines.length === 0) {
+        if (sorted.length === 0) {
             console.log("⚠️ No popular hotlines found!");
         }
     } catch (error) {

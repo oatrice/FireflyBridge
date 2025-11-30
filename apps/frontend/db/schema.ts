@@ -58,6 +58,7 @@ export const hotlines = pgTable("hotlines", {
     color: text("color"),
     links: jsonb("links"), // Store social links as JSON
     isPopular: boolean("is_popular").default(false),
+    displayOrder: integer("display_order").default(0), // Order for sorting (lower = higher priority)
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),
 });

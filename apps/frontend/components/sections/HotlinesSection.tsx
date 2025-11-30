@@ -49,6 +49,12 @@ export default function HotlinesSection({ hotlines, loading }: HotlinesSectionPr
             hotline.category === selectedCategory ||
             (hotline.categories && hotline.categories.includes(selectedCategory));
         return matchesSearch && matchesCategory;
+    }).sort((a: any, b: any) => {
+        // Sort by displayOrder for popular hotlines, otherwise by id
+        if (selectedCategory === "ยอดฮิต") {
+            return (a.displayOrder || 0) - (b.displayOrder || 0);
+        }
+        return (a.id || 0) - (b.id || 0);
     });
 
     // Pagination Logic
