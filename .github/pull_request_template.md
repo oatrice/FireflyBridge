@@ -13,6 +13,9 @@
 # 📝 Changes
 <!-- Describe what changed -->
 
+# 📸 Screenshots
+<!-- Add screenshots or recordings if applicable -->
+
 # 🧪 Testing
 - [ ] Manual testing completed
 
