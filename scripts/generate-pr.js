@@ -44,12 +44,15 @@ parts.forEach(part => {
     }
 });
 
-// Categorize files
+// Categorize files (using string methods to avoid ReDoS)
 const categories = {
     tests: changedFiles.filter(f => f.includes('.test.') || f.includes('.spec.')),
     workflows: changedFiles.filter(f => f.includes('.github/workflows')),
-    config: changedFiles.filter(f => f.match(/\.(config|properties|yml|yaml|json)$/)),
-    docs: changedFiles.filter(f => f.match(/\.(md|txt)$/)),
+    config: changedFiles.filter(f =>
+        f.endsWith('.config') || f.endsWith('.properties') ||
+        f.endsWith('.yml') || f.endsWith('.yaml') || f.endsWith('.json')
+    ),
+    docs: changedFiles.filter(f => f.endsWith('.md') || f.endsWith('.txt')),
     frontend: changedFiles.filter(f => f.includes('apps/frontend') && !f.includes('.test.')),
     backend: changedFiles.filter(f => f.includes('apps/backend') && !f.includes('.test.')),
 };
