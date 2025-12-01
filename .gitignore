@@ -39,3 +39,6 @@ supabase/
 coverage
 test-reports
 *.lcov
+
+# PR Generator
+.pr-template-output.md
