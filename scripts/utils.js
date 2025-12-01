@@ -1,4 +1,4 @@
-const { spawnSync, execSync } = require('child_process');
+const { spawnSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
@@ -8,10 +8,14 @@ const path = require('path');
 function getGitPath() {
     try {
         // Try to find git using 'which' (Unix) or 'where' (Windows)
-        const command = process.platform === 'win32' ? 'where git' : 'which git';
-        const gitPath = execSync(command, { encoding: 'utf-8' }).split('\n')[0].trim();
-        if (gitPath && fs.existsSync(gitPath)) {
-            return gitPath;
+        const cmd = process.platform === 'win32' ? 'where' : 'which';
+        const result = spawnSync(cmd, ['git'], { encoding: 'utf-8', shell: false });
+
+        if (result.status === 0 && result.stdout) {
+            const gitPath = result.stdout.split('\n')[0].trim();
+            if (gitPath && fs.existsSync(gitPath)) {
+                return gitPath;
+            }
         }
     } catch (e) {
         // Ignore error
