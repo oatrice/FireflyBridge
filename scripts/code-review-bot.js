@@ -82,6 +82,7 @@ async function getPRDetails() {
         const commitData = await request(commitUrl, options);
         commitInfo = {
             sha: commitData.sha.substring(0, 7),
+            fullSha: commitData.sha,
             message: commitData.commit.message,
         };
         console.log(`✅ Fetched commit diff for: ${commitInfo.sha} - ${commitInfo.message}`);
@@ -96,6 +97,21 @@ async function getPRDetails() {
             },
         };
         diffData = await request(prUrl, diffOptions);
+
+        // Get latest commit SHA from PR
+        const commitsUrl = `${GITHUB_API_BASE}/repos/${REPO_OWNER}/${REPO_NAME}/pulls/${PR_NUMBER}/commits`;
+        const commitsData = await request(commitsUrl, options);
+        if (commitsData && commitsData.length > 0) {
+            const latestCommit = commitsData[commitsData.length - 1];
+            commitInfo = {
+                sha: latestCommit.sha.substring(0, 7),
+                fullSha: latestCommit.sha,
+                message: latestCommit.commit.message,
+                isLatestInPR: true
+            };
+            console.log(`✅ Identified latest commit in PR: ${commitInfo.sha}`);
+        }
+
         console.log('✅ Fetched PR diff');
     }
 
@@ -109,7 +125,7 @@ async function getPRDetails() {
 
 async function generateReview(prDetails, testResults, coverageData, uncoveredAreas) {
     const reviewScope = prDetails.commitInfo
-        ? `Commit เดียว (${prDetails.commitInfo.sha}): ${prDetails.commitInfo.message}`
+        ? `Commit: ${prDetails.commitInfo.sha} (${prDetails.commitInfo.message})`
         : 'ทั้ง Pull Request';
 
     // Format test and coverage info for AI
@@ -391,8 +407,12 @@ async function analyzeDetailedCoverage() {
     }
 }
 
-function formatTestAndCoverageReport(testResults, coverage) {
+function formatTestAndCoverageReport(testResults, coverage, commitInfo) {
     let report = '\n\n---\n\n## 🧪 Test Results\n\n';
+
+    if (commitInfo) {
+        report += `**Commit:** ${commitInfo.sha}\n\n`;
+    }
 
     if (testResults) {
         const status = testResults.success ? '✅ PASSED' : '❌ FAILED';
@@ -431,8 +451,8 @@ function formatTestAndCoverageReport(testResults, coverage) {
     return report;
 }
 
-async function postComment(review, testResults, coverageData) {
-    const testAndCoverageReport = formatTestAndCoverageReport(testResults, coverageData);
+async function postComment(review, testResults, coverageData, commitInfo) {
+    const testAndCoverageReport = formatTestAndCoverageReport(testResults, coverageData, commitInfo);
     const fullComment = review + testAndCoverageReport;
 
     const options = {
@@ -466,7 +486,7 @@ async function main() {
         const review = await generateReview(prDetails, testResults, coverageData, uncoveredAreas);
 
         console.log('Posting comment...');
-        await postComment(review, testResults, coverageData);
+        await postComment(review, testResults, coverageData, prDetails.commitInfo);
 
         console.log('Done!');
     } catch (error) {
