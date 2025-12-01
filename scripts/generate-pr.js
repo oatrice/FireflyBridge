@@ -14,27 +14,7 @@
 const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
-
-// Function to get default branch
-function getDefaultBranch() {
-    try {
-        // Try to get remote HEAD
-        const remoteHead = execSync('git symbolic-ref refs/remotes/origin/HEAD', { encoding: 'utf-8' }).trim();
-        return remoteHead.replace('refs/remotes/', '');
-    } catch (e) {
-        // Fallback: try common branch names
-        const branches = ['origin/main', 'origin/master', 'origin/develop'];
-        for (const branch of branches) {
-            try {
-                execSync(`git rev-parse ${branch}`, { encoding: 'utf-8', stdio: 'pipe' });
-                return branch;
-            } catch (err) {
-                continue;
-            }
-        }
-        return 'HEAD~10'; // Last resort fallback
-    }
-}
+const { getDefaultBranch, getGitInfo, getTestResults, getCoverageInfo } = require('./utils');
 
 // Get base commit from argument or default to remote HEAD
 const baseCommit = process.argv[2] || getDefaultBranch();
@@ -42,13 +22,8 @@ const baseCommit = process.argv[2] || getDefaultBranch();
 console.log('🔍 Analyzing changes...');
 console.log(`📊 Comparing: ${baseCommit}..HEAD\n`);
 
-// Get git diff stats
-const diffStat = execSync(`git diff ${baseCommit}..HEAD --stat`, { encoding: 'utf-8' });
-const diffShortStat = execSync(`git diff ${baseCommit}..HEAD --shortstat`, { encoding: 'utf-8' });
-const changedFiles = execSync(`git diff ${baseCommit}..HEAD --name-only`, { encoding: 'utf-8' })
-    .trim()
-    .split('\n')
-    .filter(Boolean);
+// Get git info
+const { diffShortStat, changedFiles } = getGitInfo(baseCommit);
 
 // Parse diff stats
 const statsMatch = diffShortStat.match(/(\d+) files? changed(?:, (\d+) insertions?\(\+\))?(?:, (\d+) deletions?\(-\))?/);
@@ -90,39 +65,29 @@ if (hasTests && categories.tests.length > categories.frontend.length) {
 
 // Get test coverage if available
 let coverageInfo = '';
-try {
-    const coverageFile = path.join(__dirname, '../apps/frontend/coverage/coverage-summary.json');
-    if (fs.existsSync(coverageFile)) {
-        const coverage = JSON.parse(fs.readFileSync(coverageFile, 'utf-8'));
-        const total = coverage.total;
-        coverageInfo = `
+const coverage = getCoverageInfo();
+if (coverage) {
+    const total = coverage.total;
+    coverageInfo = `
 ## Test Coverage
 - **Statements:** ${total.statements.pct}%
 - **Branches:** ${total.branches.pct}%
 - **Functions:** ${total.functions.pct}%
 - **Lines:** ${total.lines.pct}%
 `;
-    }
-} catch (e) {
-    // Coverage file not available
 }
 
 // Get test results if available
 let testInfo = '';
-try {
-    const reportFile = path.join(__dirname, '../apps/frontend/test-reports/latest-report.json');
-    if (fs.existsSync(reportFile)) {
-        const report = JSON.parse(fs.readFileSync(reportFile, 'utf-8'));
-        testInfo = `
+const testResults = getTestResults();
+if (testResults) {
+    testInfo = `
 ## Test Results
-- **Total Tests:** ${report.summary.totalTests}
-- **Passed:** ${report.summary.passed} (${report.summary.passRate}%)
-- **Failed:** ${report.summary.failed}
-- **Duration:** ${(report.summary.totalDuration / 1000).toFixed(2)}s
+- **Total Tests:** ${testResults.totalTests}
+- **Passed:** ${testResults.passed} (${testResults.passRate}%)
+- **Failed:** ${testResults.failed}
+- **Duration:** ${(testResults.duration / 1000).toFixed(2)}s
 `;
-    }
-} catch (e) {
-    // Test report not available
 }
 
 // Generate PR title

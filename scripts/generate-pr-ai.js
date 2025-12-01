@@ -13,6 +13,7 @@
 const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
+const { getDefaultBranch, getGitInfo, getTestResults } = require('./utils');
 
 // Check for API key
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
@@ -26,58 +27,29 @@ if (!GEMINI_API_KEY) {
     process.exit(1);
 }
 
-// Function to get default branch
-function getDefaultBranch() {
-    try {
-        const remoteHead = execSync('git symbolic-ref refs/remotes/origin/HEAD', { encoding: 'utf-8' }).trim();
-        return remoteHead.replace('refs/remotes/', '');
-    } catch (e) {
-        const branches = ['origin/main', 'origin/master', 'origin/develop'];
-        for (const branch of branches) {
-            try {
-                execSync(`git rev-parse ${branch}`, { encoding: 'utf-8', stdio: 'pipe' });
-                return branch;
-            } catch (err) {
-                continue;
-            }
-        }
-        return 'HEAD~10';
-    }
-}
-
 const baseCommit = process.argv[2] || getDefaultBranch();
 
 console.log('🔍 Analyzing changes...');
 console.log(`📊 Comparing: ${baseCommit}..HEAD\n`);
 
-// Get git diff
-const diff = execSync(`git diff ${baseCommit}..HEAD`, { encoding: 'utf-8' });
-const diffStat = execSync(`git diff ${baseCommit}..HEAD --stat`, { encoding: 'utf-8' });
-const changedFiles = execSync(`git diff ${baseCommit}..HEAD --name-only`, { encoding: 'utf-8' })
-    .trim()
-    .split('\n')
-    .filter(Boolean);
+// Get git info
+const { diff, diffStat, changedFiles } = getGitInfo(baseCommit);
 
 // Read PR template
 const templatePath = path.join(__dirname, '../.github/pull_request_template.md');
 const template = fs.readFileSync(templatePath, 'utf-8');
 
-// Read test results if available
-let testResults = '';
-try {
-    const reportFile = path.join(__dirname, '../apps/frontend/test-reports/latest-report.json');
-    if (fs.existsSync(reportFile)) {
-        const report = JSON.parse(fs.readFileSync(reportFile, 'utf-8'));
-        testResults = JSON.stringify({
-            totalTests: report.summary.totalTests,
-            passed: report.summary.passed,
-            failed: report.summary.failed,
-            passRate: report.summary.passRate,
-            duration: report.summary.totalDuration,
-        }, null, 2);
-    }
-} catch (e) {
-    // Ignore
+// Get test results
+let testResultsStr = '';
+const testResults = getTestResults();
+if (testResults) {
+    testResultsStr = JSON.stringify({
+        totalTests: testResults.totalTests,
+        passed: testResults.passed,
+        failed: testResults.failed,
+        passRate: testResults.passRate,
+        duration: testResults.duration,
+    }, null, 2);
 }
 
 // Prepare prompt for Gemini
@@ -96,7 +68,7 @@ ${diffStat}
 ## Changed Files
 ${changedFiles.join('\n')}
 
-${testResults ? `## Test Results Data (Use this to fill Metrics section)\n${testResults}\n` : ''}
+${testResultsStr ? `## Test Results Data (Use this to fill Metrics section)\n${testResultsStr}\n` : ''}
 
 ## Git Diff (first 15000 characters)
 ${diff.substring(0, 15000)}
