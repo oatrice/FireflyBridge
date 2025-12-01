@@ -6,6 +6,29 @@ import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
     const router = useRouter();
+
+    // Feature flag: ปิดหน้า login ในช่วงที่ยังไม่พร้อม launch
+    if (process.env.NEXT_PUBLIC_ENABLE_AUTH !== "true") {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-xl shadow-lg text-center">
+                    <h2 className="text-2xl font-bold text-gray-900">
+                        🚧 Coming Soon
+                    </h2>
+                    <p className="text-gray-600">
+                        Authentication system is currently under development.
+                    </p>
+                    <button
+                        onClick={() => router.push("/")}
+                        className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                    >
+                        Back to Home
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
     const [loading, setLoading] = useState(false);
     const [isRegister, setIsRegister] = useState(false);
     const [step, setStep] = useState<"initial" | "otp">("initial");
