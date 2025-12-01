@@ -136,7 +136,13 @@ export default function LoginPage() {
                 phoneNumber: formData.phoneNumber,
                 code: formData.otp,
             }, {
-                onSuccess: () => {
+                onSuccess: async () => {
+                    // Update name if provided
+                    if (formData.name) {
+                        await (authClient as any).updateUser({
+                            name: formData.name
+                        });
+                    }
                     alert("Phone number verified successfully! You can now login.");
                     setIsRegister(false);
                     setStep("initial");

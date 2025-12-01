@@ -3,7 +3,7 @@ import { pgTable, serial, text, timestamp, boolean, jsonb, integer, decimal } fr
 // Users & Auth (Better Auth Schema)
 export const user = pgTable("user", {
     id: text("id").primaryKey(),
-    name: text("name").notNull(),
+    name: text("name"),
     email: text("email").unique(),
     emailVerified: boolean("email_verified"),
     phoneNumber: text("phone_number").unique(),
