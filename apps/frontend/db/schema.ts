@@ -9,8 +9,8 @@ export const user = pgTable("user", {
     phoneNumber: text("phone_number").unique(),
     phoneNumberVerified: boolean("phone_number_verified"),
     image: text("image"),
-    createdAt: timestamp("created_at").notNull(),
-    updatedAt: timestamp("updated_at").notNull(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
     role: text("role").default("user"), // Custom field for RBAC
 });
 

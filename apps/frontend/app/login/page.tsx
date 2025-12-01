@@ -132,27 +132,36 @@ export default function LoginPage() {
                 }
             });
         } else {
-            await authClient.phoneNumber.verify({
-                phoneNumber: formData.phoneNumber,
-                code: formData.otp,
-            }, {
-                onSuccess: async () => {
-                    // Update name if provided
-                    if (formData.name) {
-                        await (authClient as any).updateUser({
-                            name: formData.name
-                        });
+            // Create user first (if doesn't exist), then verify
+            try {
+                // Try to create user
+                await fetch("/api/create-phone-user", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        phoneNumber: formData.phoneNumber,
+                        code: formData.otp,
+                    }),
+                });
+
+                // Then verify (this will create session)
+                await authClient.phoneNumber.verify({
+                    phoneNumber: formData.phoneNumber,
+                    code: formData.otp,
+                }, {
+                    onSuccess: () => {
+                        alert("Phone number verified successfully!");
+                        router.push("/admin");
+                    },
+                    onError: (ctx: any) => {
+                        alert(ctx.error.message);
+                        setLoading(false);
                     }
-                    alert("Phone number verified successfully! You can now login.");
-                    setIsRegister(false);
-                    setStep("initial");
-                    setLoading(false);
-                },
-                onError: (ctx: any) => {
-                    alert(ctx.error.message);
-                    setLoading(false);
-                }
-            });
+                });
+            } catch (error) {
+                alert("Verification failed");
+                setLoading(false);
+            }
         }
     };
 
@@ -219,7 +228,7 @@ export default function LoginPage() {
                 ) : (
                     <div className="mt-8 space-y-6">
                         <form onSubmit={isRegister ? handleRegister : handleCredentialsSignIn} className="space-y-4">
-                            {isRegister && (
+                            {isRegister && method === "email" && (
                                 <div>
                                     <label htmlFor="name" className="sr-only">Name</label>
                                     <input
@@ -267,27 +276,29 @@ export default function LoginPage() {
                                 </div>
                             )}
 
-                            <div>
-                                <label htmlFor="password" className="sr-only">Password</label>
-                                <input
-                                    id="password"
-                                    name="password"
-                                    type="password"
-                                    autoComplete={isRegister ? "new-password" : "current-password"}
-                                    required
-                                    className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-red-500 focus:border-red-500 focus:z-10 sm:text-sm"
-                                    placeholder="Password"
-                                    value={formData.password}
-                                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                                />
-                            </div>
+                            {method === "email" && (
+                                <div>
+                                    <label htmlFor="password" className="sr-only">Password</label>
+                                    <input
+                                        id="password"
+                                        name="password"
+                                        type="password"
+                                        autoComplete={isRegister ? "new-password" : "current-password"}
+                                        required
+                                        className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-red-500 focus:border-red-500 focus:z-10 sm:text-sm"
+                                        placeholder="Password"
+                                        value={formData.password}
+                                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                    />
+                                </div>
+                            )}
 
                             <button
                                 type="submit"
                                 disabled={loading}
                                 className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
                             >
-                                {loading ? "Loading..." : (isRegister ? "Sign Up" : "Sign In")}
+                                {loading ? "Loading..." : (isRegister ? (method === "phone" ? "Send OTP" : "Sign Up") : "Sign In")}
                             </button>
                         </form>
 

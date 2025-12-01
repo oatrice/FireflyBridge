@@ -14,7 +14,7 @@ if (!process.env.DATABASE_URL) {
 console.log("[Better Auth] DATABASE_URL:", process.env.DATABASE_URL?.substring(0, 50) + "...");
 
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-const db = drizzle(pool, { schema });
+const db = drizzle(pool, { schema, logger: true });
 
 import { emailOTP, phoneNumber } from "better-auth/plugins";
 
@@ -59,6 +59,14 @@ export const auth = betterAuth({
                 type: "string",
                 required: false,
                 defaultValue: "user",
+            },
+            phoneNumber: {
+                type: "string",
+                required: false,
+            },
+            phoneNumberVerified: {
+                type: "boolean",
+                required: false,
             },
         },
     },
