@@ -16,14 +16,20 @@ console.log("[Better Auth] DATABASE_URL:", process.env.DATABASE_URL?.substring(0
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 const db = drizzle(pool, { schema });
 
-import { emailOTP } from "better-auth/plugins";
+import { emailOTP, phoneNumber } from "better-auth/plugins";
 
 export const auth = betterAuth({
     plugins: [
         emailOTP({
             async sendVerificationOTP({ email, otp, type }) {
                 // TODO: Implement actual email sending (e.g., via Resend, Nodemailer, etc.)
-                console.log(`\n\n[DEV ONLY] OTP for ${email}: ${otp}\n\n`);
+                console.log(`\n\n[DEV ONLY] Email OTP for ${email}: ${otp}\n\n`);
+            },
+        }),
+        phoneNumber({
+            async sendOTP({ phoneNumber, code }) {
+                // TODO: Implement actual SMS sending (e.g., via Twilio, AWS SNS, etc.)
+                console.log(`\n\n[DEV ONLY] SMS OTP for ${phoneNumber}: ${code}\n\n`);
             },
         }),
     ],
