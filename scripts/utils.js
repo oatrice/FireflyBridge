@@ -1,4 +1,4 @@
-const { execSync } = require('child_process');
+const { execFileSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
@@ -7,13 +7,13 @@ const path = require('path');
  */
 function getDefaultBranch() {
     try {
-        const remoteHead = execSync('git symbolic-ref refs/remotes/origin/HEAD', { encoding: 'utf-8' }).trim();
+        const remoteHead = execFileSync('git', ['symbolic-ref', 'refs/remotes/origin/HEAD'], { encoding: 'utf-8' }).trim();
         return remoteHead.replace('refs/remotes/', '');
     } catch (e) {
         const branches = ['origin/main', 'origin/master', 'origin/develop'];
         for (const branch of branches) {
             try {
-                execSync(`git rev-parse ${branch}`, { encoding: 'utf-8', stdio: 'pipe' });
+                execFileSync('git', ['rev-parse', branch], { encoding: 'utf-8', stdio: 'pipe' });
                 return branch;
             } catch (err) {
                 continue;
@@ -27,10 +27,15 @@ function getDefaultBranch() {
  * Get git diff information
  */
 function getGitInfo(baseCommit) {
-    const diff = execSync(`git diff ${baseCommit}..HEAD`, { encoding: 'utf-8' });
-    const diffStat = execSync(`git diff ${baseCommit}..HEAD --stat`, { encoding: 'utf-8' });
-    const diffShortStat = execSync(`git diff ${baseCommit}..HEAD --shortstat`, { encoding: 'utf-8' });
-    const changedFiles = execSync(`git diff ${baseCommit}..HEAD --name-only`, { encoding: 'utf-8' })
+    // Validate baseCommit to prevent command injection
+    if (!/^[a-zA-Z0-9_\-./~^]+$/.test(baseCommit)) {
+        throw new Error('Invalid base commit format');
+    }
+
+    const diff = execFileSync('git', ['diff', `${baseCommit}..HEAD`], { encoding: 'utf-8' });
+    const diffStat = execFileSync('git', ['diff', `${baseCommit}..HEAD`, '--stat'], { encoding: 'utf-8' });
+    const diffShortStat = execFileSync('git', ['diff', `${baseCommit}..HEAD`, '--shortstat'], { encoding: 'utf-8' });
+    const changedFiles = execFileSync('git', ['diff', `${baseCommit}..HEAD`, '--name-only'], { encoding: 'utf-8' })
         .trim()
         .split('\n')
         .filter(Boolean);
