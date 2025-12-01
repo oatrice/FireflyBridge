@@ -65,6 +65,8 @@ async function getPRDetails() {
     // Validate and log COMMIT_SHA
     console.log('COMMIT_SHA environment variable:', COMMIT_SHA);
 
+    let commitList = [];
+
     if (COMMIT_SHA && COMMIT_SHA !== 'undefined' && COMMIT_SHA.trim() !== '') {
         // Review specific commit only
         console.log(`📝 Reviewing COMMIT DIFF ONLY for SHA: ${COMMIT_SHA}`);
@@ -85,6 +87,7 @@ async function getPRDetails() {
             fullSha: commitData.sha,
             message: commitData.commit.message,
         };
+        commitList.push(commitInfo);
         console.log(`✅ Fetched commit diff for: ${commitInfo.sha} - ${commitInfo.message}`);
     } else {
         // Review entire PR (fallback)
@@ -98,10 +101,17 @@ async function getPRDetails() {
         };
         diffData = await request(prUrl, diffOptions);
 
-        // Get latest commit SHA from PR
+        // Get commits from PR
         const commitsUrl = `${GITHUB_API_BASE}/repos/${REPO_OWNER}/${REPO_NAME}/pulls/${PR_NUMBER}/commits`;
         const commitsData = await request(commitsUrl, options);
+
         if (commitsData && commitsData.length > 0) {
+            commitList = commitsData.map(c => ({
+                sha: c.sha.substring(0, 7),
+                fullSha: c.sha,
+                message: c.commit.message
+            }));
+
             const latestCommit = commitsData[commitsData.length - 1];
             commitInfo = {
                 sha: latestCommit.sha.substring(0, 7),
@@ -120,6 +130,7 @@ async function getPRDetails() {
         description: prData.body,
         diff: diffData,
         commitInfo,
+        commitList,
     };
 }
 
@@ -452,8 +463,22 @@ function formatTestAndCoverageReport(testResults, coverage, commitInfo) {
 }
 
 async function postComment(review, testResults, coverageData, commitInfo) {
+    let header = '';
+
+    // Add Commits List at the top
+    if (commitInfo && commitInfo.commitList && commitInfo.commitList.length > 0) {
+        header += '## 🔨 Commits in this Review\n\n';
+        commitInfo.commitList.forEach(c => {
+            header += `- \`${c.sha}\` ${c.message}\n`;
+        });
+        header += '\n---\n\n';
+    } else if (commitInfo && commitInfo.sha) {
+        // Fallback for single commit if commitList is not available
+        header += `## 🔨 Commit: \`${commitInfo.sha}\`\n${commitInfo.message}\n\n---\n\n`;
+    }
+
     const testAndCoverageReport = formatTestAndCoverageReport(testResults, coverageData, commitInfo);
-    const fullComment = review + testAndCoverageReport;
+    const fullComment = header + review + testAndCoverageReport;
 
     const options = {
         method: 'POST',
