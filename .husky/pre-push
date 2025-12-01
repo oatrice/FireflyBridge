@@ -1,1 +1,1 @@
-npm run test --workspace=apps/frontend
+pnpm run test --workspace=apps/frontend
