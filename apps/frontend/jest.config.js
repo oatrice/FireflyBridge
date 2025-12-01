@@ -48,6 +48,7 @@ const customJestConfig = {
         '!app/rescue-contacts/**',
         '!app/test-report/**',
     ],
+    coverageReporters: ['text', 'lcov', 'html'],
     coverageThreshold: {
         global: {
             branches: 50,
