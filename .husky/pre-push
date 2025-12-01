@@ -1,3 +1,6 @@
+# Setup PATH for Git clients that have limited PATH
+export PATH="/opt/homebrew/bin:/usr/local/bin:$HOME/.nvm/versions/node/v22.17.1/bin:$PATH"
+
 # Try to find pnpm in common locations
 if command -v pnpm >/dev/null 2>&1; then
   PNPM_CMD="pnpm"
@@ -9,6 +12,7 @@ elif [ -f "/usr/local/bin/pnpm" ]; then
   PNPM_CMD="/usr/local/bin/pnpm"
 else
   echo "Error: pnpm not found. Please install pnpm first."
+  echo "Current PATH: $PATH"
   exit 1
 fi
 
