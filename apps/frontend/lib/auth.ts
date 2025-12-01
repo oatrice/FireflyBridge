@@ -16,7 +16,17 @@ console.log("[Better Auth] DATABASE_URL:", process.env.DATABASE_URL?.substring(0
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 const db = drizzle(pool, { schema });
 
+import { emailOTP } from "better-auth/plugins";
+
 export const auth = betterAuth({
+    plugins: [
+        emailOTP({
+            async sendVerificationOTP({ email, otp, type }) {
+                // TODO: Implement actual email sending (e.g., via Resend, Nodemailer, etc.)
+                console.log(`\n\n[DEV ONLY] OTP for ${email}: ${otp}\n\n`);
+            },
+        }),
+    ],
     database: drizzleAdapter(db, {
         provider: "pg",
         schema: {
