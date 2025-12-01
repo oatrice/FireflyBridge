@@ -98,8 +98,6 @@ export default function LoginPage() {
 
             await authClient.phoneNumber.sendOtp({
                 phoneNumber: formData.phoneNumber,
-                type: "sign-up", // or "sign-in"
-                // password: formData.password // If we want to set password?
             }, {
                 onSuccess: async () => {
                     setStep("otp");
