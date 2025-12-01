@@ -244,6 +244,10 @@ Crucially, add a final note that allows for follow-up. State clearly: "หาก
 REMINDER: All generated content must be in Thai. Focus on clarity, accuracy, and ease of reading for technical contributors.
 `;
 
+    console.log('\n--- 🚀 GENERATED PROMPT (Preview) ---');
+    console.log(prompt);
+    console.log('--- END PROMPT ---\n');
+
     // Check if using Gemini
     if (LLM_MODEL.startsWith('gemini')) {
         const url = `https://generativelanguage.googleapis.com/v1beta/models/${LLM_MODEL}:generateContent?key=${LLM_API_KEY}`;
@@ -261,7 +265,13 @@ REMINDER: All generated content must be in Thai. Focus on clarity, accuracy, and
         };
 
         try {
+            console.log(`📡 Sending request to Gemini (${LLM_MODEL})...`);
             const response = await request(url, options, payload);
+
+            console.log('\n--- 📥 GEMINI RESPONSE ---');
+            console.log(JSON.stringify(response, null, 2));
+            console.log('--- END RESPONSE ---\n');
+
             if (response.candidates && response.candidates.length > 0) {
                 return response.candidates[0].content.parts[0].text;
             } else {

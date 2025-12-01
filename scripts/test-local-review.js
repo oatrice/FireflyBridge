@@ -1,10 +1,18 @@
-// Set required env vars to bypass check
-process.env.GITHUB_TOKEN = "dummy_token";
-process.env.LLM_API_KEY = "dummy_key";
-process.env.PR_NUMBER = "123";
-process.env.REPO_OWNER = "test-owner";
-process.env.REPO_NAME = "test-repo";
-process.env.LLM_MODEL = "gemini-pro"; // Mock model
+// Set required env vars to bypass check (only if not set)
+process.env.GITHUB_TOKEN = process.env.GITHUB_TOKEN || "dummy_token";
+// Do NOT overwrite LLM_API_KEY if it exists, so user can provide it
+if (!process.env.LLM_API_KEY) {
+    console.log("⚠️ No LLM_API_KEY provided. Using dummy key (API call will fail but logs will show).");
+    process.env.LLM_API_KEY = "dummy_key";
+} else {
+    console.log("✅ LLM_API_KEY detected. Attempting real API call...");
+}
+
+process.env.PR_NUMBER = process.env.PR_NUMBER || "123";
+process.env.REPO_OWNER = process.env.REPO_OWNER || "test-owner";
+process.env.REPO_NAME = process.env.REPO_NAME || "test-repo";
+// Use a real model name if testing with real key, otherwise default
+process.env.LLM_MODEL = process.env.LLM_MODEL || "gemini-2.0-flash-exp"; // Use a valid model for testing
 
 const { generateReview } = require('./code-review-bot');
 const { execSync } = require('child_process');
@@ -40,19 +48,19 @@ async function runTest() {
         console.log("--------------------------------------------------\n");
 
         // 2. Call generateReview
-        await generateReview(mockPrDetails, null, null, []);
-    } catch (error) {
-        if (error.message && error.message.includes('dummy_key')) {
-            // Expected error due to dummy key
-        } else if (error.message && error.message.includes('Gemini API Error')) {
-            // Expected error
-        } else {
-            // Ignore API errors, we just want to see the logs
-        }
+        const review = await generateReview(mockPrDetails, null, null, []);
+        console.log("\n✅ Review Generated Successfully!");
+        console.log("--------------------------------------------------");
+        console.log(review);
+        console.log("--------------------------------------------------");
 
-        console.log("\n--------------------------------------------------");
-        console.log("✅ Test finished (Stopped at API call).");
-        console.log("Check the logs above for Diff size and Truncation info.");
+    } catch (error) {
+        console.log("\n❌ Error during API call:");
+        console.error(error);
+
+        if (error.message && error.message.includes('dummy_key')) {
+            console.log("ℹ️ (Expected if using dummy key)");
+        }
     }
 }
 
