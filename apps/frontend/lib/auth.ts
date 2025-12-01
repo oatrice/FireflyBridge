@@ -31,6 +31,16 @@ export const auth = betterAuth({
                 // TODO: Implement actual SMS sending (e.g., via Twilio, AWS SNS, etc.)
                 console.log(`\n\n[DEV ONLY] SMS OTP for ${phoneNumber}: ${code}\n\n`);
             },
+            signUpOnVerification: {
+                getTempEmail: (phoneNumber: string) => {
+                    // Generate temporary email from phone number
+                    return `${phoneNumber.replace(/\+/g, '')}@temp.firefly-bridge.app`;
+                },
+                getTempName: (phoneNumber: string) => {
+                    // Use phone number as temporary name
+                    return `User ${phoneNumber}`;
+                },
+            },
         }),
     ],
     database: drizzleAdapter(db, {

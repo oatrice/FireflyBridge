@@ -132,36 +132,20 @@ export default function LoginPage() {
                 }
             });
         } else {
-            // Create user first (if doesn't exist), then verify
-            try {
-                // Try to create user
-                await fetch("/api/create-phone-user", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        phoneNumber: formData.phoneNumber,
-                        code: formData.otp,
-                    }),
-                });
-
-                // Then verify (this will create session)
-                await authClient.phoneNumber.verify({
-                    phoneNumber: formData.phoneNumber,
-                    code: formData.otp,
-                }, {
-                    onSuccess: () => {
-                        alert("Phone number verified successfully!");
-                        router.push("/admin");
-                    },
-                    onError: (ctx: any) => {
-                        alert(ctx.error.message);
-                        setLoading(false);
-                    }
-                });
-            } catch (error) {
-                alert("Verification failed");
-                setLoading(false);
-            }
+            // Verify OTP (Better Auth will auto-create user if signUpOnVerification is enabled)
+            await authClient.phoneNumber.verify({
+                phoneNumber: formData.phoneNumber,
+                code: formData.otp,
+            }, {
+                onSuccess: () => {
+                    alert("Phone number verified successfully!");
+                    router.push("/admin");
+                },
+                onError: (ctx: any) => {
+                    alert(ctx.error.message);
+                    setLoading(false);
+                }
+            });
         }
     };
 
