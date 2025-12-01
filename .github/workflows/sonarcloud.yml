@@ -37,7 +37,7 @@ jobs:
         continue-on-error: true  # Don't fail if coverage threshold not met
       
       - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@e44258b109568630baeb94b51a909c4d4a93d593 # v3.1.0
+        uses: SonarSource/sonarcloud-github-action@383f7e52eae3ab0510c3cb0e7d9d150bbaeab838 # v3.1.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
