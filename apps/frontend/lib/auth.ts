@@ -14,9 +14,35 @@ if (!process.env.DATABASE_URL) {
 console.log("[Better Auth] DATABASE_URL:", process.env.DATABASE_URL?.substring(0, 50) + "...");
 
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-const db = drizzle(pool, { schema });
+const db = drizzle(pool, { schema, logger: true });
+
+import { emailOTP, phoneNumber } from "better-auth/plugins";
 
 export const auth = betterAuth({
+    plugins: [
+        emailOTP({
+            async sendVerificationOTP({ email, otp, type }) {
+                // TODO: Implement actual email sending (e.g., via Resend, Nodemailer, etc.)
+                console.log(`\n\n[DEV ONLY] Email OTP for ${email}: ${otp}\n\n`);
+            },
+        }),
+        phoneNumber({
+            async sendOTP({ phoneNumber, code }) {
+                // TODO: Implement actual SMS sending (e.g., via Twilio, AWS SNS, etc.)
+                console.log(`\n\n[DEV ONLY] SMS OTP for ${phoneNumber}: ${code}\n\n`);
+            },
+            signUpOnVerification: {
+                getTempEmail: (phoneNumber: string) => {
+                    // Generate temporary email from phone number
+                    return `${phoneNumber.replace(/\+/g, '')}@temp.firefly-bridge.app`;
+                },
+                getTempName: (phoneNumber: string) => {
+                    // Use phone number as temporary name
+                    return `User ${phoneNumber}`;
+                },
+            },
+        }),
+    ],
     database: drizzleAdapter(db, {
         provider: "pg",
         schema: {
@@ -43,6 +69,14 @@ export const auth = betterAuth({
                 type: "string",
                 required: false,
                 defaultValue: "user",
+            },
+            phoneNumber: {
+                type: "string",
+                required: false,
+            },
+            phoneNumberVerified: {
+                type: "boolean",
+                required: false,
             },
         },
     },

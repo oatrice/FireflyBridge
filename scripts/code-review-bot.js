@@ -65,6 +65,8 @@ async function getPRDetails() {
     // Validate and log COMMIT_SHA
     console.log('COMMIT_SHA environment variable:', COMMIT_SHA);
 
+    let commitList = [];
+
     if (COMMIT_SHA && COMMIT_SHA !== 'undefined' && COMMIT_SHA.trim() !== '') {
         // Review specific commit only
         console.log(`📝 Reviewing COMMIT DIFF ONLY for SHA: ${COMMIT_SHA}`);
@@ -82,8 +84,10 @@ async function getPRDetails() {
         const commitData = await request(commitUrl, options);
         commitInfo = {
             sha: commitData.sha.substring(0, 7),
+            fullSha: commitData.sha,
             message: commitData.commit.message,
         };
+        commitList.push(commitInfo);
         console.log(`✅ Fetched commit diff for: ${commitInfo.sha} - ${commitInfo.message}`);
     } else {
         // Review entire PR (fallback)
@@ -96,6 +100,28 @@ async function getPRDetails() {
             },
         };
         diffData = await request(prUrl, diffOptions);
+
+        // Get commits from PR
+        const commitsUrl = `${GITHUB_API_BASE}/repos/${REPO_OWNER}/${REPO_NAME}/pulls/${PR_NUMBER}/commits`;
+        const commitsData = await request(commitsUrl, options);
+
+        if (commitsData && commitsData.length > 0) {
+            commitList = commitsData.map(c => ({
+                sha: c.sha.substring(0, 7),
+                fullSha: c.sha,
+                message: c.commit.message
+            }));
+
+            const latestCommit = commitsData[commitsData.length - 1];
+            commitInfo = {
+                sha: latestCommit.sha.substring(0, 7),
+                fullSha: latestCommit.sha,
+                message: latestCommit.commit.message,
+                isLatestInPR: true
+            };
+            console.log(`✅ Identified latest commit in PR: ${commitInfo.sha}`);
+        }
+
         console.log('✅ Fetched PR diff');
     }
 
@@ -104,12 +130,13 @@ async function getPRDetails() {
         description: prData.body,
         diff: diffData,
         commitInfo,
+        commitList,
     };
 }
 
 async function generateReview(prDetails, testResults, coverageData, uncoveredAreas) {
     const reviewScope = prDetails.commitInfo
-        ? `Commit เดียว (${prDetails.commitInfo.sha}): ${prDetails.commitInfo.message}`
+        ? `Commit: ${prDetails.commitInfo.sha} (${prDetails.commitInfo.message})`
         : 'ทั้ง Pull Request';
 
     // Format test and coverage info for AI
@@ -151,6 +178,27 @@ async function generateReview(prDetails, testResults, coverageData, uncoveredAre
         });
     }
 
+    const MAX_DIFF_LENGTH = 30000;
+    const originalDiff = typeof prDetails.diff === 'string' ? prDetails.diff : '';
+    const isTruncated = originalDiff.length > MAX_DIFF_LENGTH;
+    const diffContent = typeof prDetails.diff === 'string' ? prDetails.diff.substring(0, 30000) : 'Diff too large or unavailable';
+    console.log(`ℹ️ Diff size sent to AI: ${diffContent.length} characters`);
+    if (isTruncated) {
+        console.warn(`⚠️ Diff was truncated! Original size: ${originalDiff.length} characters.`);
+        console.log(`--- Truncated Diff Preview (Last 500 chars sent) ---`);
+        console.log(diffContent.slice(-500));
+        console.log(`--- End Preview ---`);
+    } else {
+        console.log(`✅ Diff fits within limit (${originalDiff.length} / ${MAX_DIFF_LENGTH})`);
+    }
+
+    // Determine Context Description
+    // If reviewing specific commit (and it's not just the latest commit of PR context), use Commit Message
+    // In getPRDetails, 'isLatestInPR' is only set when we fallback to PR review.
+    const isSpecificCommit = prDetails.commitInfo && !prDetails.commitInfo.isLatestInPR;
+    const contextDescription = isSpecificCommit ? prDetails.commitInfo.message : prDetails.description;
+    const contextLabel = isSpecificCommit ? 'Commit Message' : 'PR Description/Issues';
+
     const prompt = `
 Please process the following Pull Request (PR) details. Your task is to act as an AI Code Review Assistant and generate a comprehensive review summary strictly in Thai. The review must be structured and follow all the requested sections to facilitate quick and clear understanding for contributors and reviewers.
 
@@ -161,10 +209,10 @@ PR Title: ${prDetails.title}
 
 Target Repository/Feature: ${REPO_OWNER}/${REPO_NAME}
 
-Associated Issue(s): ${prDetails.description}
+${contextLabel}: ${contextDescription}
 
 Diff/Code Changes:
-${typeof prDetails.diff === 'string' ? prDetails.diff.substring(0, 30000) : 'Diff too large or unavailable'} 
+${diffContent} 
 (Note: Diff truncated to fit context window if necessary)
 ${testCoverageInfo}
 
@@ -219,7 +267,9 @@ REMINDER: All generated content must be in Thai. Focus on clarity, accuracy, and
         };
 
         try {
+            console.log(`📡 Sending request to Gemini (${LLM_MODEL})...`);
             const response = await request(url, options, payload);
+
             if (response.candidates && response.candidates.length > 0) {
                 return response.candidates[0].content.parts[0].text;
             } else {
@@ -391,7 +441,7 @@ async function analyzeDetailedCoverage() {
     }
 }
 
-function formatTestAndCoverageReport(testResults, coverage) {
+function formatTestAndCoverageReport(testResults, coverage, commitInfo) {
     let report = '\n\n---\n\n## 🧪 Test Results\n\n';
 
     if (testResults) {
@@ -431,8 +481,8 @@ function formatTestAndCoverageReport(testResults, coverage) {
     return report;
 }
 
-async function postComment(review, testResults, coverageData) {
-    const testAndCoverageReport = formatTestAndCoverageReport(testResults, coverageData);
+async function postComment(review, testResults, coverageData, commitInfo) {
+    const testAndCoverageReport = formatTestAndCoverageReport(testResults, coverageData, commitInfo);
     const fullComment = review + testAndCoverageReport;
 
     const options = {
@@ -466,7 +516,7 @@ async function main() {
         const review = await generateReview(prDetails, testResults, coverageData, uncoveredAreas);
 
         console.log('Posting comment...');
-        await postComment(review, testResults, coverageData);
+        await postComment(review, testResults, coverageData, prDetails.commitInfo);
 
         console.log('Done!');
     } catch (error) {

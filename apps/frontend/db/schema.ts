@@ -3,12 +3,14 @@ import { pgTable, serial, text, timestamp, boolean, jsonb, integer, decimal } fr
 // Users & Auth (Better Auth Schema)
 export const user = pgTable("user", {
     id: text("id").primaryKey(),
-    name: text("name").notNull(),
-    email: text("email").notNull().unique(),
-    emailVerified: boolean("email_verified").notNull(),
+    name: text("name"),
+    email: text("email").unique(),
+    emailVerified: boolean("email_verified"),
+    phoneNumber: text("phone_number").unique(),
+    phoneNumberVerified: boolean("phone_number_verified"),
     image: text("image"),
-    createdAt: timestamp("created_at").notNull(),
-    updatedAt: timestamp("updated_at").notNull(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
     role: text("role").default("user"), // Custom field for RBAC
 });
 
