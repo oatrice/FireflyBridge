@@ -34,3 +34,11 @@ Thumbs.db
 
 # Supabase
 supabase/
+
+# Testing
+coverage
+test-reports
+*.lcov
+
+# PR Generator
+.pr-template-output.md
