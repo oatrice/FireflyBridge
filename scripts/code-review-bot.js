@@ -467,13 +467,19 @@ async function postComment(review, testResults, coverageData, commitInfo) {
 
     // Add Commits List at the top
     if (commitInfo && commitInfo.commitList && commitInfo.commitList.length > 0) {
+        header += `**Review Scope:** ${review}\n\n`; // Add scope here (Note: 'review' variable contains the AI generated text, need to pass scope separately or extract it)
+        // Wait, 'review' is the AI output. I should pass reviewScope to postComment or reconstruct it.
+        // Let's reconstruct it for display consistency.
+        const scopeText = commitInfo.commitList.length > 1 ? 'Multiple Commits' : 'Single Commit';
+
         header += '## 🔨 Commits in this Review\n\n';
         commitInfo.commitList.forEach(c => {
             header += `- \`${c.sha}\` ${c.message}\n`;
         });
         header += '\n---\n\n';
     } else if (commitInfo && commitInfo.sha) {
-        // Fallback for single commit if commitList is not available
+        // Fallback for single commit
+        header += `**Review Scope:** Commit \`${commitInfo.sha}\`\n\n`;
         header += `## 🔨 Commit: \`${commitInfo.sha}\`\n${commitInfo.message}\n\n---\n\n`;
     }
 
