@@ -181,8 +181,7 @@ async function generateReview(prDetails, testResults, coverageData, uncoveredAre
     const MAX_DIFF_LENGTH = 30000;
     const originalDiff = typeof prDetails.diff === 'string' ? prDetails.diff : '';
     const isTruncated = originalDiff.length > MAX_DIFF_LENGTH;
-    const diffContent = isTruncated ? originalDiff.substring(0, MAX_DIFF_LENGTH) : originalDiff;
-
+    const diffContent = typeof prDetails.diff === 'string' ? prDetails.diff.substring(0, 30000) : 'Diff too large or unavailable';
     console.log(`ℹ️ Diff size sent to AI: ${diffContent.length} characters`);
     if (isTruncated) {
         console.warn(`⚠️ Diff was truncated! Original size: ${originalDiff.length} characters.`);
@@ -192,6 +191,13 @@ async function generateReview(prDetails, testResults, coverageData, uncoveredAre
     } else {
         console.log(`✅ Diff fits within limit (${originalDiff.length} / ${MAX_DIFF_LENGTH})`);
     }
+
+    // Determine Context Description
+    // If reviewing specific commit (and it's not just the latest commit of PR context), use Commit Message
+    // In getPRDetails, 'isLatestInPR' is only set when we fallback to PR review.
+    const isSpecificCommit = prDetails.commitInfo && !prDetails.commitInfo.isLatestInPR;
+    const contextDescription = isSpecificCommit ? prDetails.commitInfo.message : prDetails.description;
+    const contextLabel = isSpecificCommit ? 'Commit Message' : 'PR Description/Issues';
 
     const prompt = `
 Please process the following Pull Request (PR) details. Your task is to act as an AI Code Review Assistant and generate a comprehensive review summary strictly in Thai. The review must be structured and follow all the requested sections to facilitate quick and clear understanding for contributors and reviewers.
@@ -203,7 +209,7 @@ PR Title: ${prDetails.title}
 
 Target Repository/Feature: ${REPO_OWNER}/${REPO_NAME}
 
-Associated Issue(s): ${prDetails.description}
+${contextLabel}: ${contextDescription}
 
 Diff/Code Changes:
 ${diffContent} 
