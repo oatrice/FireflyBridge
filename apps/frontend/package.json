@@ -9,6 +9,9 @@
     "lint": "eslint",
     "analyze": "ANALYZE=true next build --webpack",
     "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:report": "jest && echo '\n✅ Test report generated! View at: http://localhost:3000/test-report'",
     "test:hotlines": "bun test app/api/hotlines.bun.test.ts",
     "db:push": "drizzle-kit push",
     "db:seed": "tsx scripts/seed.ts"

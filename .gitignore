@@ -34,3 +34,8 @@ Thumbs.db
 
 # Supabase
 supabase/
+
+# Testing
+coverage
+test-reports
+*.lcov
