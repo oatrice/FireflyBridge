@@ -1,1 +1,15 @@
-pnpm --filter frontend test
+# Try to find pnpm in common locations
+if command -v pnpm >/dev/null 2>&1; then
+  PNPM_CMD="pnpm"
+elif [ -f "$HOME/.nvm/versions/node/$(node -v)/bin/pnpm" ]; then
+  PNPM_CMD="$HOME/.nvm/versions/node/$(node -v)/bin/pnpm"
+elif [ -f "/opt/homebrew/bin/pnpm" ]; then
+  PNPM_CMD="/opt/homebrew/bin/pnpm"
+elif [ -f "/usr/local/bin/pnpm" ]; then
+  PNPM_CMD="/usr/local/bin/pnpm"
+else
+  echo "Error: pnpm not found. Please install pnpm first."
+  exit 1
+fi
+
+$PNPM_CMD --filter frontend test
