@@ -250,10 +250,6 @@ Crucially, add a final note that allows for follow-up. State clearly: "หาก
 REMINDER: All generated content must be in Thai. Focus on clarity, accuracy, and ease of reading for technical contributors.
 `;
 
-    console.log('\n--- 🚀 GENERATED PROMPT (Preview) ---');
-    console.log(prompt);
-    console.log('--- END PROMPT ---\n');
-
     // Check if using Gemini
     if (LLM_MODEL.startsWith('gemini')) {
         const url = `https://generativelanguage.googleapis.com/v1beta/models/${LLM_MODEL}:generateContent?key=${LLM_API_KEY}`;
@@ -273,10 +269,6 @@ REMINDER: All generated content must be in Thai. Focus on clarity, accuracy, and
         try {
             console.log(`📡 Sending request to Gemini (${LLM_MODEL})...`);
             const response = await request(url, options, payload);
-
-            console.log('\n--- 📥 GEMINI RESPONSE ---');
-            console.log(JSON.stringify(response, null, 2));
-            console.log('--- END RESPONSE ---\n');
 
             if (response.candidates && response.candidates.length > 0) {
                 return response.candidates[0].content.parts[0].text;
@@ -452,10 +444,6 @@ async function analyzeDetailedCoverage() {
 function formatTestAndCoverageReport(testResults, coverage, commitInfo) {
     let report = '\n\n---\n\n## 🧪 Test Results\n\n';
 
-    if (commitInfo) {
-        report += `**Commit:** ${commitInfo.sha}\n\n`;
-    }
-
     if (testResults) {
         const status = testResults.success ? '✅ PASSED' : '❌ FAILED';
         const emoji = testResults.success ? '✅' : '❌';
@@ -494,28 +482,8 @@ function formatTestAndCoverageReport(testResults, coverage, commitInfo) {
 }
 
 async function postComment(review, testResults, coverageData, commitInfo) {
-    let header = '';
-
-    // Add Commits List at the top
-    if (commitInfo && commitInfo.commitList && commitInfo.commitList.length > 0) {
-        header += `**Review Scope:** ${review}\n\n`; // Add scope here (Note: 'review' variable contains the AI generated text, need to pass scope separately or extract it)
-        // Wait, 'review' is the AI output. I should pass reviewScope to postComment or reconstruct it.
-        // Let's reconstruct it for display consistency.
-        const scopeText = commitInfo.commitList.length > 1 ? 'Multiple Commits' : 'Single Commit';
-
-        header += '## 🔨 Commits in this Review\n\n';
-        commitInfo.commitList.forEach(c => {
-            header += `- \`${c.sha}\` ${c.message}\n`;
-        });
-        header += '\n---\n\n';
-    } else if (commitInfo && commitInfo.sha) {
-        // Fallback for single commit
-        header += `**Review Scope:** Commit \`${commitInfo.sha}\`\n\n`;
-        header += `## 🔨 Commit: \`${commitInfo.sha}\`\n${commitInfo.message}\n\n---\n\n`;
-    }
-
     const testAndCoverageReport = formatTestAndCoverageReport(testResults, coverageData, commitInfo);
-    const fullComment = header + review + testAndCoverageReport;
+    const fullComment = review + testAndCoverageReport;
 
     const options = {
         method: 'POST',
