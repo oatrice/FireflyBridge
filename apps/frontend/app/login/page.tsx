@@ -10,7 +10,7 @@ export default function LoginPage() {
     const [isRegister, setIsRegister] = useState(false);
     const [step, setStep] = useState<"initial" | "otp">("initial");
 
-    const [method, setMethod] = useState<"email" | "phone">("email");
+    const [method, setMethod] = useState<"email" | "phone">("phone");
     const [formData, setFormData] = useState({
         email: "",
         phoneNumber: "",
@@ -82,25 +82,26 @@ export default function LoginPage() {
                 }
             });
         } else {
-            await (authClient as any).signUp.phoneNumber({
+            // Try to send OTP directly first. 
+            // If the user doesn't exist, this might just send OTP for verification.
+            // After verification, we might need to "sign up" or "sign in".
+            // But usually phone number auth is "passwordless" or "OTP based".
+            // If we want password + phone, it's different.
+            // The current UI asks for password.
+            // If we want Phone + Password, we might need to use `signUp.email` but with phone? No.
+            // Let's assume we want Phone + OTP (no password) or Phone + Password.
+            // The `phoneNumber` plugin in better-auth is usually for OTP based auth.
+            // If we want Phone + Password, we might need to add `phoneNumber` to `user` schema and use `emailAndPassword` but allow phone?
+            // But `better-auth` `emailAndPassword` is strictly email.
+            // So `phoneNumber` plugin is likely OTP only or Phone + Password if configured.
+            // Let's try to use `sendOtp` to see if the route exists.
+
+            await authClient.phoneNumber.sendOtp({
                 phoneNumber: formData.phoneNumber,
-                password: formData.password,
-                name: formData.name,
+                type: "sign-up", // or "sign-in"
+                // password: formData.password // If we want to set password?
             }, {
                 onSuccess: async () => {
-                    // OTP is sent automatically by the plugin upon sign up usually, 
-                    // or we might need to trigger it. 
-                    // But better-auth phoneNumber plugin usually verifies phone number.
-                    // Let's assume we need to verify.
-                    // Actually, for better-auth phoneNumber, the signUp usually creates the user. 
-                    // If we want to verify, we might need to use verifyPhoneNumber.
-                    // But wait, the previous flow was: sign up -> send otp -> verify.
-                    // Let's check if we need to manually send OTP for phone.
-                    // Based on my config, I have `sendOTP`.
-                    // So likely I need to call something to trigger it if it's not automatic.
-                    // But `signUp.phoneNumber` might not trigger verification automatically unless configured.
-                    // Let's try to just set step to OTP and see if we receive it. 
-                    // If not, we might need to call sendVerificationCode.
                     setStep("otp");
                     setLoading(false);
                 },
@@ -168,15 +169,6 @@ export default function LoginPage() {
                 {step === "initial" && (
                     <div className="flex justify-center space-x-4 mb-6">
                         <button
-                            onClick={() => setMethod("email")}
-                            className={`px-4 py-2 text-sm font-medium rounded-md ${method === "email"
-                                ? "bg-red-100 text-red-700"
-                                : "text-gray-500 hover:text-gray-700"
-                                }`}
-                        >
-                            Email
-                        </button>
-                        <button
                             onClick={() => setMethod("phone")}
                             className={`px-4 py-2 text-sm font-medium rounded-md ${method === "phone"
                                 ? "bg-red-100 text-red-700"
@@ -184,6 +176,15 @@ export default function LoginPage() {
                                 }`}
                         >
                             Phone
+                        </button>
+                        <button
+                            onClick={() => setMethod("email")}
+                            className={`px-4 py-2 text-sm font-medium rounded-md ${method === "email"
+                                ? "bg-red-100 text-red-700"
+                                : "text-gray-500 hover:text-gray-700"
+                                }`}
+                        >
+                            Email
                         </button>
                     </div>
                 )}
@@ -280,7 +281,7 @@ export default function LoginPage() {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
+                                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
                             >
                                 {loading ? "Loading..." : (isRegister ? "Sign Up" : "Sign In")}
                             </button>
@@ -299,7 +300,7 @@ export default function LoginPage() {
                             <button
                                 onClick={() => handleSignIn("google")}
                                 disabled={loading}
-                                className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
+                                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
                             >
                                 Google
                             </button>
