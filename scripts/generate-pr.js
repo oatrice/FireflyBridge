@@ -25,11 +25,14 @@ console.log(`📊 Comparing: ${baseCommit}..HEAD\n`);
 // Get git info
 const { diffShortStat, changedFiles } = getGitInfo(baseCommit);
 
-// Parse diff stats
-const statsMatch = diffShortStat.match(/(\d+) files? changed(?:, (\d+) insertions?\(\+\))?(?:, (\d+) deletions?\(-\))?/);
-const filesChanged = statsMatch ? parseInt(statsMatch[1]) : 0;
-const insertions = statsMatch && statsMatch[2] ? parseInt(statsMatch[2]) : 0;
-const deletions = statsMatch && statsMatch[3] ? parseInt(statsMatch[3]) : 0;
+// Parse diff stats safely to avoid ReDoS
+const filesChangedMatch = diffShortStat.match(/(\d+) files? changed/);
+const insertionsMatch = diffShortStat.match(/(\d+) insertions?\(\+\)/);
+const deletionsMatch = diffShortStat.match(/(\d+) deletions?\(-\)/);
+
+const filesChanged = filesChangedMatch ? parseInt(filesChangedMatch[1]) : 0;
+const insertions = insertionsMatch ? parseInt(insertionsMatch[1]) : 0;
+const deletions = deletionsMatch ? parseInt(deletionsMatch[1]) : 0;
 
 // Categorize files
 const categories = {

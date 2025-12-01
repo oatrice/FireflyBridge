@@ -179,11 +179,4 @@ async function generatePR() {
     }
 }
 
-// Run with fetch polyfill for older Node versions
-if (typeof fetch === 'undefined') {
-    console.log('📦 Installing fetch polyfill...');
-    require('child_process').execSync('npm install node-fetch@2', { stdio: 'inherit' });
-    global.fetch = require('node-fetch');
-}
-
 generatePR();
