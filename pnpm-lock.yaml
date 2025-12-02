@@ -103,6 +103,15 @@ importers:
       '@types/react-dom':
         specifier: ^19
         version: 19.2.3(@types/react@19.2.7)
+      allure-commandline:
+        specifier: ^2.34.1
+        version: 2.34.1
+      allure-jest:
+        specifier: ^3.4.3
+        version: 3.4.3(allure-playwright@3.4.3(@playwright/test@1.57.0))(jest-circus@30.2.0)(jest-cli@30.2.0(@types/node@20.19.25)(esbuild-register@3.6.0(esbuild@0.25.12)))(jest-environment-jsdom@30.2.0)(jest-environment-node@30.2.0)(jest@30.2.0(@types/node@20.19.25)(esbuild-register@3.6.0(esbuild@0.25.12)))
+      allure-playwright:
+        specifier: ^3.4.3
+        version: 3.4.3(@playwright/test@1.57.0)
       dotenv:
         specifier: ^17.2.3
         version: 17.2.3
@@ -1539,6 +1548,43 @@ packages:
   ajv@6.12.6:
     resolution: {integrity: sha512-j3fVLgvTo527anyYyJOGTYJbG+vnnQYvE0m5mmkc1TK+nxAppkCLMIL0aZ4dblVCNoGShhm+kzE4ZUykBoMg4g==}
 
+  allure-commandline@2.34.1:
+    resolution: {integrity: sha512-l42csZ2bz7FdtJI1t5zA3IXtOZ0YJaP/+JMRC9gt6aBHRVUIu+6r+3F7KRyshQ79osLz9/MHlGqAjBPRqH0QFw==}
+    hasBin: true
+
+  allure-jest@3.4.3:
+    resolution: {integrity: sha512-d4l4X3q8lsbs/Ce9xG5S9i5Ggp0UZnjrKJnj2GJokXnsUKwM1UaXrIToaoDkJypDOM74iGF2DoF6cibfXZuptA==}
+    peerDependencies:
+      jest: '>=24.8.0'
+      jest-circus: '>=24.8.0'
+      jest-cli: '>=24.8.0'
+      jest-environment-jsdom: '>=24.8.0'
+      jest-environment-node: '>=24.8.0'
+    peerDependenciesMeta:
+      jest:
+        optional: true
+      jest-circus:
+        optional: true
+      jest-cli:
+        optional: true
+      jest-environment-jsdom:
+        optional: true
+      jest-environment-node:
+        optional: true
+
+  allure-js-commons@3.4.3:
+    resolution: {integrity: sha512-2n2uUFVmI7OaKXfkUPq2AcD1ksPR/WXZ9IhmQlMylb8bNpPChn1QPA/W97+RDYawFgvfhnadzIrH9ZWTWKjiNg==}
+    peerDependencies:
+      allure-playwright: 3.4.3
+    peerDependenciesMeta:
+      allure-playwright:
+        optional: true
+
+  allure-playwright@3.4.3:
+    resolution: {integrity: sha512-yrRwxloT5eSDXm6PDo1UCWpdPF7WRifhXwdBsZX1r8eXpQLhwHOZSzAvXP3Q3LcLdQpgn0cUjDIteBvuY2+75Q==}
+    peerDependencies:
+      '@playwright/test': '>=1.53.0'
+
   ansi-escapes@4.3.2:
     resolution: {integrity: sha512-gKXj5ALrKWQLsYG9jlTRmR/xKluxHV+Z9QEwNIgCfM1/uwPMCuzVVnh5mwTd+OuBZcwSIMbqssNWRm1lE51QaQ==}
     engines: {node: '>=8'}
@@ -1762,6 +1808,9 @@ packages:
     resolution: {integrity: sha512-kWWXztvZ5SBQV+eRgKFeh8q5sLuZY2+8WUIzlxWVTg+oGwY14qylx1KbKzHd8P6ZYkAg0xyIDU9JMHhyJMZ1jw==}
     engines: {node: '>=10'}
 
+  charenc@0.0.2:
+    resolution: {integrity: sha512-yrLQ/yVUFXkzg7EDQsPieE/53+0RlaWTs+wBrvW36cyilJ2SaDWfl4Yj7MtLTXleV9uEKefbAGUPv2/iWSooRA==}
+
   ci-info@4.3.1:
     resolution: {integrity: sha512-Wdy2Igu8OcBpI2pZePZ5oWjPC38tmDVx5WKUXKwlLYkA0ozo85sLsLvkBbBn/sZaSCMFOGZJ14fvW9t5/d7kdA==}
     engines: {node: '>=8'}
@@ -1807,6 +1856,9 @@ packages:
   cross-spawn@7.0.6:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
     engines: {node: '>= 8'}
+
+  crypt@0.0.2:
+    resolution: {integrity: sha512-mCxBlsHFYh9C+HVpiEacem8FEBnMXgU9gy4zmNC+SXAZNB/1idgp/aulFJ4FgCi7GPEVbfyng092GqL2k2rmow==}
 
   css.escape@1.5.1:
     resolution: {integrity: sha512-YUifsXXuknHlUsmlgyY0PKzgPOr7/FjCePfHNt0jxm83wHZi44VDMQ7/fGNkjY3/jV1MC+1CmZbaHzugyeRtpg==}
@@ -2542,6 +2594,9 @@ packages:
     resolution: {integrity: sha512-wa56o2/ElJMYqjCjGkXri7it5FbebW5usLw/nPmCMs5DeZ7eziSYZhSmPRn0txqeW4LnAmQQU7FgqLpsEFKM4A==}
     engines: {node: '>= 0.4'}
 
+  is-buffer@1.1.6:
+    resolution: {integrity: sha512-NcdALwpXkTm5Zvvbk7owOUSvVvBKDgKP5/ewfXEznmQFfs4ZRmanOeKBTjRVjka3QFoN6XJ+9F3USqfHqTaU5w==}
+
   is-bun-module@2.0.0:
     resolution: {integrity: sha512-gNCGbnnnnFAUGKeZ9PdbyeGYJqewpmc2aKHUEMO5nQPWU9lOmv7jcmQIv+qHD8fXW6W7qfuCwX4rY9LNRjXrkQ==}
 
@@ -3008,6 +3063,9 @@ packages:
   math-intrinsics@1.1.0:
     resolution: {integrity: sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==}
     engines: {node: '>= 0.4'}
+
+  md5@2.3.0:
+    resolution: {integrity: sha512-T1GITYmFaKuO91vxyoQMFETst+O71VUPEU3ze5GNzDm0OWdP8v1ziTaAEPUr/3kLsY3Sftgz242A1SetQiDL7g==}
 
   memoirist@0.4.0:
     resolution: {integrity: sha512-zxTgA0mSYELa66DimuNQDvyLq36AwDlTuVRbnQtB+VuTcKWm5Qc4z3WkSpgsFWHNhexqkIooqpv4hdcqrX5Nmg==}
@@ -5142,6 +5200,31 @@ snapshots:
       json-schema-traverse: 0.4.1
       uri-js: 4.4.1
 
+  allure-commandline@2.34.1: {}
+
+  allure-jest@3.4.3(allure-playwright@3.4.3(@playwright/test@1.57.0))(jest-circus@30.2.0)(jest-cli@30.2.0(@types/node@20.19.25)(esbuild-register@3.6.0(esbuild@0.25.12)))(jest-environment-jsdom@30.2.0)(jest-environment-node@30.2.0)(jest@30.2.0(@types/node@20.19.25)(esbuild-register@3.6.0(esbuild@0.25.12))):
+    dependencies:
+      allure-js-commons: 3.4.3(allure-playwright@3.4.3(@playwright/test@1.57.0))
+    optionalDependencies:
+      jest: 30.2.0(@types/node@20.19.25)(esbuild-register@3.6.0(esbuild@0.25.12))
+      jest-circus: 30.2.0
+      jest-cli: 30.2.0(@types/node@20.19.25)(esbuild-register@3.6.0(esbuild@0.25.12))
+      jest-environment-jsdom: 30.2.0
+      jest-environment-node: 30.2.0
+    transitivePeerDependencies:
+      - allure-playwright
+
+  allure-js-commons@3.4.3(allure-playwright@3.4.3(@playwright/test@1.57.0)):
+    dependencies:
+      md5: 2.3.0
+    optionalDependencies:
+      allure-playwright: 3.4.3(@playwright/test@1.57.0)
+
+  allure-playwright@3.4.3(@playwright/test@1.57.0):
+    dependencies:
+      '@playwright/test': 1.57.0
+      allure-js-commons: 3.4.3(allure-playwright@3.4.3(@playwright/test@1.57.0))
+
   ansi-escapes@4.3.2:
     dependencies:
       type-fest: 0.21.3
@@ -5402,6 +5485,8 @@ snapshots:
 
   char-regex@1.0.2: {}
 
+  charenc@0.0.2: {}
+
   ci-info@4.3.1: {}
 
   cjs-module-lexer@2.1.1: {}
@@ -5437,6 +5522,8 @@ snapshots:
       path-key: 3.1.1
       shebang-command: 2.0.0
       which: 2.0.2
+
+  crypt@0.0.2: {}
 
   css.escape@1.5.1: {}
 
@@ -6267,6 +6354,8 @@ snapshots:
       call-bound: 1.0.4
       has-tostringtag: 1.0.2
 
+  is-buffer@1.1.6: {}
+
   is-bun-module@2.0.0:
     dependencies:
       semver: 7.7.3
@@ -6910,6 +6999,12 @@ snapshots:
       tmpl: 1.0.5
 
   math-intrinsics@1.1.0: {}
+
+  md5@2.3.0:
+    dependencies:
+      charenc: 0.0.2
+      crypt: 0.0.2
+      is-buffer: 1.1.6
 
   memoirist@0.4.0: {}
 

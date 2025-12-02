@@ -8,7 +8,10 @@ const createJestConfig = nextJest({
 // Add any custom config to be passed to Jest
 const customJestConfig = {
     coverageProvider: 'v8',
-    testEnvironment: 'jsdom',
+    testEnvironment: require.resolve('allure-jest/jsdom'),
+    testEnvironmentOptions: {
+        resultsDir: 'allure-results',
+    },
     // Add more setup options before each test is run
     setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
     moduleNameMapper: {

@@ -34,3 +34,33 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Testing
+
+This project uses Jest for unit tests and Playwright for E2E tests.
+
+### Running Tests
+
+- Run unit tests: `pnpm test`
+- Run E2E tests: `pnpm test:e2e`
+- Run all tests: `pnpm test:all`
+
+### Test Reports
+
+We use Allure Report for detailed test reporting.
+
+**Prerequisites:**
+- Java Runtime Environment (JRE) or Java Development Kit (JDK) must be installed.
+  - macOS: `brew install openjdk`
+
+**Generating Report:**
+1. Run tests to generate results:
+   ```bash
+   pnpm test
+   # or
+   pnpm test:e2e
+   ```
+2. Generate and open Allure report:
+   ```bash
+   pnpm test:report:allure
+   ```

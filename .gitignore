@@ -43,3 +43,5 @@ test-reports
 # PR Generator
 .pr-template-output.md
 apps/frontend/public/test-report.html
+apps/frontend/allure-results
+apps/frontend/allure-report
