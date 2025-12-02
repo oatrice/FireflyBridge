@@ -16,6 +16,8 @@ export interface Hotline {
         instagram?: string[];
         youtube?: string;
     };
+    isPopular?: boolean;
+    displayOrder?: number;
 }
 
 export interface ExternalLink {
@@ -33,8 +35,8 @@ export interface Shelter {
     location: string;
     status: string;
     contacts: Array<{ name: string; phone: string }>;
-    area: string;
-    icon: string;
+    area?: string;
+    icon?: string;
     link?: string;
 }
 
