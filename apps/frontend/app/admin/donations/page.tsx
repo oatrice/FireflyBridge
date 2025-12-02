@@ -193,8 +193,9 @@ export default function DonationsAdminPage() {
             >
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                        <label className="block text-sm font-medium text-neutral-700 mb-1">ชื่อหน่วยงาน/โครงการ</label>
+                        <label htmlFor="name" className="block text-sm font-medium text-neutral-700 mb-1">ชื่อหน่วยงาน/โครงการ</label>
                         <input
+                            id="name"
                             type="text"
                             required
                             value={formData.name}
@@ -205,8 +206,9 @@ export default function DonationsAdminPage() {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-neutral-700 mb-1">รายละเอียด</label>
+                        <label htmlFor="description" className="block text-sm font-medium text-neutral-700 mb-1">รายละเอียด</label>
                         <textarea
+                            id="description"
                             value={formData.description || ""}
                             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                             className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none h-20"
@@ -220,8 +222,9 @@ export default function DonationsAdminPage() {
                         </h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-neutral-700 mb-1">ธนาคาร</label>
+                                <label htmlFor="bankName" className="block text-sm font-medium text-neutral-700 mb-1">ธนาคาร</label>
                                 <input
+                                    id="bankName"
                                     type="text"
                                     value={formData.bankName || ""}
                                     onChange={(e) => setFormData({ ...formData, bankName: e.target.value })}
@@ -230,8 +233,9 @@ export default function DonationsAdminPage() {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-neutral-700 mb-1">เลขที่บัญชี</label>
+                                <label htmlFor="accountNumber" className="block text-sm font-medium text-neutral-700 mb-1">เลขที่บัญชี</label>
                                 <input
+                                    id="accountNumber"
                                     type="text"
                                     value={formData.accountNumber || ""}
                                     onChange={(e) => setFormData({ ...formData, accountNumber: e.target.value })}
@@ -240,8 +244,9 @@ export default function DonationsAdminPage() {
                                 />
                             </div>
                             <div className="md:col-span-2">
-                                <label className="block text-sm font-medium text-neutral-700 mb-1">ชื่อบัญชี</label>
+                                <label htmlFor="accountName" className="block text-sm font-medium text-neutral-700 mb-1">ชื่อบัญชี</label>
                                 <input
+                                    id="accountName"
                                     type="text"
                                     value={formData.accountName || ""}
                                     onChange={(e) => setFormData({ ...formData, accountName: e.target.value })}
@@ -269,8 +274,9 @@ export default function DonationsAdminPage() {
                         </h3>
                         <div className="space-y-2">
                             {formData.donationPoints?.map((point, index) => (
-                                <div key={index} className="flex gap-2">
+                                <div key={`point-${index}`} className="flex gap-2">
                                     <input
+                                        aria-label={`จุดรับบริจาค ${index + 1}`}
                                         type="text"
                                         value={point}
                                         onChange={(e) => updatePoint(index, e.target.value)}
@@ -282,6 +288,7 @@ export default function DonationsAdminPage() {
                                             type="button"
                                             onClick={() => removePointField(index)}
                                             className="px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg"
+                                            title="ลบจุดรับบริจาค"
                                         >
                                             🗑️
                                         </button>
@@ -304,8 +311,9 @@ export default function DonationsAdminPage() {
                         </h3>
                         <div className="space-y-2">
                             {formData.contacts?.map((contact, index) => (
-                                <div key={index} className="flex gap-2">
+                                <div key={`contact-${index}`} className="flex gap-2">
                                     <input
+                                        aria-label={`ชื่อผู้ติดต่อ ${index + 1}`}
                                         type="text"
                                         value={contact.name}
                                         onChange={(e) => updateContact(index, 'name', e.target.value)}
@@ -313,6 +321,7 @@ export default function DonationsAdminPage() {
                                         placeholder="ชื่อผู้ติดต่อ"
                                     />
                                     <input
+                                        aria-label={`เบอร์โทรผู้ติดต่อ ${index + 1}`}
                                         type="text"
                                         value={contact.phone}
                                         onChange={(e) => updateContact(index, 'phone', e.target.value)}
@@ -324,6 +333,7 @@ export default function DonationsAdminPage() {
                                             type="button"
                                             onClick={() => removeContactField(index)}
                                             className="px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg"
+                                            title="ลบผู้ติดต่อ"
                                         >
                                             🗑️
                                         </button>

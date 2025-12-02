@@ -165,8 +165,9 @@ export default function SheltersAdminPage() {
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-neutral-700 mb-1">ชื่อศูนย์พักพิง</label>
+                            <label htmlFor="name" className="block text-sm font-medium text-neutral-700 mb-1">ชื่อศูนย์พักพิง</label>
                             <input
+                                id="name"
                                 type="text"
                                 required
                                 value={formData.name}
@@ -176,8 +177,9 @@ export default function SheltersAdminPage() {
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-neutral-700 mb-1">พื้นที่ (อำเภอ/ตำบล)</label>
+                            <label htmlFor="area" className="block text-sm font-medium text-neutral-700 mb-1">พื้นที่ (อำเภอ/ตำบล)</label>
                             <input
+                                id="area"
                                 type="text"
                                 value={formData.area || ""}
                                 onChange={(e) => setFormData({ ...formData, area: e.target.value })}
@@ -188,8 +190,9 @@ export default function SheltersAdminPage() {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-neutral-700 mb-1">ที่ตั้ง (Google Maps Link หรือที่อยู่)</label>
+                        <label htmlFor="location" className="block text-sm font-medium text-neutral-700 mb-1">ที่ตั้ง (Google Maps Link หรือที่อยู่)</label>
                         <input
+                            id="location"
                             type="text"
                             required
                             value={formData.location}
@@ -201,8 +204,9 @@ export default function SheltersAdminPage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-neutral-700 mb-1">สถานะ</label>
+                            <label htmlFor="status" className="block text-sm font-medium text-neutral-700 mb-1">สถานะ</label>
                             <select
+                                id="status"
                                 value={formData.status}
                                 onChange={(e) => setFormData({ ...formData, status: e.target.value })}
                                 className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
@@ -213,8 +217,9 @@ export default function SheltersAdminPage() {
                             </select>
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-neutral-700 mb-1">ไอคอน (Emoji)</label>
+                            <label htmlFor="icon" className="block text-sm font-medium text-neutral-700 mb-1">ไอคอน (Emoji)</label>
                             <input
+                                id="icon"
                                 type="text"
                                 value={formData.icon || "🏠"}
                                 onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
@@ -225,11 +230,12 @@ export default function SheltersAdminPage() {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-neutral-700 mb-1">ผู้ติดต่อ</label>
-                        <div className="space-y-2">
+                        <label htmlFor="contacts" className="block text-sm font-medium text-neutral-700 mb-1">ผู้ติดต่อ</label>
+                        <div id="contacts" className="space-y-2">
                             {formData.contacts?.map((contact, index) => (
-                                <div key={index} className="flex gap-2">
+                                <div key={`contact-${index}`} className="flex gap-2">
                                     <input
+                                        aria-label={`ชื่อผู้ติดต่อ ${index + 1}`}
                                         type="text"
                                         value={contact.name}
                                         onChange={(e) => updateContact(index, 'name', e.target.value)}
@@ -237,6 +243,7 @@ export default function SheltersAdminPage() {
                                         placeholder="ชื่อผู้ติดต่อ"
                                     />
                                     <input
+                                        aria-label={`เบอร์โทรผู้ติดต่อ ${index + 1}`}
                                         type="text"
                                         value={contact.phone}
                                         onChange={(e) => updateContact(index, 'phone', e.target.value)}
@@ -248,6 +255,7 @@ export default function SheltersAdminPage() {
                                             type="button"
                                             onClick={() => removeContactField(index)}
                                             className="px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg"
+                                            title="ลบผู้ติดต่อ"
                                         >
                                             🗑️
                                         </button>
@@ -265,8 +273,9 @@ export default function SheltersAdminPage() {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-neutral-700 mb-1">ลิงก์เพิ่มเติม (ถ้ามี)</label>
+                        <label htmlFor="link" className="block text-sm font-medium text-neutral-700 mb-1">ลิงก์เพิ่มเติม (ถ้ามี)</label>
                         <input
+                            id="link"
                             type="text"
                             value={formData.link || ""}
                             onChange={(e) => setFormData({ ...formData, link: e.target.value })}

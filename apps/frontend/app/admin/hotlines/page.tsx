@@ -157,8 +157,9 @@ export default function HotlinesAdminPage() {
             >
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                        <label className="block text-sm font-medium text-neutral-700 mb-1">ชื่อหน่วยงาน</label>
+                        <label htmlFor="name" className="block text-sm font-medium text-neutral-700 mb-1">ชื่อหน่วยงาน</label>
                         <input
+                            id="name"
                             type="text"
                             name="name"
                             required
@@ -170,8 +171,9 @@ export default function HotlinesAdminPage() {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-neutral-700 mb-1">หมวดหมู่</label>
+                        <label htmlFor="category" className="block text-sm font-medium text-neutral-700 mb-1">หมวดหมู่</label>
                         <select
+                            id="category"
                             name="category"
                             value={formData.category}
                             onChange={(e) => setFormData({ ...formData, category: e.target.value })}
@@ -188,11 +190,12 @@ export default function HotlinesAdminPage() {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-neutral-700 mb-1">เบอร์โทรศัพท์</label>
-                        <div className="space-y-2">
+                        <label htmlFor="numbers" className="block text-sm font-medium text-neutral-700 mb-1">เบอร์โทรศัพท์</label>
+                        <div id="numbers" className="space-y-2">
                             {formData.numbers?.map((num, index) => (
-                                <div key={index} className="flex gap-2">
+                                <div key={`number-${index}`} className="flex gap-2">
                                     <input
+                                        aria-label={`เบอร์โทรศัพท์ ${index + 1}`}
                                         type="text"
                                         name={`numbers.${index}`}
                                         value={num}
@@ -205,6 +208,7 @@ export default function HotlinesAdminPage() {
                                             type="button"
                                             onClick={() => removeNumberField(index)}
                                             className="px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg"
+                                            title="ลบเบอร์โทร"
                                         >
                                             🗑️
                                         </button>
@@ -222,8 +226,9 @@ export default function HotlinesAdminPage() {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-neutral-700 mb-1">รายละเอียดเพิ่มเติม</label>
+                        <label htmlFor="description" className="block text-sm font-medium text-neutral-700 mb-1">รายละเอียดเพิ่มเติม</label>
                         <textarea
+                            id="description"
                             name="description"
                             value={formData.description || ""}
                             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -234,8 +239,9 @@ export default function HotlinesAdminPage() {
 
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-neutral-700 mb-1">สีป้ายกำกับ (Tailwind Class)</label>
+                            <label htmlFor="color" className="block text-sm font-medium text-neutral-700 mb-1">สีป้ายกำกับ (Tailwind Class)</label>
                             <input
+                                id="color"
                                 type="text"
                                 name="color"
                                 value={formData.color || ""}

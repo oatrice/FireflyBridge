@@ -20,18 +20,18 @@ const createCrudHandlers = (
             return await db.select().from(table);
         })
         .post("/", async ({ body }: { body: any }) => {
-            const newItem = await db.insert(table).values(body as any).returning() as any[];
+            const newItem = await db.insert(table).values(body).returning() as any[];
             return newItem[0];
         }, { body: schema })
         .put("/:id", async ({ params: { id }, body }: { params: { id: string }, body: any }) => {
             const updatedItem = await db.update(table)
-                .set({ ...body as any, updatedAt: new Date() })
-                .where(eq(table.id, parseInt(id)))
+                .set({ ...body, updatedAt: new Date() })
+                .where(eq(table.id, Number.parseInt(id)))
                 .returning() as any[];
             return updatedItem[0];
         }, { body: updateSchema })
         .delete("/:id", async ({ params: { id } }: { params: { id: string } }) => {
-            await db.delete(table).where(eq(table.id, parseInt(id)));
+            await db.delete(table).where(eq(table.id, Number.parseInt(id)));
             return { success: true };
         });
 };

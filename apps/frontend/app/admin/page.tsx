@@ -111,8 +111,8 @@ export default function AdminPage() {
 
             {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                {stats.map((stat, index) => (
-                    <div key={index} className="bg-white p-6 rounded-2xl shadow-sm border border-neutral-100">
+                {stats.map((stat) => (
+                    <div key={stat.title} className="bg-white p-6 rounded-2xl shadow-sm border border-neutral-100">
                         <div className="flex justify-between items-start mb-4">
                             <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl ${stat.color}`}>
                                 {stat.icon}

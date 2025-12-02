@@ -124,8 +124,9 @@ export default function ExternalLinksAdminPage() {
             >
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                        <label className="block text-sm font-medium text-neutral-700 mb-1">ชื่อเว็บไซต์/แพลตฟอร์ม</label>
+                        <label htmlFor="name" className="block text-sm font-medium text-neutral-700 mb-1">ชื่อเว็บไซต์/แพลตฟอร์ม</label>
                         <input
+                            id="name"
                             type="text"
                             name="name"
                             required
@@ -137,8 +138,9 @@ export default function ExternalLinksAdminPage() {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-neutral-700 mb-1">URL</label>
+                        <label htmlFor="url" className="block text-sm font-medium text-neutral-700 mb-1">URL</label>
                         <input
+                            id="url"
                             type="url"
                             name="url"
                             required
@@ -150,8 +152,9 @@ export default function ExternalLinksAdminPage() {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-neutral-700 mb-1">หมวดหมู่</label>
+                        <label htmlFor="category" className="block text-sm font-medium text-neutral-700 mb-1">หมวดหมู่</label>
                         <select
+                            id="category"
                             name="category"
                             value={formData.category}
                             onChange={(e) => setFormData({ ...formData, category: e.target.value })}
@@ -167,8 +170,9 @@ export default function ExternalLinksAdminPage() {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-neutral-700 mb-1">รายละเอียด</label>
+                        <label htmlFor="description" className="block text-sm font-medium text-neutral-700 mb-1">รายละเอียด</label>
                         <textarea
+                            id="description"
                             name="description"
                             value={formData.description || ""}
                             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -178,8 +182,9 @@ export default function ExternalLinksAdminPage() {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-neutral-700 mb-1">ไอคอน (Emoji)</label>
+                        <label htmlFor="icon" className="block text-sm font-medium text-neutral-700 mb-1">ไอคอน (Emoji)</label>
                         <input
+                            id="icon"
                             type="text"
                             name="icon"
                             value={formData.icon || ""}
