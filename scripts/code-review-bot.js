@@ -578,6 +578,7 @@ async function main() {
         let header = '';
         if (reviewType === 'unit') header = '## 🤖 AI Review: Unit Tests & Coverage\n\n';
         else if (reviewType === 'allure') header = '## 🤖 AI Review: E2E & Allure Report\n\n';
+        else if (reviewType === 'full') header = '## 🤖 AI Review: Combined Summary (Unit + E2E)\n\n';
 
         await postComment(header + review, testResults, coverageData, prDetails.commitInfo);
 
