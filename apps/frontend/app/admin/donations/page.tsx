@@ -16,7 +16,7 @@ interface DonationForm {
     acceptsMoney: boolean;
 }
 
-const generateId = () => Math.random().toString(36).substring(7);
+const generateId = () => crypto.randomUUID();
 
 export default function DonationsAdminPage() {
     const initialFormData: DonationForm = {

@@ -13,7 +13,7 @@ interface HotlineForm {
     isPopular: boolean;
 }
 
-const generateId = () => Math.random().toString(36).substring(7);
+const generateId = () => crypto.randomUUID();
 
 export default function HotlinesAdminPage() {
     const initialFormData: HotlineForm = {
