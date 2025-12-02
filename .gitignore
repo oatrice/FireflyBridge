@@ -45,3 +45,4 @@ test-reports
 apps/frontend/public/test-report.html
 apps/frontend/allure-results
 apps/frontend/allure-report
+apps/frontend/public/test-report.html
