@@ -27,6 +27,11 @@ export default function AdminSidebar() {
             path: "/admin/donations",
             icon: "💰",
         },
+        {
+            title: "ลิงก์ภายนอก (External Links)",
+            path: "/admin/external-links",
+            icon: "🔗",
+        },
     ];
 
     return (
@@ -45,8 +50,8 @@ export default function AdminSidebar() {
                             key={item.path}
                             href={item.path}
                             className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${isActive
-                                    ? "bg-blue-50 text-blue-600 font-medium shadow-sm"
-                                    : "text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900"
+                                ? "bg-blue-50 text-blue-600 font-medium shadow-sm"
+                                : "text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900"
                                 }`}
                         >
                             <span className="text-xl">{item.icon}</span>

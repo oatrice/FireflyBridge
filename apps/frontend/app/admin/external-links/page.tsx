@@ -206,14 +206,15 @@ export default function ExternalLinksAdminPage() {
             >
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                        <label className="block text-sm font-medium text-neutral-700 mb-1">ชื่อเว็บไซต์</label>
+                        <label className="block text-sm font-medium text-neutral-700 mb-1">ชื่อเว็บไซต์/แพลตฟอร์ม</label>
                         <input
                             type="text"
+                            name="name"
                             required
                             value={formData.name}
                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                            className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none"
-                            placeholder="เช่น กรมอุตุนิยมวิทยา"
+                            className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                            placeholder="เช่น HatYaiFlood.com"
                         />
                     </div>
 
@@ -221,44 +222,52 @@ export default function ExternalLinksAdminPage() {
                         <label className="block text-sm font-medium text-neutral-700 mb-1">URL</label>
                         <input
                             type="url"
+                            name="url"
                             required
                             value={formData.url}
                             onChange={(e) => setFormData({ ...formData, url: e.target.value })}
-                            className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none"
+                            className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                             placeholder="https://..."
                         />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-neutral-700 mb-1">หมวดหมู่</label>
-                            <input
-                                type="text"
-                                value={formData.category}
-                                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                                className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none"
-                                placeholder="เช่น พยากรณ์อากาศ"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-neutral-700 mb-1">ไอคอน (Emoji)</label>
-                            <input
-                                type="text"
-                                value={formData.icon}
-                                onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
-                                className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none"
-                                placeholder="🔗"
-                            />
-                        </div>
+                    <div>
+                        <label className="block text-sm font-medium text-neutral-700 mb-1">หมวดหมู่</label>
+                        <select
+                            name="category"
+                            value={formData.category}
+                            onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                            className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                        >
+                            <option value="ทั่วไป">ทั่วไป</option>
+                            <option value="น้ำท่วม">น้ำท่วม</option>
+                            <option value="จราจร">จราจร</option>
+                            <option value="กล้อง CCTV">กล้อง CCTV</option>
+                            <option value="หน่วยงานรัฐ">หน่วยงานรัฐ</option>
+                            <option value="อื่นๆ">อื่นๆ</option>
+                        </select>
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-neutral-700 mb-1">รายละเอียดเพิ่มเติม</label>
+                        <label className="block text-sm font-medium text-neutral-700 mb-1">รายละเอียด</label>
                         <textarea
+                            name="description"
                             value={formData.description || ""}
                             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                            className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none h-24"
+                            className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none h-24"
                             placeholder="รายละเอียดเกี่ยวกับเว็บไซต์..."
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-neutral-700 mb-1">ไอคอน (Emoji)</label>
+                        <input
+                            type="text"
+                            name="icon"
+                            value={formData.icon || ""}
+                            onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
+                            className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                            placeholder="🌊"
                         />
                     </div>
 

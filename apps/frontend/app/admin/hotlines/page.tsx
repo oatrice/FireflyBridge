@@ -239,6 +239,7 @@ export default function HotlinesAdminPage() {
                         <label className="block text-sm font-medium text-neutral-700 mb-1">ชื่อหน่วยงาน</label>
                         <input
                             type="text"
+                            name="name"
                             required
                             value={formData.name}
                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -250,6 +251,7 @@ export default function HotlinesAdminPage() {
                     <div>
                         <label className="block text-sm font-medium text-neutral-700 mb-1">หมวดหมู่</label>
                         <select
+                            name="category"
                             value={formData.category}
                             onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                             className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
@@ -271,6 +273,7 @@ export default function HotlinesAdminPage() {
                                 <div key={index} className="flex gap-2">
                                     <input
                                         type="text"
+                                        name={`numbers.${index}`}
                                         value={num}
                                         onChange={(e) => updateNumber(index, e.target.value)}
                                         className="flex-1 px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
@@ -300,6 +303,7 @@ export default function HotlinesAdminPage() {
                     <div>
                         <label className="block text-sm font-medium text-neutral-700 mb-1">รายละเอียดเพิ่มเติม</label>
                         <textarea
+                            name="description"
                             value={formData.description || ""}
                             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                             className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none h-24"
@@ -312,6 +316,7 @@ export default function HotlinesAdminPage() {
                             <label className="block text-sm font-medium text-neutral-700 mb-1">สีป้ายกำกับ (Tailwind Class)</label>
                             <input
                                 type="text"
+                                name="color"
                                 value={formData.color || ""}
                                 onChange={(e) => setFormData({ ...formData, color: e.target.value })}
                                 className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"

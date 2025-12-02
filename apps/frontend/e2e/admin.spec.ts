@@ -41,8 +41,8 @@ test.describe('Admin Dashboard', () => {
     });
 
     test('should allow admin to add, edit, and delete hotline', async ({ page }) => {
-        // 1. Navigate to Hotlines
-        await page.click('a[href="/admin/hotlines"]');
+        // 1. Navigate to Hotlines using Quick Actions card
+        await page.locator('.grid a[href="/admin/hotlines"]').click();
         await expect(page).toHaveURL(/\/admin\/hotlines/);
 
         // 2. Add New Hotline
@@ -83,7 +83,7 @@ test.describe('Admin Dashboard', () => {
 
         // Verify update
         await expect(page.getByText(newName)).toBeVisible();
-        await expect(page.getByText(testName)).not.toBeVisible();
+        await expect(page.getByText(testName, { exact: true })).not.toBeVisible();
 
         // 4. Delete Hotline
         const updatedRow = page.locator(`tr:has-text("${newName}")`).first();
@@ -102,19 +102,19 @@ test.describe('Admin Dashboard', () => {
     });
 
     test('should allow admin to navigate to shelters', async ({ page }) => {
-        await page.click('a[href="/admin/shelters"]');
+        await page.locator('.grid a[href="/admin/shelters"]').click();
         await expect(page).toHaveURL(/\/admin\/shelters/);
         await expect(page.locator('h1')).toContainText('Shelters');
     });
 
     test('should allow admin to navigate to donations', async ({ page }) => {
-        await page.click('a[href="/admin/donations"]');
+        await page.locator('.grid a[href="/admin/donations"]').click();
         await expect(page).toHaveURL(/\/admin\/donations/);
         await expect(page.locator('h1')).toContainText('Donations');
     });
 
     test('should allow admin to navigate to external links', async ({ page }) => {
-        await page.click('a[href="/admin/external-links"]');
+        await page.locator('.grid a[href="/admin/external-links"]').click();
         await expect(page).toHaveURL(/\/admin\/external-links/);
         await expect(page.locator('h1')).toContainText('External Links');
     });
