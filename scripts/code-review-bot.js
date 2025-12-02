@@ -134,14 +134,23 @@ async function getPRDetails() {
     };
 }
 
-async function generateReview(prDetails, testResults, coverageData, uncoveredAreas) {
+async function generateReview(prDetails, testResults, coverageData, uncoveredAreas, allureStats) {
     const reviewScope = prDetails.commitInfo
         ? `Commit: ${prDetails.commitInfo.sha} (${prDetails.commitInfo.message})`
         : 'ทั้ง Pull Request';
 
     // Format test and coverage info for AI
     let testCoverageInfo = '\n';
-    if (testResults) {
+
+    if (allureStats) {
+        testCoverageInfo += `\nAllure Report Stats:\n`;
+        testCoverageInfo += `- Total: ${allureStats.total}\n`;
+        testCoverageInfo += `- Passed: ${allureStats.passed}\n`;
+        testCoverageInfo += `- Failed: ${allureStats.failed}\n`;
+        testCoverageInfo += `- Broken: ${allureStats.broken}\n`;
+        testCoverageInfo += `- Skipped: ${allureStats.skipped}\n`;
+    } else if (testResults) {
+        // Fallback to standard test results if Allure not available
         const status = testResults.success ? 'PASSED ✅' : 'FAILED ❌';
         testCoverageInfo += `\nTest Results: ${status}\n`;
         testCoverageInfo += `- Passed: ${testResults.numPassedTests}/${testResults.numTotalTests}\n`;
@@ -441,6 +450,30 @@ async function analyzeDetailedCoverage() {
     }
 }
 
+async function readAllureSummary() {
+    const fs = require('fs');
+    const path = require('path');
+
+    try {
+        console.log('Reading Allure report summary...');
+        // Allure generates a widgets/summary.json file which contains high-level stats
+        const summaryPath = path.join(process.cwd(), 'allure-report', 'widgets', 'summary.json');
+
+        if (!fs.existsSync(summaryPath)) {
+            console.warn('Allure summary file not found at:', summaryPath);
+            return null;
+        }
+
+        const summaryData = JSON.parse(fs.readFileSync(summaryPath, 'utf8'));
+
+        // Structure: { reportName: ..., testRuns: [], statistic: { failed: 0, broken: 0, skipped: 0, passed: 0, unknown: 0, total: 0 }, ... }
+        return summaryData.statistic;
+    } catch (error) {
+        console.error('Error reading Allure summary:', error.message);
+        return null;
+    }
+}
+
 function formatTestAndCoverageReport(testResults, coverage, commitInfo) {
     let report = '\n\n---\n\n## 🧪 Test Results\n\n';
 
@@ -478,6 +511,16 @@ function formatTestAndCoverageReport(testResults, coverage, commitInfo) {
         report += '⚠️ Could not retrieve coverage data.\n';
     }
 
+    // Add Allure Report Link
+    // Note: This assumes the artifact is downloadable from the Actions run summary page
+    const runId = process.env.GITHUB_RUN_ID;
+    const repoUrl = `https://github.com/${process.env.REPO_OWNER}/${process.env.REPO_NAME}`;
+    if (runId) {
+        report += `\n\n### 📈 Detailed Reports\n`;
+        report += `You can download the full **Allure Report** from the [Actions Run Summary](${repoUrl}/actions/runs/${runId}).\n`;
+        report += `(Look for the **allure-report** artifact at the bottom of the page)\n`;
+    }
+
     return report;
 }
 
@@ -512,8 +555,11 @@ async function main() {
         console.log('Analyzing uncovered code areas...');
         const uncoveredAreas = await analyzeDetailedCoverage();
 
+        console.log('Reading Allure summary...');
+        const allureStats = await readAllureSummary();
+
         console.log('Generating review...');
-        const review = await generateReview(prDetails, testResults, coverageData, uncoveredAreas);
+        const review = await generateReview(prDetails, testResults, coverageData, uncoveredAreas, allureStats);
 
         console.log('Posting comment...');
         await postComment(review, testResults, coverageData, prDetails.commitInfo);

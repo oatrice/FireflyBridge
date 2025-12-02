@@ -1,0 +1,70 @@
+name: Allure Report
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  test-and-report:
+    name: Run Tests & Generate Report
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Install Dependencies
+        run: pnpm install
+
+      - name: Install Playwright Browsers
+        run: |
+          cd apps/frontend
+          pnpm exec playwright install --with-deps
+
+      - name: Run Tests
+        id: run-tests
+        run: |
+          cd apps/frontend
+          pnpm test:all
+        continue-on-error: true
+
+      - name: Load Test Report History
+        uses: actions/checkout@v4
+        if: always()
+        continue-on-error: true
+        with:
+          ref: gh-pages
+          path: gh-pages
+
+      - name: Build Allure Report
+        uses: simple-elf/allure-report-action@master
+        if: always()
+        with:
+          allure_results: apps/frontend/allure-results
+          allure_history: allure-history
+          keep_reports: 20
+
+      - name: Deploy Report to GitHub Pages
+        if: always()
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: allure-history

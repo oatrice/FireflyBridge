@@ -57,6 +57,32 @@ jobs:
             apps/frontend/coverage/coverage-final.json
           retention-days: 1
 
+      - name: Install Playwright Browsers
+        run: |
+          cd apps/frontend
+          pnpm exec playwright install --with-deps
+
+      - name: Run Tests with Allure
+        run: |
+          cd apps/frontend
+          pnpm test:all
+        continue-on-error: true
+
+      - name: Generate Allure Report
+        if: always()
+        run: |
+          cd apps/frontend
+          pnpm test:report:allure:generate
+        continue-on-error: true
+
+      - name: Upload Allure Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report
+          path: apps/frontend/allure-report
+          retention-days: 1
+
   review:
     name: AI Code Review
     runs-on: ubuntu-latest
@@ -83,6 +109,13 @@ jobs:
         with:
           name: test-results
           path: ./test-results
+        continue-on-error: true
+
+      - name: Download Allure Report
+        uses: actions/download-artifact@v4
+        with:
+          name: allure-report
+          path: ./allure-report
         continue-on-error: true
 
       - name: Run AI Code Review
