@@ -1,126 +1,34 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { AdminModal } from "@/components/ui/AdminModal";
+import { useAdminCrud } from "@/hooks/useAdminCrud";
 import type { ExternalLink } from "@/lib/types";
 
 export default function ExternalLinksAdminPage() {
-    const [links, setLinks] = useState<ExternalLink[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [editingLink, setEditingLink] = useState<ExternalLink | null>(null);
-    const [formData, setFormData] = useState<Partial<ExternalLink>>({
+    const initialFormData: Partial<ExternalLink> = {
         name: "",
         url: "",
         description: "",
         category: "ทั่วไป",
         icon: "🔗",
-    });
-
-    // Fetch external links from the API
-    const fetchLinks = async () => {
-        try {
-            const res = await fetch("/api/external-links");
-            if (res.ok) {
-                const data = await res.json();
-                setLinks(data);
-            } else {
-                console.error("Failed to fetch external links, status:", res.status);
-                // Consider adding a toast notification here for better UX
-            }
-        } catch (error) {
-            console.error("Failed to fetch external links:", error);
-            // Consider adding a toast notification here for better UX
-        } finally {
-            setLoading(false);
-        }
     };
 
-    useEffect(() => {
-        fetchLinks();
-    }, []);
-
-    // Handle form submission for creating or updating an external link
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-
-        try {
-            // Determine URL and method based on whether we are editing or creating
-            const url = editingLink
-                ? `/api/external-links/${editingLink.id}`
-                : "/api/external-links";
-
-            const method = editingLink ? "PUT" : "POST";
-
-            const res = await fetch(url, {
-                method,
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(formData),
-            });
-
-            if (res.ok) {
-                // Reset form and close modal on success
-                setIsModalOpen(false);
-                setEditingLink(null);
-                setFormData({
-                    name: "",
-                    url: "",
-                    description: "",
-                    category: "ทั่วไป",
-                    icon: "🔗",
-                });
-                fetchLinks(); // Refresh the list
-            } else {
-                const errorData = await res.json().catch(() => ({}));
-                console.error("Failed to save external link:", errorData);
-                alert(`Failed to save external link: ${errorData.message || "Unknown error"}`);
-            }
-        } catch (error) {
-            console.error("Error saving external link:", error);
-            alert("An error occurred while saving the external link. Please try again.");
-        }
-    };
-
-    // Handle deletion of an external link
-    const handleDelete = async (id: string) => {
-        if (!confirm("Are you sure you want to delete this link?")) return;
-
-        try {
-            const res = await fetch(`/api/external-links/${id}`, {
-                method: "DELETE",
-            });
-
-            if (res.ok) {
-                fetchLinks(); // Refresh the list
-            } else {
-                console.error("Failed to delete external link, status:", res.status);
-                alert("Failed to delete external link. Please try again.");
-            }
-        } catch (error) {
-            console.error("Error deleting external link:", error);
-            alert("An error occurred while deleting the external link.");
-        }
-    };
-
-    // Open modal for editing
-    const handleEdit = (link: ExternalLink) => {
-        setEditingLink(link);
-        setFormData(link);
-        setIsModalOpen(true);
-    };
-
-    // Open modal for creating
-    const handleCreate = () => {
-        setEditingLink(null);
-        setFormData({
-            name: "",
-            url: "",
-            description: "",
-            category: "ทั่วไป",
-            icon: "🔗",
-        });
-        setIsModalOpen(true);
-    };
+    const {
+        items: links,
+        loading,
+        isModalOpen,
+        setIsModalOpen,
+        editingItem: editingLink,
+        formData,
+        setFormData,
+        handleSubmit,
+        handleDelete,
+        handleEdit,
+        handleCreate
+    } = useAdminCrud<ExternalLink>(
+        "/api/external-links",
+        initialFormData
+    );
 
     if (loading) return <div className="p-8 text-center">Loading...</div>;
 

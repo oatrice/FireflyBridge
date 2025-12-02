@@ -1,136 +1,47 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { AdminModal } from "@/components/ui/AdminModal";
+import { useAdminCrud } from "@/hooks/useAdminCrud";
 import type { Hotline } from "@/lib/types";
 
 export default function HotlinesAdminPage() {
-    const [hotlines, setHotlines] = useState<Hotline[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [editingHotline, setEditingHotline] = useState<Hotline | null>(null);
-    const [formData, setFormData] = useState<Partial<Hotline>>({
+    const initialFormData: Partial<Hotline> = {
         name: "",
         numbers: [""],
         category: "ทั่วไป",
         description: "",
         color: "bg-gray-500",
         isPopular: false,
+    };
+
+    const transformPayload = (data: Partial<Hotline>) => {
+        const cleanedNumbers = data.numbers?.filter(n => n.trim() !== "") || [];
+        return { ...data, numbers: cleanedNumbers };
+    };
+
+    const transformEditData = (hotline: Hotline) => ({
+        ...hotline,
+        numbers: hotline.numbers && hotline.numbers.length > 0 ? hotline.numbers : [hotline.number || ""],
     });
 
-    // Fetch hotlines from the API
-    const fetchHotlines = async () => {
-        try {
-            const res = await fetch("/api/hotlines");
-            if (res.ok) {
-                const data = await res.json();
-                setHotlines(data);
-            } else {
-                console.error("Failed to fetch hotlines, status:", res.status);
-                // Consider adding a toast notification here for better UX
-            }
-        } catch (error) {
-            console.error("Failed to fetch hotlines:", error);
-            // Consider adding a toast notification here for better UX
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchHotlines();
-    }, []);
-
-    // Handle form submission for creating or updating a hotline
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-
-        // Clean up numbers array: remove empty strings to ensure data integrity
-        const cleanedNumbers = formData.numbers?.filter(n => n.trim() !== "") || [];
-        const payload = { ...formData, numbers: cleanedNumbers };
-
-        try {
-            // Determine URL and method based on whether we are editing or creating
-            const url = editingHotline
-                ? `/api/hotlines/${editingHotline.id}`
-                : "/api/hotlines";
-
-            const method = editingHotline ? "PUT" : "POST";
-
-            const res = await fetch(url, {
-                method,
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload),
-            });
-
-            if (res.ok) {
-                // Reset form and close modal on success
-                setIsModalOpen(false);
-                setEditingHotline(null);
-                setFormData({
-                    name: "",
-                    numbers: [""],
-                    category: "ทั่วไป",
-                    description: "",
-                    color: "bg-gray-500",
-                    isPopular: false,
-                });
-                fetchHotlines(); // Refresh the list
-            } else {
-                const errorData = await res.json().catch(() => ({}));
-                console.error("Failed to save hotline:", errorData);
-                alert(`Failed to save hotline: ${errorData.message || "Unknown error"}`);
-            }
-        } catch (error) {
-            console.error("Error saving hotline:", error);
-            alert("An error occurred while saving the hotline. Please try again.");
-        }
-    };
-
-    // Handle deletion of a hotline
-    const handleDelete = async (id: string) => {
-        if (!confirm("Are you sure you want to delete this hotline?")) return;
-
-        try {
-            const res = await fetch(`/api/hotlines/${id}`, {
-                method: "DELETE",
-            });
-
-            if (res.ok) {
-                fetchHotlines(); // Refresh the list
-            } else {
-                console.error("Failed to delete hotline, status:", res.status);
-                alert("Failed to delete hotline. Please try again.");
-            }
-        } catch (error) {
-            console.error("Error deleting hotline:", error);
-            alert("An error occurred while deleting the hotline.");
-        }
-    };
-
-    // Open modal for editing
-    const handleEdit = (hotline: Hotline) => {
-        setEditingHotline(hotline);
-        setFormData({
-            ...hotline,
-            numbers: hotline.numbers && hotline.numbers.length > 0 ? hotline.numbers : [hotline.number || ""],
-        });
-        setIsModalOpen(true);
-    };
-
-    // Open modal for creating
-    const handleCreate = () => {
-        setEditingHotline(null);
-        setFormData({
-            name: "",
-            numbers: [""],
-            category: "ทั่วไป",
-            description: "",
-            color: "bg-gray-500",
-            isPopular: false,
-        });
-        setIsModalOpen(true);
-    };
+    const {
+        items: hotlines,
+        loading,
+        isModalOpen,
+        setIsModalOpen,
+        editingItem: editingHotline,
+        formData,
+        setFormData,
+        handleSubmit,
+        handleDelete,
+        handleEdit,
+        handleCreate
+    } = useAdminCrud<Hotline>(
+        "/api/hotlines",
+        initialFormData,
+        transformPayload,
+        transformEditData
+    );
 
     // Helper to update numbers array
     const updateNumber = (index: number, value: string) => {

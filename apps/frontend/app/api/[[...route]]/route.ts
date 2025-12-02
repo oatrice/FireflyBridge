@@ -36,6 +36,11 @@ const createCrudHandlers = (
         });
 };
 
+const contactSchema = t.Object({
+    name: t.String(),
+    phone: t.String()
+});
+
 const hotlineSchema = t.Object({
     name: t.String(),
     numbers: t.Optional(t.Array(t.String())),
@@ -47,42 +52,19 @@ const hotlineSchema = t.Object({
     displayOrder: t.Optional(t.Number())
 });
 
-const hotlineUpdateSchema = t.Object({
-    name: t.Optional(t.String()),
-    numbers: t.Optional(t.Array(t.String())),
-    category: t.Optional(t.String()),
-    description: t.Optional(t.String()),
-    color: t.Optional(t.String()),
-    links: t.Optional(t.Any()),
-    isPopular: t.Optional(t.Boolean()),
-    displayOrder: t.Optional(t.Number())
-});
+const hotlineUpdateSchema = t.Partial(hotlineSchema);
 
 const shelterSchema = t.Object({
     name: t.String(),
     location: t.String(),
     status: t.String(),
-    contacts: t.Optional(t.Array(t.Object({
-        name: t.String(),
-        phone: t.String()
-    }))),
+    contacts: t.Optional(t.Array(contactSchema)),
     area: t.Optional(t.String()),
     icon: t.Optional(t.String()),
     link: t.Optional(t.String())
 });
 
-const shelterUpdateSchema = t.Object({
-    name: t.Optional(t.String()),
-    location: t.Optional(t.String()),
-    status: t.Optional(t.String()),
-    contacts: t.Optional(t.Array(t.Object({
-        name: t.String(),
-        phone: t.String()
-    }))),
-    area: t.Optional(t.String()),
-    icon: t.Optional(t.String()),
-    link: t.Optional(t.String())
-});
+const shelterUpdateSchema = t.Partial(shelterSchema);
 
 const donationSchema = t.Object({
     name: t.String(),
@@ -91,28 +73,12 @@ const donationSchema = t.Object({
     accountName: t.Optional(t.String()),
     description: t.Optional(t.String()),
     qrCodeUrl: t.Optional(t.String()),
-    contacts: t.Optional(t.Array(t.Object({
-        name: t.String(),
-        phone: t.String()
-    }))),
+    contacts: t.Optional(t.Array(contactSchema)),
     donationPoints: t.Optional(t.Array(t.String())),
     acceptsMoney: t.Optional(t.Boolean())
 });
 
-const donationUpdateSchema = t.Object({
-    name: t.Optional(t.String()),
-    bankName: t.Optional(t.String()),
-    accountNumber: t.Optional(t.String()),
-    accountName: t.Optional(t.String()),
-    description: t.Optional(t.String()),
-    qrCodeUrl: t.Optional(t.String()),
-    contacts: t.Optional(t.Array(t.Object({
-        name: t.String(),
-        phone: t.String()
-    }))),
-    donationPoints: t.Optional(t.Array(t.String())),
-    acceptsMoney: t.Optional(t.Boolean())
-});
+const donationUpdateSchema = t.Partial(donationSchema);
 
 const externalLinkSchema = t.Object({
     name: t.String(),
@@ -122,13 +88,7 @@ const externalLinkSchema = t.Object({
     icon: t.Optional(t.String())
 });
 
-const externalLinkUpdateSchema = t.Object({
-    name: t.Optional(t.String()),
-    url: t.Optional(t.String()),
-    description: t.Optional(t.String()),
-    category: t.Optional(t.String()),
-    icon: t.Optional(t.String())
-});
+const externalLinkUpdateSchema = t.Partial(externalLinkSchema);
 
 export const app = new Elysia({ prefix: "/api" })
     .use(cors())

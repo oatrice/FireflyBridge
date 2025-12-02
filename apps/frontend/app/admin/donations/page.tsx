@@ -1,15 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { AdminModal } from "@/components/ui/AdminModal";
+import { useAdminCrud } from "@/hooks/useAdminCrud";
 import type { DonationChannel } from "@/lib/types";
 
 export default function DonationsAdminPage() {
-    const [donations, setDonations] = useState<DonationChannel[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [editingDonation, setEditingDonation] = useState<DonationChannel | null>(null);
-    const [formData, setFormData] = useState<Partial<DonationChannel>>({
+    const initialFormData: Partial<DonationChannel> = {
         name: "",
         bankName: "",
         accountNumber: "",
@@ -19,124 +15,42 @@ export default function DonationsAdminPage() {
         contacts: [{ name: "", phone: "" }],
         donationPoints: [""],
         acceptsMoney: true,
-    });
-
-    // Fetch donations
-    const fetchDonations = async () => {
-        try {
-            const res = await fetch("/api/donations");
-            if (res.ok) {
-                const data = await res.json();
-                setDonations(data);
-            }
-        } catch (error) {
-            console.error("Failed to fetch donations:", error);
-        } finally {
-            setLoading(false);
-        }
     };
 
-    useEffect(() => {
-        fetchDonations();
-    }, []);
-
-    // Handle form submit
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-
-        // Clean up data
-        const cleanedContacts = formData.contacts?.filter(c => c.name.trim() !== "" || c.phone.trim() !== "") || [];
-        const cleanedPoints = formData.donationPoints?.filter(p => p.trim() !== "") || [];
-
-        const payload = {
-            ...formData,
+    const transformPayload = (data: Partial<DonationChannel>) => {
+        const cleanedContacts = data.contacts?.filter(c => c.name.trim() !== "" || c.phone.trim() !== "") || [];
+        const cleanedPoints = data.donationPoints?.filter(p => p.trim() !== "") || [];
+        return {
+            ...data,
             contacts: cleanedContacts,
             donationPoints: cleanedPoints
         };
-
-        try {
-            const url = editingDonation
-                ? `/api/donations/${editingDonation.id}`
-                : "/api/donations";
-
-            const method = editingDonation ? "PUT" : "POST";
-
-            const res = await fetch(url, {
-                method,
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload),
-            });
-
-            if (res.ok) {
-                setIsModalOpen(false);
-                setEditingDonation(null);
-                setFormData({
-                    name: "",
-                    bankName: "",
-                    accountNumber: "",
-                    accountName: "",
-                    description: "",
-                    qrCodeUrl: "",
-                    contacts: [{ name: "", phone: "" }],
-                    donationPoints: [""],
-                    acceptsMoney: true,
-                });
-                fetchDonations();
-            } else {
-                alert("Failed to save donation channel");
-            }
-        } catch (error) {
-            console.error("Error saving donation:", error);
-            alert("Error saving donation");
-        }
     };
 
-    // Handle delete
-    const handleDelete = async (id: string) => {
-        if (!confirm("Are you sure you want to delete this donation channel?")) return;
+    const transformEditData = (donation: DonationChannel) => ({
+        ...donation,
+        contacts: donation.contacts && donation.contacts.length > 0 ? donation.contacts : [{ name: "", phone: "" }],
+        donationPoints: donation.donationPoints && donation.donationPoints.length > 0 ? donation.donationPoints : [""],
+    });
 
-        try {
-            const res = await fetch(`/api/donations/${id}`, {
-                method: "DELETE",
-            });
-
-            if (res.ok) {
-                fetchDonations();
-            } else {
-                alert("Failed to delete donation channel");
-            }
-        } catch (error) {
-            console.error("Error deleting donation:", error);
-        }
-    };
-
-    // Open modal for editing
-    const handleEdit = (donation: DonationChannel) => {
-        setEditingDonation(donation);
-        setFormData({
-            ...donation,
-            contacts: donation.contacts && donation.contacts.length > 0 ? donation.contacts : [{ name: "", phone: "" }],
-            donationPoints: donation.donationPoints && donation.donationPoints.length > 0 ? donation.donationPoints : [""],
-        });
-        setIsModalOpen(true);
-    };
-
-    // Open modal for creating
-    const handleCreate = () => {
-        setEditingDonation(null);
-        setFormData({
-            name: "",
-            bankName: "",
-            accountNumber: "",
-            accountName: "",
-            description: "",
-            qrCodeUrl: "",
-            contacts: [{ name: "", phone: "" }],
-            donationPoints: [""],
-            acceptsMoney: true,
-        });
-        setIsModalOpen(true);
-    };
+    const {
+        items: donations,
+        loading,
+        isModalOpen,
+        setIsModalOpen,
+        editingItem: editingDonation,
+        formData,
+        setFormData,
+        handleSubmit,
+        handleDelete,
+        handleEdit,
+        handleCreate
+    } = useAdminCrud<DonationChannel>(
+        "/api/donations",
+        initialFormData,
+        transformPayload,
+        transformEditData
+    );
 
     // Helper functions
     const updateContact = (index: number, field: 'name' | 'phone', value: string) => {

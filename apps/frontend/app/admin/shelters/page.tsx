@@ -1,15 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { AdminModal } from "@/components/ui/AdminModal";
+import { useAdminCrud } from "@/hooks/useAdminCrud";
 import type { Shelter } from "@/lib/types";
 
 export default function SheltersAdminPage() {
-    const [shelters, setShelters] = useState<Shelter[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [editingShelter, setEditingShelter] = useState<Shelter | null>(null);
-    const [formData, setFormData] = useState<Partial<Shelter>>({
+    const initialFormData: Partial<Shelter> = {
         name: "",
         location: "",
         status: "open",
@@ -17,113 +13,36 @@ export default function SheltersAdminPage() {
         area: "",
         icon: "🏠",
         link: "",
+    };
+
+    const transformPayload = (data: Partial<Shelter>) => {
+        const cleanedContacts = data.contacts?.filter(c => c.name.trim() !== "" || c.phone.trim() !== "") || [];
+        return { ...data, contacts: cleanedContacts };
+    };
+
+    const transformEditData = (shelter: Shelter) => ({
+        ...shelter,
+        contacts: shelter.contacts && shelter.contacts.length > 0 ? shelter.contacts : [{ name: "", phone: "" }],
     });
 
-    // Fetch shelters
-    const fetchShelters = async () => {
-        try {
-            const res = await fetch("/api/shelters");
-            if (res.ok) {
-                const data = await res.json();
-                setShelters(data);
-            }
-        } catch (error) {
-            console.error("Failed to fetch shelters:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchShelters();
-    }, []);
-
-    // Handle form submit
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-
-        // Clean up contacts
-        const cleanedContacts = formData.contacts?.filter(c => c.name.trim() !== "" || c.phone.trim() !== "") || [];
-        const payload = { ...formData, contacts: cleanedContacts };
-
-        try {
-            const url = editingShelter
-                ? `/api/shelters/${editingShelter.id}`
-                : "/api/shelters";
-
-            const method = editingShelter ? "PUT" : "POST";
-
-            const res = await fetch(url, {
-                method,
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload),
-            });
-
-            if (res.ok) {
-                setIsModalOpen(false);
-                setEditingShelter(null);
-                setFormData({
-                    name: "",
-                    location: "",
-                    status: "open",
-                    contacts: [{ name: "", phone: "" }],
-                    area: "",
-                    icon: "🏠",
-                    link: "",
-                });
-                fetchShelters();
-            } else {
-                alert("Failed to save shelter");
-            }
-        } catch (error) {
-            console.error("Error saving shelter:", error);
-            alert("Error saving shelter");
-        }
-    };
-
-    // Handle delete
-    const handleDelete = async (id: string) => {
-        if (!confirm("Are you sure you want to delete this shelter?")) return;
-
-        try {
-            const res = await fetch(`/api/shelters/${id}`, {
-                method: "DELETE",
-            });
-
-            if (res.ok) {
-                fetchShelters();
-            } else {
-                alert("Failed to delete shelter");
-            }
-        } catch (error) {
-            console.error("Error deleting shelter:", error);
-        }
-    };
-
-    // Open modal for editing
-    const handleEdit = (shelter: Shelter) => {
-        setEditingShelter(shelter);
-        setFormData({
-            ...shelter,
-            contacts: shelter.contacts && shelter.contacts.length > 0 ? shelter.contacts : [{ name: "", phone: "" }],
-        });
-        setIsModalOpen(true);
-    };
-
-    // Open modal for creating
-    const handleCreate = () => {
-        setEditingShelter(null);
-        setFormData({
-            name: "",
-            location: "",
-            status: "open",
-            contacts: [{ name: "", phone: "" }],
-            area: "",
-            icon: "🏠",
-            link: "",
-        });
-        setIsModalOpen(true);
-    };
+    const {
+        items: shelters,
+        loading,
+        isModalOpen,
+        setIsModalOpen,
+        editingItem: editingShelter,
+        formData,
+        setFormData,
+        handleSubmit,
+        handleDelete,
+        handleEdit,
+        handleCreate
+    } = useAdminCrud<Shelter>(
+        "/api/shelters",
+        initialFormData,
+        transformPayload,
+        transformEditData
+    );
 
     // Helper to update contacts
     const updateContact = (index: number, field: 'name' | 'phone', value: string) => {
