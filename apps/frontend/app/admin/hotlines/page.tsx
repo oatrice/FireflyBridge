@@ -36,15 +36,25 @@ export default function HotlinesAdminPage() {
         return { ...data, numbers: cleanedNumbers };
     };
 
-    const transformEditData = (hotline: Hotline): HotlineForm => ({
-        ...hotline,
-        description: hotline.description || "",
-        color: hotline.color || "bg-gray-500",
-        isPopular: hotline.isPopular || false,
-        numbers: hotline.numbers && hotline.numbers.length > 0
-            ? hotline.numbers.map(n => ({ id: generateId(), value: n }))
-            : (hotline.number ? [{ id: generateId(), value: hotline.number }] : [{ id: generateId(), value: "" }]),
-    });
+    const transformEditData = (hotline: Hotline): HotlineForm => {
+        let numbers: { id: string; value: string }[];
+
+        if (hotline.numbers && hotline.numbers.length > 0) {
+            numbers = hotline.numbers.map(n => ({ id: generateId(), value: n }));
+        } else if (hotline.number) {
+            numbers = [{ id: generateId(), value: hotline.number }];
+        } else {
+            numbers = [{ id: generateId(), value: "" }];
+        }
+
+        return {
+            ...hotline,
+            description: hotline.description || "",
+            color: hotline.color || "bg-gray-500",
+            isPopular: hotline.isPopular || false,
+            numbers,
+        };
+    };
 
     const {
         items: hotlines,
