@@ -543,33 +543,51 @@ async function postComment(review, testResults, coverageData, commitInfo) {
 
 async function main() {
     try {
+        const reviewType = process.env.REVIEW_TYPE || 'full';
+        console.log(`Starting AI Code Review (Type: ${reviewType})...`);
+
         console.log('Fetching PR details...');
         const prDetails = await getPRDetails();
 
-        console.log('Reading test results...');
-        const testResults = await readTestResults();
+        let testResults = null;
+        let coverageData = null;
+        let uncoveredAreas = null;
+        let allureStats = null;
 
-        console.log('Reading test coverage...');
-        const coverageData = await runTestCoverage();
+        if (reviewType === 'unit' || reviewType === 'full') {
+            console.log('Reading test results...');
+            testResults = await readTestResults();
 
-        console.log('Analyzing uncovered code areas...');
-        const uncoveredAreas = await analyzeDetailedCoverage();
+            console.log('Reading test coverage...');
+            coverageData = await runTestCoverage();
 
-        console.log('Reading Allure summary...');
-        const allureStats = await readAllureSummary();
+            console.log('Analyzing uncovered code areas...');
+            uncoveredAreas = await analyzeDetailedCoverage();
+        }
+
+        if (reviewType === 'allure' || reviewType === 'full') {
+            console.log('Reading Allure summary...');
+            allureStats = await readAllureSummary();
+        }
 
         console.log('Generating review...');
         const review = await generateReview(prDetails, testResults, coverageData, uncoveredAreas, allureStats);
 
         console.log('Posting comment...');
-        await postComment(review, testResults, coverageData, prDetails.commitInfo);
+        // Add header to distinguish review types
+        let header = '';
+        if (reviewType === 'unit') header = '## 🤖 AI Review: Unit Tests & Coverage\n\n';
+        else if (reviewType === 'allure') header = '## 🤖 AI Review: E2E & Allure Report\n\n';
 
-        console.log('Done!');
+        await postComment(header + review, testResults, coverageData, prDetails.commitInfo);
+
     } catch (error) {
         console.error('Error:', error);
         process.exit(1);
     }
 }
+
+
 
 // Export functions for testing
 module.exports = {
