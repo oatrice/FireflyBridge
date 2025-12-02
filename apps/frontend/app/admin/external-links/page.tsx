@@ -17,16 +17,20 @@ export default function ExternalLinksAdminPage() {
         icon: "🔗",
     });
 
-    // Fetch links
+    // Fetch external links from the API
     const fetchLinks = async () => {
         try {
             const res = await fetch("/api/external-links");
             if (res.ok) {
                 const data = await res.json();
                 setLinks(data);
+            } else {
+                console.error("Failed to fetch external links, status:", res.status);
+                // Consider adding a toast notification here for better UX
             }
         } catch (error) {
             console.error("Failed to fetch external links:", error);
+            // Consider adding a toast notification here for better UX
         } finally {
             setLoading(false);
         }
@@ -36,11 +40,12 @@ export default function ExternalLinksAdminPage() {
         fetchLinks();
     }, []);
 
-    // Handle form submit
+    // Handle form submission for creating or updating an external link
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         try {
+            // Determine URL and method based on whether we are editing or creating
             const url = editingLink
                 ? `/api/external-links/${editingLink.id}`
                 : "/api/external-links";
@@ -54,6 +59,7 @@ export default function ExternalLinksAdminPage() {
             });
 
             if (res.ok) {
+                // Reset form and close modal on success
                 setIsModalOpen(false);
                 setEditingLink(null);
                 setFormData({
@@ -63,17 +69,19 @@ export default function ExternalLinksAdminPage() {
                     category: "ทั่วไป",
                     icon: "🔗",
                 });
-                fetchLinks();
+                fetchLinks(); // Refresh the list
             } else {
-                alert("Failed to save external link");
+                const errorData = await res.json().catch(() => ({}));
+                console.error("Failed to save external link:", errorData);
+                alert(`Failed to save external link: ${errorData.message || "Unknown error"}`);
             }
         } catch (error) {
             console.error("Error saving external link:", error);
-            alert("Error saving external link");
+            alert("An error occurred while saving the external link. Please try again.");
         }
     };
 
-    // Handle delete
+    // Handle deletion of an external link
     const handleDelete = async (id: string) => {
         if (!confirm("Are you sure you want to delete this link?")) return;
 
@@ -83,12 +91,14 @@ export default function ExternalLinksAdminPage() {
             });
 
             if (res.ok) {
-                fetchLinks();
+                fetchLinks(); // Refresh the list
             } else {
-                alert("Failed to delete external link");
+                console.error("Failed to delete external link, status:", res.status);
+                alert("Failed to delete external link. Please try again.");
             }
         } catch (error) {
             console.error("Error deleting external link:", error);
+            alert("An error occurred while deleting the external link.");
         }
     };
 

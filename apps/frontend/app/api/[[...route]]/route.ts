@@ -7,7 +7,7 @@ import { asc, eq } from "drizzle-orm";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const app = new Elysia({ prefix: "/api" })
+export const app = new Elysia({ prefix: "/api" })
     .use(cors())
     .get("/", () => "FireflyBridge API is Running 🚀")
 

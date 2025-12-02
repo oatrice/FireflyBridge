@@ -18,16 +18,20 @@ export default function HotlinesAdminPage() {
         isPopular: false,
     });
 
-    // Fetch hotlines
+    // Fetch hotlines from the API
     const fetchHotlines = async () => {
         try {
             const res = await fetch("/api/hotlines");
             if (res.ok) {
                 const data = await res.json();
                 setHotlines(data);
+            } else {
+                console.error("Failed to fetch hotlines, status:", res.status);
+                // Consider adding a toast notification here for better UX
             }
         } catch (error) {
             console.error("Failed to fetch hotlines:", error);
+            // Consider adding a toast notification here for better UX
         } finally {
             setLoading(false);
         }
@@ -37,15 +41,16 @@ export default function HotlinesAdminPage() {
         fetchHotlines();
     }, []);
 
-    // Handle form submit
+    // Handle form submission for creating or updating a hotline
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Clean up numbers array (remove empty strings)
+        // Clean up numbers array: remove empty strings to ensure data integrity
         const cleanedNumbers = formData.numbers?.filter(n => n.trim() !== "") || [];
         const payload = { ...formData, numbers: cleanedNumbers };
 
         try {
+            // Determine URL and method based on whether we are editing or creating
             const url = editingHotline
                 ? `/api/hotlines/${editingHotline.id}`
                 : "/api/hotlines";
@@ -59,6 +64,7 @@ export default function HotlinesAdminPage() {
             });
 
             if (res.ok) {
+                // Reset form and close modal on success
                 setIsModalOpen(false);
                 setEditingHotline(null);
                 setFormData({
@@ -69,17 +75,19 @@ export default function HotlinesAdminPage() {
                     color: "bg-gray-500",
                     isPopular: false,
                 });
-                fetchHotlines();
+                fetchHotlines(); // Refresh the list
             } else {
-                alert("Failed to save hotline");
+                const errorData = await res.json().catch(() => ({}));
+                console.error("Failed to save hotline:", errorData);
+                alert(`Failed to save hotline: ${errorData.message || "Unknown error"}`);
             }
         } catch (error) {
             console.error("Error saving hotline:", error);
-            alert("Error saving hotline");
+            alert("An error occurred while saving the hotline. Please try again.");
         }
     };
 
-    // Handle delete
+    // Handle deletion of a hotline
     const handleDelete = async (id: string) => {
         if (!confirm("Are you sure you want to delete this hotline?")) return;
 
@@ -89,12 +97,14 @@ export default function HotlinesAdminPage() {
             });
 
             if (res.ok) {
-                fetchHotlines();
+                fetchHotlines(); // Refresh the list
             } else {
-                alert("Failed to delete hotline");
+                console.error("Failed to delete hotline, status:", res.status);
+                alert("Failed to delete hotline. Please try again.");
             }
         } catch (error) {
             console.error("Error deleting hotline:", error);
+            alert("An error occurred while deleting the hotline.");
         }
     };
 
