@@ -12,25 +12,25 @@ const createCrudHandlers = (
     schema: any,
     updateSchema: any = schema
 ) => {
-    return (app: Elysia) => app
+    return (app: any) => app
         .get("/", async () => {
             if (table === hotlines) {
                 return await db.select().from(table).orderBy(asc(table.displayOrder), asc(table.id));
             }
             return await db.select().from(table);
         })
-        .post("/", async ({ body }) => {
+        .post("/", async ({ body }: { body: any }) => {
             const newItem = await db.insert(table).values(body as any).returning() as any[];
             return newItem[0];
         }, { body: schema })
-        .put("/:id", async ({ params: { id }, body }) => {
+        .put("/:id", async ({ params: { id }, body }: { params: { id: string }, body: any }) => {
             const updatedItem = await db.update(table)
                 .set({ ...body as any, updatedAt: new Date() })
                 .where(eq(table.id, parseInt(id)))
                 .returning() as any[];
             return updatedItem[0];
         }, { body: updateSchema })
-        .delete("/:id", async ({ params: { id } }) => {
+        .delete("/:id", async ({ params: { id } }: { params: { id: string } }) => {
             await db.delete(table).where(eq(table.id, parseInt(id)));
             return { success: true };
         });
