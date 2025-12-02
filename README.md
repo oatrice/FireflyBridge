@@ -1,3 +1,8 @@
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=oatrice_FireflyBridge&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=oatrice_FireflyBridge)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=oatrice_FireflyBridge&metric=coverage)](https://sonarcloud.io/summary/new_code?id=oatrice_FireflyBridge)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=oatrice_FireflyBridge&metric=bugs)](https://sonarcloud.io/summary/new_code?id=oatrice_FireflyBridge)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=oatrice_FireflyBridge&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=oatrice_FireflyBridge)
+
 # FireflyBridge
 
 Monorepo สำหรับโปรเจ็ค FireflyBridge จัดการด้วย **pnpm workspaces**

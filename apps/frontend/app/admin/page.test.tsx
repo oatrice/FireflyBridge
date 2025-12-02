@@ -16,6 +16,14 @@ jest.mock('next/navigation', () => ({
     useRouter: jest.fn(),
 }));
 
+// Mock fetch
+global.fetch = jest.fn(() =>
+    Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve([]),
+    })
+) as unknown as typeof fetch;
+
 describe('AdminPage', () => {
     const mockPush = jest.fn();
 
@@ -66,8 +74,8 @@ describe('AdminPage', () => {
         render(<AdminPage />);
 
         await waitFor(() => {
-            expect(screen.getByText('Admin Dashboard')).toBeInTheDocument();
-            expect(screen.getByText('Welcome, Admin (admin@example.com)')).toBeInTheDocument();
+            expect(screen.getByText('ภาพรวม (Overview)')).toBeInTheDocument();
+            expect(screen.getByText('ยินดีต้อนรับ, Admin')).toBeInTheDocument();
         });
     });
 
@@ -85,10 +93,12 @@ describe('AdminPage', () => {
         render(<AdminPage />);
 
         await waitFor(() => {
-            expect(screen.getByText('Sign Out')).toBeInTheDocument();
+            const signOutButtons = screen.getAllByText('ออกจากระบบ');
+            expect(signOutButtons.length).toBeGreaterThan(0);
         });
 
-        fireEvent.click(screen.getByText('Sign Out'));
+        const signOutButton = screen.getAllByText('ออกจากระบบ')[0];
+        fireEvent.click(signOutButton);
 
         await waitFor(() => {
             expect(authClient.signOut).toHaveBeenCalled();

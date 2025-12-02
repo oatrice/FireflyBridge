@@ -17,7 +17,7 @@ global.fetch = jest.fn(() =>
         ok: true,
         json: () => Promise.resolve([]),
     })
-) as jest.Mock;
+) as unknown as typeof fetch;
 
 describe('Home Page', () => {
     beforeEach(() => {
@@ -57,18 +57,19 @@ describe('Home Page', () => {
         const feedbackButton = screen.getByText('แจ้งข้อมูล / ข้อเสนอแนะ').closest('a');
         expect(feedbackButton).toHaveClass('px-6'); // Initial state
 
-        // Simulate scroll
-        fireEvent.scroll(window, { target: { scrollY: 150 } });
+        // Mock window.scrollY
+        Object.defineProperty(window, 'scrollY', { value: 150, writable: true });
+        fireEvent.scroll(window);
 
-        // Check if class changed (might need waitFor if state update is async)
+        // Check if class changed
         waitFor(() => {
             expect(feedbackButton).toHaveClass('px-3');
         });
     });
 
     it('handles fetch errors gracefully', async () => {
-        // Mock fetch error
-        (global.fetch as jest.Mock).mockImplementationOnce(() => Promise.reject('API Error'));
+        // Mock fetch error (reject)
+        (global.fetch as unknown as jest.Mock).mockImplementationOnce(() => Promise.reject('API Error'));
 
         const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => { });
 
@@ -76,6 +77,26 @@ describe('Home Page', () => {
 
         await waitFor(() => {
             expect(consoleSpy).toHaveBeenCalledWith('Error fetching data:', 'API Error');
+        });
+
+        consoleSpy.mockRestore();
+    });
+
+    it('handles non-ok API responses', async () => {
+        // Mock fetch returning ok: false
+        (global.fetch as unknown as jest.Mock).mockImplementation(() =>
+            Promise.resolve({
+                ok: false,
+                json: () => Promise.resolve([]),
+            })
+        );
+
+        const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => { });
+
+        render(<Home />);
+
+        await waitFor(() => {
+            expect(consoleSpy).toHaveBeenCalledWith('Error fetching data:', expect.any(Error));
         });
 
         consoleSpy.mockRestore();

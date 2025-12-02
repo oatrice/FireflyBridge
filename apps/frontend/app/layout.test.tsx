@@ -16,6 +16,21 @@ jest.mock('@vercel/analytics/next', () => ({
 }));
 
 describe('RootLayout', () => {
+    // Suppress the error "In HTML, <html> cannot be a child of <div>" which is expected when testing RootLayout
+    const originalError = console.error;
+    beforeAll(() => {
+        jest.spyOn(console, 'error').mockImplementation((...args) => {
+            const msg = args.join(' ');
+            if (msg.includes('In HTML, <html> cannot be a child of <div>') || msg.includes('hydration error')) {
+                return;
+            }
+            originalError(...args);
+        });
+    });
+
+    afterAll(() => {
+        jest.restoreAllMocks();
+    });
     it('renders children and analytics scripts', () => {
         render(
             <RootLayout>

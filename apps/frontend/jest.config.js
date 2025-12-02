@@ -14,7 +14,7 @@ const customJestConfig = {
     moduleNameMapper: {
         '^@/(.*)$': '<rootDir>/$1',
     },
-    testPathIgnorePatterns: ['/node_modules/', '\\.bun\\.test\\.ts$'],
+    testPathIgnorePatterns: ['/node_modules/', '\\.bun\\.test\\.ts$', '<rootDir>/e2e/'],
 
     // Custom reporter for detailed test tracking
     reporters: [
@@ -33,22 +33,12 @@ const customJestConfig = {
         '!**/.next/**',
         '!**/coverage/**',
         '!**/test-reports/**',
-        // API Routes (should have integration tests, not unit tests)
-        '!app/api/**',
-        // Auth & Config files (hard to unit test)
-        '!lib/auth.ts',
-        '!lib/auth-client.ts',
-        '!lib/types.ts',
-        // Admin sub-pages (should have E2E tests)
-        '!app/admin/hotlines/**',
-        '!app/admin/shelters/**',
-        '!app/admin/donations/**',
         // Special pages (should have E2E tests)
         '!app/cases/**',
         '!app/rescue-contacts/**',
         '!app/test-report/**',
     ],
-    coverageReporters: ['text', 'lcov', 'html'],
+    coverageReporters: ['text', 'lcov', 'html', 'json-summary'],
     coverageThreshold: {
         global: {
             branches: 50,

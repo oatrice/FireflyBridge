@@ -1,290 +1,313 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { AdminModal } from "@/components/ui/AdminModal";
+import { useAdminCrud } from "@/hooks/useAdminCrud";
+import type { Hotline } from "@/lib/types";
 
-interface Hotline {
-    id: string;
+interface HotlineForm {
     name: string;
-    numbers: string[];
+    numbers: { id: string; value: string }[];
     category: string;
-    description?: string;
-    color?: string;
+    description: string;
+    color: string;
+    isPopular: boolean;
 }
 
-const getBadgeColor = (color?: string) => {
-    const c = color?.toLowerCase() || "blue";
-    if (c.includes("red")) return "bg-red-700 text-white";
-    if (c.includes("green")) return "bg-green-700 text-white";
-    if (c.includes("yellow")) return "bg-yellow-300 text-black";
-    if (c.includes("purple")) return "bg-purple-700 text-white";
-    if (c.includes("cyan")) return "bg-cyan-700 text-white";
-    if (c.includes("orange")) return "bg-orange-700 text-white";
-    if (c.includes("gray")) return "bg-gray-700 text-white";
-    return "bg-blue-700 text-white";
+const generateId = () => {
+    const array = new Uint32Array(1);
+    crypto.getRandomValues(array);
+    return array[0].toString(36);
 };
 
-export default function AdminHotlinesPage() {
-    const [hotlines, setHotlines] = useState<Hotline[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [editingHotline, setEditingHotline] = useState<Hotline | null>(null);
-    const router = useRouter();
-
-    // Form state
-    const [formData, setFormData] = useState({
+export default function HotlinesAdminPage() {
+    const initialFormData: HotlineForm = {
         name: "",
-        numbers: "",
-        category: "general",
+        numbers: [{ id: generateId(), value: "" }],
+        category: "ทั่วไป",
         description: "",
-        color: "blue",
-    });
-
-    useEffect(() => {
-        fetchHotlines();
-    }, []);
-
-    const fetchHotlines = async () => {
-        try {
-            const res = await fetch("/api/admin/hotlines");
-            if (res.ok) {
-                const data = await res.json();
-                setHotlines(data);
-            }
-        } catch (error) {
-            console.error("Failed to fetch hotlines", error);
-        } finally {
-            setLoading(false);
-        }
+        color: "bg-gray-500",
+        isPopular: false,
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        const numbersArray = formData.numbers.split(",").map((n) => n.trim()).filter(Boolean);
-
-        const payload = {
-            ...formData,
-            numbers: numbersArray,
-            id: editingHotline?.id,
-        };
-
-        try {
-            const method = editingHotline ? "PUT" : "POST";
-            const res = await fetch("/api/admin/hotlines", {
-                method,
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload),
-            });
-
-            if (res.ok) {
-                fetchHotlines();
-                closeDialog();
-            } else {
-                alert("Failed to save hotline");
-            }
-        } catch (error) {
-            console.error("Error saving hotline", error);
-        }
+    const transformPayload = (data: HotlineForm) => {
+        const cleanedNumbers = data.numbers
+            ?.filter(n => n.value.trim() !== "")
+            .map(n => n.value) || [];
+        return { ...data, numbers: cleanedNumbers };
     };
 
-    const handleDelete = async (id: string) => {
-        if (!confirm("Are you sure you want to delete this hotline?")) return;
+    const transformEditData = (hotline: Hotline): HotlineForm => {
+        let numbers: { id: string; value: string }[];
 
-        try {
-            const res = await fetch(`/api/admin/hotlines?id=${id}`, {
-                method: "DELETE",
-            });
-
-            if (res.ok) {
-                fetchHotlines();
-            } else {
-                alert("Failed to delete hotline");
-            }
-        } catch (error) {
-            console.error("Error deleting hotline", error);
-        }
-    };
-
-    const openDialog = (hotline?: Hotline) => {
-        if (hotline) {
-            setEditingHotline(hotline);
-            setFormData({
-                name: hotline.name,
-                numbers: hotline.numbers.join(", "),
-                category: hotline.category,
-                description: hotline.description || "",
-                color: hotline.color || "blue",
-            });
+        if (hotline.numbers && hotline.numbers.length > 0) {
+            numbers = hotline.numbers.map(n => ({ id: generateId(), value: n }));
+        } else if (hotline.number) {
+            numbers = [{ id: generateId(), value: hotline.number }];
         } else {
-            setEditingHotline(null);
-            setFormData({
-                name: "",
-                numbers: "",
-                category: "general",
-                description: "",
-                color: "blue",
-            });
+            numbers = [{ id: generateId(), value: "" }];
         }
-        setIsDialogOpen(true);
+
+        return {
+            ...hotline,
+            description: hotline.description || "",
+            color: hotline.color || "bg-gray-500",
+            isPopular: hotline.isPopular || false,
+            numbers,
+        };
     };
 
-    const closeDialog = () => {
-        setIsDialogOpen(false);
-        setEditingHotline(null);
+    const {
+        items: hotlines,
+        loading,
+        isModalOpen,
+        setIsModalOpen,
+        editingItem: editingHotline,
+        formData,
+        setFormData,
+        handleSubmit,
+        handleDelete,
+        handleEdit,
+        handleCreate
+    } = useAdminCrud<Hotline, HotlineForm>(
+        "/api/hotlines",
+        initialFormData,
+        transformPayload,
+        transformEditData
+    );
+
+    // Helper to update numbers array
+    const updateNumber = (index: number, value: string) => {
+        const newNumbers = [...formData.numbers];
+        newNumbers[index] = { ...newNumbers[index], value };
+        setFormData({ ...formData, numbers: newNumbers });
+    };
+
+    const addNumberField = () => {
+        setFormData({ ...formData, numbers: [...formData.numbers, { id: generateId(), value: "" }] });
+    };
+
+    const removeNumberField = (index: number) => {
+        const newNumbers = [...formData.numbers];
+        newNumbers.splice(index, 1);
+        setFormData({ ...formData, numbers: newNumbers });
     };
 
     if (loading) return <div className="p-8 text-center">Loading...</div>;
 
     return (
-        <div className="min-h-screen bg-gray-50 p-8">
-            <div className="max-w-6xl mx-auto">
-                <div className="flex justify-between items-center mb-8">
-                    <div>
-                        <Link href="/admin" className="text-blue-700 hover:underline mb-2 inline-block">
-                            &larr; Back to Dashboard
-                        </Link>
-                        <h1 className="text-3xl font-bold text-gray-900">Manage Hotlines</h1>
-                    </div>
-                    <button
-                        onClick={() => openDialog()}
-                        className="bg-blue-700 text-white px-4 py-2 rounded-lg hover:bg-blue-800 transition-colors"
-                    >
-                        + Add Hotline
-                    </button>
-                </div>
+        <div>
+            <div className="flex justify-between items-center mb-6">
+                <h1 className="text-2xl font-bold text-neutral-900">จัดการเบอร์โทรฉุกเฉิน (Hotlines)</h1>
+                <button
+                    onClick={handleCreate}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                >
+                    <span>➕</span> เพิ่มข้อมูล
+                </button>
+            </div>
 
-                <div className="bg-white rounded-xl shadow overflow-hidden">
-                    <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
+            <div className="bg-white rounded-xl shadow-sm border border-neutral-200 overflow-hidden">
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left">
+                        <thead className="bg-neutral-50 border-b border-neutral-200">
                             <tr>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Name</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Numbers</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Category</th>
-                                <th className="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">Actions</th>
+                                <th className="px-6 py-4 font-semibold text-neutral-700">ชื่อหน่วยงาน</th>
+                                <th className="px-6 py-4 font-semibold text-neutral-700">เบอร์โทร</th>
+                                <th className="px-6 py-4 font-semibold text-neutral-700">หมวดหมู่</th>
+                                <th className="px-6 py-4 font-semibold text-neutral-700 text-right">จัดการ</th>
                             </tr>
                         </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
+                        <tbody className="divide-y divide-neutral-200">
                             {hotlines.map((hotline) => (
-                                <tr key={hotline.id} className="hover:bg-gray-50">
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="text-sm font-medium text-gray-900">{hotline.name}</div>
-                                        <div className="text-sm text-gray-700">{hotline.description}</div>
+                                <tr key={hotline.id} className="hover:bg-neutral-50 transition-colors">
+                                    <td className="px-6 py-4">
+                                        <div className="font-medium text-neutral-900">{hotline.name}</div>
+                                        {hotline.description && (
+                                            <div className="text-sm text-neutral-500 truncate max-w-xs">{hotline.description}</div>
+                                        )}
+                                        {hotline.isPopular && (
+                                            <span className="inline-block mt-1 px-2 py-0.5 bg-yellow-100 text-yellow-800 text-xs rounded-full">
+                                                ⭐ ยอดฮิต
+                                            </span>
+                                        )}
                                     </td>
                                     <td className="px-6 py-4">
-                                        <div className="flex flex-wrap gap-1">
-                                            {hotline.numbers.map((num, idx) => (
-                                                <span key={idx} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-900">
+                                        <div className="flex flex-col gap-1">
+                                            {hotline.numbers?.map((num, idx) => (
+                                                <span key={`${num}-${idx}`} className="text-neutral-600 font-mono bg-neutral-100 px-2 py-0.5 rounded w-fit text-sm">
                                                     {num}
+                                                </span>
+                                            )) || (hotline.number && (
+                                                <span className="text-neutral-600 font-mono bg-neutral-100 px-2 py-0.5 rounded w-fit text-sm">
+                                                    {hotline.number}
                                                 </span>
                                             ))}
                                         </div>
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${getBadgeColor(hotline.color)}`}>
+                                    <td className="px-6 py-4">
+                                        <span className={`px-3 py-1 rounded-full text-xs font-semibold text-white ${hotline.color}`}>
                                             {hotline.category}
                                         </span>
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <button
-                                            onClick={() => openDialog(hotline)}
-                                            className="text-indigo-700 hover:text-indigo-900 mr-4"
-                                        >
-                                            Edit
-                                        </button>
-                                        <button
-                                            onClick={() => handleDelete(hotline.id)}
-                                            className="text-red-700 hover:text-red-900"
-                                        >
-                                            Delete
-                                        </button>
+                                    <td className="px-6 py-4 text-right">
+                                        <div className="flex justify-end gap-2">
+                                            <button
+                                                onClick={() => handleEdit(hotline)}
+                                                className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                                title="แก้ไข"
+                                            >
+                                                ✏️
+                                            </button>
+                                            <button
+                                                onClick={() => handleDelete(hotline.id)}
+                                                className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                                title="ลบ"
+                                            >
+                                                🗑️
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             ))}
+                            {hotlines.length === 0 && (
+                                <tr>
+                                    <td colSpan={4} className="px-6 py-12 text-center text-neutral-500">
+                                        ไม่พบข้อมูล
+                                    </td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            {/* Dialog */}
-            {/* Dialog */}
             <AdminModal
-                isOpen={isDialogOpen}
-                onClose={closeDialog}
-                title={editingHotline ? "Edit Hotline" : "Add New Hotline"}
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                title={editingHotline ? "แก้ไขข้อมูล" : "เพิ่มข้อมูลใหม่"}
+                maxWidth="max-w-xl"
             >
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-900">Name</label>
+                        <label htmlFor="name" className="block text-sm font-medium text-neutral-700 mb-1">ชื่อหน่วยงาน</label>
                         <input
+                            id="name"
                             type="text"
+                            name="name"
                             required
                             value={formData.name}
                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                            className="mt-1 block w-full rounded-md border-gray-400 shadow-sm focus:border-blue-700 focus:ring-blue-700 border p-2 text-gray-900 placeholder-gray-600"
+                            className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                            placeholder="เช่น มูลนิธิกู้ภัย..."
                         />
                     </div>
+
                     <div>
-                        <label className="block text-sm font-medium text-gray-900">Numbers (comma separated)</label>
-                        <input
-                            type="text"
-                            required
-                            value={formData.numbers}
-                            onChange={(e) => setFormData({ ...formData, numbers: e.target.value })}
-                            className="mt-1 block w-full rounded-md border-gray-400 shadow-sm focus:border-blue-700 focus:ring-blue-700 border p-2 text-gray-900 placeholder-gray-600"
-                            placeholder="02-123-4567, 191"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-900">Category</label>
+                        <label htmlFor="category" className="block text-sm font-medium text-neutral-700 mb-1">หมวดหมู่</label>
                         <select
+                            id="category"
+                            name="category"
                             value={formData.category}
                             onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                            className="mt-1 block w-full rounded-md border-gray-400 shadow-sm focus:border-blue-700 focus:ring-blue-700 border p-2 text-gray-900"
+                            className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                         >
-                            <option value="general">General</option>
-                            <option value="emergency">Emergency</option>
-                            <option value="medical">Medical</option>
-                            <option value="utilities">Utilities</option>
+                            <option value="ทั่วไป">ทั่วไป</option>
+                            <option value="มูลนิธิ">มูลนิธิ</option>
+                            <option value="อาสาสมัคร">อาสาสมัคร</option>
+                            <option value="ท้องถิ่น">ท้องถิ่น</option>
+                            <option value="โรงพยาบาล">โรงพยาบาล</option>
+                            <option value="ตำรวจ">ตำรวจ</option>
+                            <option value="อื่นๆ">อื่นๆ</option>
                         </select>
                     </div>
+
                     <div>
-                        <label className="block text-sm font-medium text-gray-900">Description</label>
+                        <label htmlFor="numbers" className="block text-sm font-medium text-neutral-700 mb-1">เบอร์โทรศัพท์</label>
+                        <div id="numbers" className="space-y-2">
+                            {formData.numbers?.map((num, index) => (
+                                <div key={num.id} className="flex gap-2">
+                                    <input
+                                        aria-label={`เบอร์โทรศัพท์ ${index + 1}`}
+                                        type="text"
+                                        name={`numbers.${index}`}
+                                        value={num.value}
+                                        onChange={(e) => updateNumber(index, e.target.value)}
+                                        className="flex-1 px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                                        placeholder="08x-xxx-xxxx"
+                                    />
+                                    {index > 0 && (
+                                        <button
+                                            type="button"
+                                            onClick={() => removeNumberField(index)}
+                                            className="px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg"
+                                            title="ลบเบอร์โทร"
+                                        >
+                                            🗑️
+                                        </button>
+                                    )}
+                                </div>
+                            ))}
+                            <button
+                                type="button"
+                                onClick={addNumberField}
+                                className="text-sm text-blue-600 hover:underline flex items-center gap-1"
+                            >
+                                <span>➕</span> เพิ่มเบอร์โทร
+                            </button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label htmlFor="description" className="block text-sm font-medium text-neutral-700 mb-1">รายละเอียดเพิ่มเติม</label>
                         <textarea
-                            value={formData.description}
+                            id="description"
+                            name="description"
+                            value={formData.description || ""}
                             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                            className="mt-1 block w-full rounded-md border-gray-400 shadow-sm focus:border-blue-700 focus:ring-blue-700 border p-2 text-gray-900 placeholder-gray-600"
-                            rows={3}
+                            className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none h-24"
+                            placeholder="รายละเอียดเกี่ยวกับหน่วยงาน หรือพื้นที่ให้บริการ..."
                         />
                     </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-900">Color</label>
-                        <select
-                            value={formData.color}
-                            onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                            className="mt-1 block w-full rounded-md border-gray-400 shadow-sm focus:border-blue-700 focus:ring-blue-700 border p-2 text-gray-900"
-                        >
-                            <option value="blue">Blue</option>
-                            <option value="red">Red</option>
-                            <option value="green">Green</option>
-                            <option value="yellow">Yellow</option>
-                            <option value="purple">Purple</option>
-                        </select>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label htmlFor="color" className="block text-sm font-medium text-neutral-700 mb-1">สีป้ายกำกับ (Tailwind Class)</label>
+                            <input
+                                id="color"
+                                type="text"
+                                name="color"
+                                value={formData.color || ""}
+                                onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+                                className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                                placeholder="bg-blue-500"
+                            />
+                        </div>
+                        <div className="flex items-center pt-6">
+                            <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    checked={formData.isPopular || false}
+                                    onChange={(e) => setFormData({ ...formData, isPopular: e.target.checked })}
+                                    className="w-5 h-5 rounded border-neutral-300 text-blue-600 focus:ring-blue-500"
+                                />
+                                <span className="text-neutral-700">แสดงในหมวดยอดฮิต</span>
+                            </label>
+                        </div>
                     </div>
-                    <div className="flex justify-end gap-3 mt-6">
+
+                    <div className="flex justify-end gap-3 pt-4 border-t border-neutral-100 mt-6">
                         <button
                             type="button"
-                            onClick={closeDialog}
-                            className="px-4 py-2 text-sm font-medium text-gray-900 bg-gray-200 hover:bg-gray-300 rounded-md"
+                            onClick={() => setIsModalOpen(false)}
+                            className="px-4 py-2 text-neutral-600 hover:bg-neutral-100 rounded-lg transition-colors"
                         >
-                            Cancel
+                            ยกเลิก
                         </button>
                         <button
                             type="submit"
-                            className="px-4 py-2 text-sm font-medium text-white bg-blue-700 hover:bg-blue-800 rounded-md"
+                            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
                         >
-                            Save
+                            บันทึกข้อมูล
                         </button>
                     </div>
                 </form>

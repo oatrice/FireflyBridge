@@ -175,4 +175,99 @@ describe('HotlinesSection', () => {
         expect(prevBtn).toBeEnabled()
         expect(nextBtn).toBeDisabled()
     })
+
+    it('searches by description and single number', () => {
+        const hotlines = [
+            { id: '1', name: 'H1', number: '123', description: 'DescMatch', category: 'General', color: 'bg-gray-500' },
+        ]
+        render(<HotlinesSection hotlines={hotlines} loading={false} />)
+
+        // Switch to 'ทั้งหมด' to search across all categories
+        fireEvent.click(screen.getByRole('button', { name: 'ทั้งหมด' }))
+
+        const searchInput = screen.getByPlaceholderText(/ค้นหาเบอร์โทร/i)
+
+        // Search by description
+        fireEvent.change(searchInput, { target: { value: 'DescMatch' } })
+        expect(screen.getByText('H1')).toBeInTheDocument()
+
+        // Search by single number
+        fireEvent.change(searchInput, { target: { value: '123' } })
+        expect(screen.getByText('H1')).toBeInTheDocument()
+    })
+
+    it('filters by multiple categories', () => {
+        const hotlines = [
+            { id: '1', name: 'H1', category: 'MainCat', categories: ['SubCat'], description: 'D1', color: 'bg-gray-500' },
+        ]
+        render(<HotlinesSection hotlines={hotlines} loading={false} />)
+
+        const subCatBtn = screen.getByRole('button', { name: 'SubCat' })
+        fireEvent.click(subCatBtn)
+        expect(screen.getByText('H1')).toBeInTheDocument()
+    })
+
+    it('sorts by ID when not popular', () => {
+        const hotlines = [
+            { id: '2', name: 'H2', category: 'General', description: 'D2', color: 'bg-gray-500' },
+            { id: '1', name: 'H1', category: 'General', description: 'D1', color: 'bg-gray-500' },
+        ]
+        render(<HotlinesSection hotlines={hotlines} loading={false} />)
+
+        // Switch to 'General' category (or 'ทั้งหมด') to avoid 'ยอดฮิต' sort
+        const allBtn = screen.getByRole('button', { name: 'ทั้งหมด' })
+        fireEvent.click(allBtn)
+
+        // Should sort by ID (1 then 2)
+        const items = screen.getAllByText(/^H\d$/)
+        expect(items[0]).toHaveTextContent('H1')
+        expect(items[1]).toHaveTextContent('H2')
+    })
+
+    it('resets pagination when filter changes', () => {
+        // Create enough items for 2 pages
+        const hotlines = Array.from({ length: 10 }, (_, i) => ({
+            id: `${i}`, name: `Item ${i}`, category: 'General', description: 'desc', color: 'bg-gray-500'
+        }))
+        render(<HotlinesSection hotlines={hotlines} loading={false} />)
+
+        // Switch to 'ทั้งหมด'
+        fireEvent.click(screen.getByRole('button', { name: 'ทั้งหมด' }))
+
+        // Go to page 2
+        fireEvent.click(screen.getByRole('button', { name: /ถัดไป/i }))
+        expect(screen.queryByText('Item 0')).not.toBeInTheDocument()
+
+        // Change search term
+        const searchInput = screen.getByPlaceholderText(/ค้นหาเบอร์โทร/i)
+        fireEvent.change(searchInput, { target: { value: 'Item' } })
+
+        // Should be back on page 1
+        expect(screen.getByText('Item 0')).toBeInTheDocument()
+    })
+
+    it('renders social links correctly', () => {
+        const hotline = {
+            id: '1',
+            name: 'SocialH',
+            category: 'General',
+            description: 'desc',
+            color: 'bg-gray-500',
+            links: {
+                facebook: 'https://fb.com',
+                website: 'https://web.com',
+                line: 'https://line.me',
+                instagram: ['https://ig.com'],
+                youtube: 'youtube.com/channel' // Test http prefix addition
+            }
+        }
+        render(<HotlinesSection hotlines={[hotline]} loading={false} />)
+        fireEvent.click(screen.getByRole('button', { name: 'ทั้งหมด' }))
+
+        expect(screen.getByTitle('Facebook')).toHaveAttribute('href', 'https://fb.com')
+        expect(screen.getByTitle('Website')).toHaveAttribute('href', 'https://web.com')
+        expect(screen.getByTitle('LINE')).toHaveAttribute('href', 'https://line.me')
+        expect(screen.getByTitle('Instagram')).toHaveAttribute('href', 'https://ig.com')
+        expect(screen.getByTitle('YouTube')).toHaveAttribute('href', 'https://youtube.com/channel')
+    })
 })

@@ -44,7 +44,7 @@ export default function SheltersSection({ shelters, loading }: SheltersSectionPr
         const matchesSearch =
             shelter.name.toLowerCase().includes(shelterSearchTerm.toLowerCase()) ||
             shelter.location.toLowerCase().includes(shelterSearchTerm.toLowerCase()) ||
-            shelter.area.toLowerCase().includes(shelterSearchTerm.toLowerCase()) ||
+            (shelter.area || "").toLowerCase().includes(shelterSearchTerm.toLowerCase()) ||
             shelter.contacts.some((c) => c.phone.includes(shelterSearchTerm));
         const matchesArea = selectedArea === "ทั้งหมด" || shelter.area === selectedArea;
         return matchesSearch && matchesArea;
@@ -53,7 +53,7 @@ export default function SheltersSection({ shelters, loading }: SheltersSectionPr
     // Sort shelters
     const sortedShelters = [...filteredShelters].sort((a, b) => {
         if (shelterSortBy === "area") {
-            return a.area.localeCompare(b.area, "th") || a.name.localeCompare(b.name, "th");
+            return (a.area || "").localeCompare(b.area || "", "th") || a.name.localeCompare(b.name, "th");
         } else {
             return a.name.localeCompare(b.name, "th");
         }
@@ -72,7 +72,7 @@ export default function SheltersSection({ shelters, loading }: SheltersSectionPr
     }
 
     // Get unique areas
-    const areas = ["ทั้งหมด", ...Array.from(new Set(shelters.map((s) => s.area)))];
+    const areas = ["ทั้งหมด", ...Array.from(new Set(shelters.map((s) => s.area).filter((a): a is string => !!a)))];
 
     // Pagination Controls Component
     const PaginationControls = () => (
@@ -86,8 +86,8 @@ export default function SheltersSection({ shelters, loading }: SheltersSectionPr
                     onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
                     disabled={currentPage === 1}
                     className={`px-4 py-2 rounded-lg font-medium transition-all ${currentPage === 1
-                            ? "bg-neutral-100 text-neutral-400 cursor-not-allowed"
-                            : "bg-white border border-neutral-200 text-neutral-700 hover:bg-neutral-50"
+                        ? "bg-neutral-100 text-neutral-400 cursor-not-allowed"
+                        : "bg-white border border-neutral-200 text-neutral-700 hover:bg-neutral-50"
                         }`}
                 >
                     ← ก่อนหน้า
@@ -106,8 +106,8 @@ export default function SheltersSection({ shelters, loading }: SheltersSectionPr
                                     key={page}
                                     onClick={() => setCurrentPage(page)}
                                     className={`w-10 h-10 rounded-lg font-medium transition-all ${currentPage === page
-                                            ? "bg-blue-600 text-white shadow-md"
-                                            : "bg-white border border-neutral-200 text-neutral-700 hover:bg-neutral-50"
+                                        ? "bg-blue-600 text-white shadow-md"
+                                        : "bg-white border border-neutral-200 text-neutral-700 hover:bg-neutral-50"
                                         }`}
                                 >
                                     {page}
@@ -128,8 +128,8 @@ export default function SheltersSection({ shelters, loading }: SheltersSectionPr
                     onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
                     disabled={currentPage === totalPages}
                     className={`px-4 py-2 rounded-lg font-medium transition-all ${currentPage === totalPages
-                            ? "bg-neutral-100 text-neutral-400 cursor-not-allowed"
-                            : "bg-white border border-neutral-200 text-neutral-700 hover:bg-neutral-50"
+                        ? "bg-neutral-100 text-neutral-400 cursor-not-allowed"
+                        : "bg-white border border-neutral-200 text-neutral-700 hover:bg-neutral-50"
                         }`}
                 >
                     ถัดไป →
@@ -185,8 +185,8 @@ export default function SheltersSection({ shelters, loading }: SheltersSectionPr
                                     key={area}
                                     onClick={() => setSelectedArea(area)}
                                     className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${selectedArea === area
-                                            ? "bg-blue-600 text-white shadow-md"
-                                            : "bg-white text-neutral-600 hover:bg-neutral-100 border border-neutral-200"
+                                        ? "bg-blue-600 text-white shadow-md"
+                                        : "bg-white text-neutral-600 hover:bg-neutral-100 border border-neutral-200"
                                         }`}
                                 >
                                     {area} ({count})
@@ -202,8 +202,8 @@ export default function SheltersSection({ shelters, loading }: SheltersSectionPr
                             <button
                                 onClick={() => setShelterViewMode("grid")}
                                 className={`px-3 py-1.5 rounded text-sm font-medium transition-all ${shelterViewMode === "grid"
-                                        ? "bg-blue-600 text-white"
-                                        : "text-neutral-600 hover:text-neutral-900"
+                                    ? "bg-blue-600 text-white"
+                                    : "text-neutral-600 hover:text-neutral-900"
                                     }`}
                                 title="Grid View"
                             >
@@ -212,8 +212,8 @@ export default function SheltersSection({ shelters, loading }: SheltersSectionPr
                             <button
                                 onClick={() => setShelterViewMode("list")}
                                 className={`px-3 py-1.5 rounded text-sm font-medium transition-all ${shelterViewMode === "list"
-                                        ? "bg-blue-600 text-white"
-                                        : "text-neutral-600 hover:text-neutral-900"
+                                    ? "bg-blue-600 text-white"
+                                    : "text-neutral-600 hover:text-neutral-900"
                                     }`}
                                 title="List View"
                             >
