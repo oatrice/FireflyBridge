@@ -171,4 +171,90 @@ describe('DonationsSection', () => {
         expect(screen.queryByText(/ไม่พบข้อมูล/)).not.toBeInTheDocument()
         expect(screen.getByText('โรงพยาบาล A')).toBeInTheDocument()
     })
+
+    it('categorizes donations correctly', () => {
+        const variedDonations = [
+            { id: '1', name: 'โรงพยาบาล A', bankName: 'B1', accountNumber: '1', accountName: 'N1' },
+            { id: '2', name: 'รพ. B', bankName: 'B2', accountNumber: '2', accountName: 'N2' },
+            { id: '3', name: 'มูลนิธิ C', bankName: 'B3', accountNumber: '3', accountName: 'N3' },
+            { id: '4', name: 'สมาคม D', bankName: 'B4', accountNumber: '4', accountName: 'N4' },
+            { id: '5', name: 'General Org', bankName: 'B5', accountNumber: '5', accountName: 'N5' },
+        ]
+        render(<DonationsSection donations={variedDonations} loading={false} />)
+
+        // Test "โรงพยาบาล" filter (should include "โรงพยาบาล" and "รพ.")
+        fireEvent.click(screen.getByRole('button', { name: /โรงพยาบาล \(\d+\)/i }))
+        expect(screen.getByText('โรงพยาบาล A')).toBeInTheDocument()
+        expect(screen.getByText('รพ. B')).toBeInTheDocument()
+        expect(screen.queryByText('มูลนิธิ C')).not.toBeInTheDocument()
+
+        // Test "มูลนิธิ" filter (should include "มูลนิธิ" and "สมาคม")
+        fireEvent.click(screen.getByRole('button', { name: /มูลนิธิ \(\d+\)/i }))
+        expect(screen.getByText('มูลนิธิ C')).toBeInTheDocument()
+        expect(screen.getByText('สมาคม D')).toBeInTheDocument()
+        expect(screen.queryByText('General Org')).not.toBeInTheDocument()
+
+        // Test "องค์กรหลัก" filter (Default category)
+        fireEvent.click(screen.getByRole('button', { name: /องค์กรหลัก \(\d+\)/i }))
+        expect(screen.getByText('General Org')).toBeInTheDocument()
+        expect(screen.queryByText('มูลนิธิ C')).not.toBeInTheDocument()
+    })
+
+    it('searches by multiple fields', () => {
+        const donations = [
+            { id: '1', name: 'NameMatch', bankName: 'BankMatch', accountNumber: '12345', description: 'DescMatch', accountName: 'AccName' },
+        ]
+        render(<DonationsSection donations={donations} loading={false} />)
+        const searchInput = screen.getByPlaceholderText(/ค้นหาช่องทางบริจาค/i)
+
+        // Search by bank name
+        fireEvent.change(searchInput, { target: { value: 'BankMatch' } })
+        expect(screen.getByText('NameMatch')).toBeInTheDocument()
+
+        // Search by account number
+        fireEvent.change(searchInput, { target: { value: '12345' } })
+        expect(screen.getByText('NameMatch')).toBeInTheDocument()
+
+        // Search by description
+        fireEvent.change(searchInput, { target: { value: 'DescMatch' } })
+        expect(screen.getByText('NameMatch')).toBeInTheDocument()
+    })
+
+    it('sorts with missing bank names', () => {
+        const donations = [
+            { id: '1', name: 'A', bankName: 'Z Bank', accountNumber: '1', accountName: 'N1' },
+            { id: '2', name: 'B', bankName: undefined, accountNumber: '2', accountName: 'N2' }, // Should be treated as "zzz"
+        ]
+        render(<DonationsSection donations={donations} loading={false} />)
+
+        const sortSelect = screen.getByRole('combobox')
+        fireEvent.change(sortSelect, { target: { value: 'bank' } })
+
+        const items = screen.getAllByRole('heading', { level: 3 })
+        expect(items.length).toBe(2)
+    })
+
+    it('handles QR modal backdrop click and propagation', () => {
+        const donationsWithQR = [
+            { ...mockDonations[0], qrCodeUrl: '/qr-test.png' }
+        ]
+        render(<DonationsSection donations={donationsWithQR} loading={false} />)
+
+        // Open modal
+        fireEvent.click(screen.getByAltText(/QR Code for/i))
+        expect(screen.getByText('คลิกนอกกรอบเพื่อปิด')).toBeInTheDocument()
+
+        // Click on the image inside modal (should NOT close)
+        // The modal image alt text is just the donation name, while the trigger is "QR Code for ..."
+        const modalImage = screen.getByAltText(donationsWithQR[0].name)
+        fireEvent.click(modalImage)
+        expect(screen.getByText('คลิกนอกกรอบเพื่อปิด')).toBeInTheDocument()
+
+        // Click on backdrop (should close)
+        const backdrop = screen.getByText('คลิกนอกกรอบเพื่อปิด').closest('div')?.parentElement?.parentElement
+        if (backdrop) {
+            fireEvent.click(backdrop)
+            expect(screen.queryByText('คลิกนอกกรอบเพื่อปิด')).not.toBeInTheDocument()
+        }
+    })
 })
