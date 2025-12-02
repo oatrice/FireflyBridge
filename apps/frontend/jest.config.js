@@ -14,7 +14,7 @@ const customJestConfig = {
     moduleNameMapper: {
         '^@/(.*)$': '<rootDir>/$1',
     },
-    testPathIgnorePatterns: ['/node_modules/', '\\.bun\\.test\\.ts$'],
+    testPathIgnorePatterns: ['/node_modules/', '\\.bun\\.test\\.ts$', '<rootDir>/e2e/'],
 
     // Custom reporter for detailed test tracking
     reporters: [
@@ -48,7 +48,7 @@ const customJestConfig = {
         '!app/rescue-contacts/**',
         '!app/test-report/**',
     ],
-    coverageReporters: ['text', 'lcov', 'html'],
+    coverageReporters: ['text', 'lcov', 'html', 'json-summary'],
     coverageThreshold: {
         global: {
             branches: 50,
