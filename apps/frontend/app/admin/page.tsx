@@ -10,6 +10,13 @@ export default function AdminPage() {
     const [user, setUser] = useState<any>(null);
     const [loading, setLoading] = useState(true);
 
+    const [counts, setCounts] = useState({
+        hotlines: 0,
+        shelters: 0,
+        donations: 0,
+        externalLinks: 0
+    });
+
     useEffect(() => {
         const checkSession = async () => {
             const { data: session } = await authClient.getSession();
@@ -22,6 +29,29 @@ export default function AdminPage() {
                 setUser({ role: "user" }); // Mark as non-admin
             } else {
                 setUser(session.user);
+                // Fetch counts only if admin
+                try {
+                    const [hotlinesRes, sheltersRes, donationsRes, externalLinksRes] = await Promise.all([
+                        fetch('/api/hotlines'),
+                        fetch('/api/shelters'),
+                        fetch('/api/donations'),
+                        fetch('/api/external-links')
+                    ]);
+
+                    const hotlines = await hotlinesRes.json();
+                    const shelters = await sheltersRes.json();
+                    const donations = await donationsRes.json();
+                    const externalLinks = await externalLinksRes.json();
+
+                    setCounts({
+                        hotlines: Array.isArray(hotlines) ? hotlines.length : 0,
+                        shelters: Array.isArray(shelters) ? shelters.length : 0,
+                        donations: Array.isArray(donations) ? donations.length : 0,
+                        externalLinks: Array.isArray(externalLinks) ? externalLinks.length : 0
+                    });
+                } catch (error) {
+                    console.error("Failed to fetch counts", error);
+                }
             }
             setLoading(false);
         };
@@ -58,10 +88,10 @@ export default function AdminPage() {
     }
 
     const stats = [
-        { title: "Hotlines", value: "45", icon: "📞", color: "bg-blue-50 text-blue-600" },
-        { title: "Shelters", value: "12", icon: "🏠", color: "bg-green-50 text-green-600" },
-        { title: "Donations", value: "8", icon: "💰", color: "bg-purple-50 text-purple-600" },
-        { title: "Views Today", value: "1,234", icon: "👁️", color: "bg-orange-50 text-orange-600" },
+        { title: "Hotlines", value: counts.hotlines.toString(), icon: "📞", color: "bg-blue-50 text-blue-600" },
+        { title: "Shelters", value: counts.shelters.toString(), icon: "🏠", color: "bg-green-50 text-green-600" },
+        { title: "Donations", value: counts.donations.toString(), icon: "💰", color: "bg-purple-50 text-purple-600" },
+        { title: "External Links", value: counts.externalLinks.toString(), icon: "🔗", color: "bg-orange-50 text-orange-600" },
     ];
 
     return (
