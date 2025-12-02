@@ -152,6 +152,37 @@ const app = new Elysia({ prefix: "/api" })
     // Other endpoints
     .get("/external-links", async () => {
         return await db.select().from(externalLinks);
+    })
+    .post("/external-links", async ({ body }) => {
+        const newLink = await db.insert(externalLinks).values(body as any).returning();
+        return newLink[0];
+    }, {
+        body: t.Object({
+            name: t.String(),
+            url: t.String(),
+            description: t.Optional(t.String()),
+            category: t.Optional(t.String()),
+            icon: t.Optional(t.String())
+        })
+    })
+    .put("/external-links/:id", async ({ params: { id }, body }) => {
+        const updatedLink = await db.update(externalLinks)
+            .set({ ...body as any, updatedAt: new Date() })
+            .where(eq(externalLinks.id, parseInt(id)))
+            .returning();
+        return updatedLink[0];
+    }, {
+        body: t.Object({
+            name: t.Optional(t.String()),
+            url: t.Optional(t.String()),
+            description: t.Optional(t.String()),
+            category: t.Optional(t.String()),
+            icon: t.Optional(t.String())
+        })
+    })
+    .delete("/external-links/:id", async ({ params: { id } }) => {
+        await db.delete(externalLinks).where(eq(externalLinks.id, parseInt(id)));
+        return { success: true };
     });
 
 export const GET = app.handle;

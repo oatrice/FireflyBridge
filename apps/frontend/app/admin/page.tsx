@@ -130,6 +130,17 @@ export default function AdminPage() {
                     <p className="text-neutral-500 text-sm mb-4">จัดการช่องทางการรับบริจาค</p>
                     <span className="text-purple-600 text-sm font-medium group-hover:underline">ไปที่หน้าจัดการ &rarr;</span>
                 </Link>
+
+                <Link href="/admin/external-links" className="group bg-white p-6 rounded-2xl shadow-sm border border-neutral-100 hover:shadow-md transition-all">
+                    <div className="flex items-center gap-4 mb-4">
+                        <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-orange-600">
+                            🔗
+                        </div>
+                        <h3 className="font-bold text-lg text-neutral-900 group-hover:text-orange-600 transition-colors">External Links</h3>
+                    </div>
+                    <p className="text-neutral-500 text-sm mb-4">จัดการลิงก์ภายนอกและเว็บไซต์ที่เกี่ยวข้อง</p>
+                    <span className="text-orange-600 text-sm font-medium group-hover:underline">ไปที่หน้าจัดการ &rarr;</span>
+                </Link>
             </div>
         </div>
     );
