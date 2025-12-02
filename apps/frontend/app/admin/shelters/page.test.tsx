@@ -105,4 +105,95 @@ describe('SheltersAdminPage', () => {
             expect(global.fetch).toHaveBeenCalledWith('/api/shelters/1', expect.objectContaining({ method: 'DELETE' }));
         });
     });
+
+    it('handles add shelter submission', async () => {
+        (global.fetch as unknown as jest.Mock).mockImplementation((url, options) => {
+            if (url === '/api/shelters' && options?.method === 'POST') {
+                return Promise.resolve({
+                    ok: true,
+                    json: async () => ({ ...mockShelters[0], id: '2', name: 'New Shelter' }),
+                });
+            }
+            return Promise.resolve({
+                ok: true,
+                json: async () => mockShelters,
+            });
+        });
+
+        render(<SheltersAdminPage />);
+
+        await waitFor(() => {
+            expect(screen.getByText('เพิ่มข้อมูล')).toBeInTheDocument();
+        });
+
+        fireEvent.click(screen.getByText('เพิ่มข้อมูล'));
+
+        // Fill form
+        fireEvent.change(screen.getByPlaceholderText('เช่น วัด...'), { target: { value: 'New Shelter' } });
+        fireEvent.change(screen.getByPlaceholderText('https://maps.google.com/...'), { target: { value: 'New Location' } });
+
+        // Submit
+        fireEvent.click(screen.getByText('บันทึกข้อมูล'));
+
+        await waitFor(() => {
+            expect(global.fetch).toHaveBeenCalledWith('/api/shelters', expect.objectContaining({
+                method: 'POST',
+                body: expect.stringContaining('New Shelter')
+            }));
+        });
+    });
+
+    it('handles edit shelter submission', async () => {
+        (global.fetch as unknown as jest.Mock).mockImplementation((url, options) => {
+            if (url === '/api/shelters/1' && options?.method === 'PUT') {
+                return Promise.resolve({
+                    ok: true,
+                    json: async () => ({ ...mockShelters[0], name: 'Updated Shelter' }),
+                });
+            }
+            return Promise.resolve({
+                ok: true,
+                json: async () => mockShelters,
+            });
+        });
+
+        render(<SheltersAdminPage />);
+
+        await waitFor(() => {
+            expect(screen.getByTitle('แก้ไข')).toBeInTheDocument();
+        });
+
+        fireEvent.click(screen.getByTitle('แก้ไข'));
+
+        // Change value
+        fireEvent.change(screen.getByDisplayValue('Test Shelter'), { target: { value: 'Updated Shelter' } });
+
+        // Submit
+        fireEvent.click(screen.getByText('บันทึกข้อมูล'));
+
+        await waitFor(() => {
+            expect(global.fetch).toHaveBeenCalledWith('/api/shelters/1', expect.objectContaining({
+                method: 'PUT',
+                body: expect.stringContaining('Updated Shelter')
+            }));
+        });
+    });
+
+    it('handles dynamic contact fields', async () => {
+        render(<SheltersAdminPage />);
+
+        await waitFor(() => {
+            expect(screen.getByText('เพิ่มข้อมูล')).toBeInTheDocument();
+        });
+
+        fireEvent.click(screen.getByText('เพิ่มข้อมูล'));
+
+        // Add contact
+        const addContactBtn = screen.getByText('เพิ่มผู้ติดต่อ');
+        fireEvent.click(addContactBtn);
+
+        // Check if we have multiple contact name inputs
+        const inputs = screen.getAllByPlaceholderText('ชื่อผู้ติดต่อ');
+        expect(inputs).toHaveLength(2);
+    });
 });

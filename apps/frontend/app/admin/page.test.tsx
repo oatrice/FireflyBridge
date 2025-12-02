@@ -16,6 +16,14 @@ jest.mock('next/navigation', () => ({
     useRouter: jest.fn(),
 }));
 
+// Mock fetch
+global.fetch = jest.fn(() =>
+    Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve([]),
+    })
+) as unknown as typeof fetch;
+
 describe('AdminPage', () => {
     const mockPush = jest.fn();
 

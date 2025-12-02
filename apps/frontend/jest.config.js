@@ -33,16 +33,6 @@ const customJestConfig = {
         '!**/.next/**',
         '!**/coverage/**',
         '!**/test-reports/**',
-        // API Routes (should have integration tests, not unit tests)
-        '!app/api/**',
-        // Auth & Config files (hard to unit test)
-        '!lib/auth.ts',
-        '!lib/auth-client.ts',
-        '!lib/types.ts',
-        // Admin sub-pages (should have E2E tests)
-        '!app/admin/hotlines/**',
-        '!app/admin/shelters/**',
-        '!app/admin/donations/**',
         // Special pages (should have E2E tests)
         '!app/cases/**',
         '!app/rescue-contacts/**',

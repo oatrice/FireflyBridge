@@ -104,4 +104,94 @@ describe('HotlinesAdminPage', () => {
             expect(global.fetch).toHaveBeenCalledWith('/api/hotlines/1', expect.objectContaining({ method: 'DELETE' }));
         });
     });
+
+    it('handles add hotline submission', async () => {
+        (global.fetch as unknown as jest.Mock).mockImplementation((url, options) => {
+            if (url === '/api/hotlines' && options?.method === 'POST') {
+                return Promise.resolve({
+                    ok: true,
+                    json: async () => ({ ...mockHotlines[0], id: '2', name: 'New Hotline' }),
+                });
+            }
+            return Promise.resolve({
+                ok: true,
+                json: async () => mockHotlines,
+            });
+        });
+
+        render(<HotlinesAdminPage />);
+
+        await waitFor(() => {
+            expect(screen.getByText('เพิ่มข้อมูล')).toBeInTheDocument();
+        });
+
+        fireEvent.click(screen.getByText('เพิ่มข้อมูล'));
+
+        // Fill form
+        fireEvent.change(screen.getByPlaceholderText('เช่น มูลนิธิกู้ภัย...'), { target: { value: 'New Hotline' } });
+
+        // Submit
+        fireEvent.click(screen.getByText('บันทึกข้อมูล'));
+
+        await waitFor(() => {
+            expect(global.fetch).toHaveBeenCalledWith('/api/hotlines', expect.objectContaining({
+                method: 'POST',
+                body: expect.stringContaining('New Hotline')
+            }));
+        });
+    });
+
+    it('handles edit hotline submission', async () => {
+        (global.fetch as unknown as jest.Mock).mockImplementation((url, options) => {
+            if (url === '/api/hotlines/1' && options?.method === 'PUT') {
+                return Promise.resolve({
+                    ok: true,
+                    json: async () => ({ ...mockHotlines[0], name: 'Updated Hotline' }),
+                });
+            }
+            return Promise.resolve({
+                ok: true,
+                json: async () => mockHotlines,
+            });
+        });
+
+        render(<HotlinesAdminPage />);
+
+        await waitFor(() => {
+            expect(screen.getByTitle('แก้ไข')).toBeInTheDocument();
+        });
+
+        fireEvent.click(screen.getByTitle('แก้ไข'));
+
+        // Change value
+        fireEvent.change(screen.getByDisplayValue('Test Hotline'), { target: { value: 'Updated Hotline' } });
+
+        // Submit
+        fireEvent.click(screen.getByText('บันทึกข้อมูล'));
+
+        await waitFor(() => {
+            expect(global.fetch).toHaveBeenCalledWith('/api/hotlines/1', expect.objectContaining({
+                method: 'PUT',
+                body: expect.stringContaining('Updated Hotline')
+            }));
+        });
+    });
+
+    it('handles dynamic number fields', async () => {
+        render(<HotlinesAdminPage />);
+
+        await waitFor(() => {
+            expect(screen.getByText('เพิ่มข้อมูล')).toBeInTheDocument();
+        });
+
+        fireEvent.click(screen.getByText('เพิ่มข้อมูล'));
+
+        // Add number
+        const addNumberBtn = screen.getByText('เพิ่มเบอร์โทร');
+        fireEvent.click(addNumberBtn);
+
+        // Check if we have multiple number inputs (initial 1 + added 1 = 2)
+        const inputs = screen.getAllByPlaceholderText('08x-xxx-xxxx');
+        expect(inputs).toHaveLength(2);
+    });
 });

@@ -93,4 +93,63 @@ describe('SheltersSection', () => {
         expect(screen.getByText('Shelter B')).toBeInTheDocument()
         expect(screen.queryByText('Shelter A')).not.toBeInTheDocument()
     })
+
+    it('sorts shelters', () => {
+        render(<SheltersSection shelters={mockShelters} loading={false} />)
+
+        // Default sort: Area
+        // Area 1 (A, S3, S4...) comes before Area 2 (B)
+        // Within Area 1, sorted by name. "S3" comes before "Shelter A" ('3' < 'h')
+        const items = screen.getAllByRole('heading', { level: 3 })
+        expect(items[0]).toHaveTextContent('S3')
+
+        // Change sort to Name
+        const sortSelect = screen.getByRole('combobox')
+        fireEvent.change(sortSelect, { target: { value: 'name' } })
+
+        expect(sortSelect).toHaveValue('name')
+    })
+
+    it('handles undefined areas gracefully', () => {
+        const sheltersWithUndefinedArea = [
+            { ...mockShelters[0], area: undefined },
+            { ...mockShelters[1], area: 'Area 2' }
+        ]
+        // @ts-ignore
+        render(<SheltersSection shelters={sheltersWithUndefinedArea} loading={false} />)
+
+        // Should not crash
+        expect(screen.getByText('Shelter A')).toBeInTheDocument()
+
+        // Check filter buttons - undefined area should not create a button (filtered out)
+        // "ทั้งหมด" and "Area 2" should be present.
+        expect(screen.getByRole('button', { name: /ทั้งหมด/i })).toBeInTheDocument()
+        expect(screen.getByRole('button', { name: /Area 2/i })).toBeInTheDocument()
+    })
+
+    it('renders contact links correctly', () => {
+        const shelterWithLink = {
+            ...mockShelters[0],
+            link: 'https://maps.google.com'
+        }
+        render(<SheltersSection shelters={[shelterWithLink]} loading={false} />)
+
+        expect(screen.getByText('แผนที่').closest('a')).toHaveAttribute('href', 'https://maps.google.com')
+        expect(screen.getByText('โทรทันที').closest('a')).toHaveAttribute('href', 'tel:0812345678')
+    })
+
+    it('shows no results state and clears it', () => {
+        render(<SheltersSection shelters={mockShelters} loading={false} />)
+
+        const searchInput = screen.getByPlaceholderText(/ค้นหาศูนย์พักพิง/i)
+        fireEvent.change(searchInput, { target: { value: 'NonExistent' } })
+
+        expect(screen.getByText('ไม่พบข้อมูล')).toBeInTheDocument()
+
+        const clearBtn = screen.getByRole('button', { name: 'ล้างการค้นหา' })
+        fireEvent.click(clearBtn)
+
+        expect(screen.queryByText('ไม่พบข้อมูล')).not.toBeInTheDocument()
+        expect(screen.getByText('Shelter A')).toBeInTheDocument()
+    })
 })

@@ -103,4 +103,77 @@ describe('ExternalLinksAdminPage', () => {
             expect(global.fetch).toHaveBeenCalledWith('/api/external-links/1', expect.objectContaining({ method: 'DELETE' }));
         });
     });
+
+    it('handles add external link submission', async () => {
+        (global.fetch as unknown as jest.Mock).mockImplementation((url, options) => {
+            if (url === '/api/external-links' && options?.method === 'POST') {
+                return Promise.resolve({
+                    ok: true,
+                    json: async () => ({ ...mockLinks[0], id: '2', name: 'New Link' }),
+                });
+            }
+            return Promise.resolve({
+                ok: true,
+                json: async () => mockLinks,
+            });
+        });
+
+        render(<ExternalLinksAdminPage />);
+
+        await waitFor(() => {
+            expect(screen.getByText('เพิ่มข้อมูล')).toBeInTheDocument();
+        });
+
+        fireEvent.click(screen.getByText('เพิ่มข้อมูล'));
+
+        // Fill form
+        fireEvent.change(screen.getByPlaceholderText('เช่น HatYaiFlood.com'), { target: { value: 'New Link' } });
+        fireEvent.change(screen.getByPlaceholderText('https://...'), { target: { value: 'https://newlink.com' } });
+
+        // Submit
+        fireEvent.click(screen.getByText('บันทึกข้อมูล'));
+
+        await waitFor(() => {
+            expect(global.fetch).toHaveBeenCalledWith('/api/external-links', expect.objectContaining({
+                method: 'POST',
+                body: expect.stringContaining('New Link')
+            }));
+        });
+    });
+
+    it('handles edit external link submission', async () => {
+        (global.fetch as unknown as jest.Mock).mockImplementation((url, options) => {
+            if (url === '/api/external-links/1' && options?.method === 'PUT') {
+                return Promise.resolve({
+                    ok: true,
+                    json: async () => ({ ...mockLinks[0], name: 'Updated Link' }),
+                });
+            }
+            return Promise.resolve({
+                ok: true,
+                json: async () => mockLinks,
+            });
+        });
+
+        render(<ExternalLinksAdminPage />);
+
+        await waitFor(() => {
+            expect(screen.getByTitle('แก้ไข')).toBeInTheDocument();
+        });
+
+        fireEvent.click(screen.getByTitle('แก้ไข'));
+
+        // Change value
+        fireEvent.change(screen.getByDisplayValue('Test Link'), { target: { value: 'Updated Link' } });
+
+        // Submit
+        fireEvent.click(screen.getByText('บันทึกข้อมูล'));
+
+        await waitFor(() => {
+            expect(global.fetch).toHaveBeenCalledWith('/api/external-links/1', expect.objectContaining({
+                method: 'PUT',
+                body: expect.stringContaining('Updated Link')
+            }));
+        });
+    });
 });
