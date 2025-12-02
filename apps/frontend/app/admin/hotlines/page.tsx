@@ -4,24 +4,42 @@ import { AdminModal } from "@/components/ui/AdminModal";
 import { useAdminCrud } from "@/hooks/useAdminCrud";
 import type { Hotline } from "@/lib/types";
 
+interface HotlineForm {
+    name: string;
+    numbers: { id: string; value: string }[];
+    category: string;
+    description: string;
+    color: string;
+    isPopular: boolean;
+}
+
+const generateId = () => Math.random().toString(36).substring(7);
+
 export default function HotlinesAdminPage() {
-    const initialFormData: Partial<Hotline> = {
+    const initialFormData: HotlineForm = {
         name: "",
-        numbers: [""],
+        numbers: [{ id: generateId(), value: "" }],
         category: "ทั่วไป",
         description: "",
         color: "bg-gray-500",
         isPopular: false,
     };
 
-    const transformPayload = (data: Partial<Hotline>) => {
-        const cleanedNumbers = data.numbers?.filter(n => n.trim() !== "") || [];
+    const transformPayload = (data: HotlineForm) => {
+        const cleanedNumbers = data.numbers
+            ?.filter(n => n.value.trim() !== "")
+            .map(n => n.value) || [];
         return { ...data, numbers: cleanedNumbers };
     };
 
-    const transformEditData = (hotline: Hotline) => ({
+    const transformEditData = (hotline: Hotline): HotlineForm => ({
         ...hotline,
-        numbers: hotline.numbers && hotline.numbers.length > 0 ? hotline.numbers : [hotline.number || ""],
+        description: hotline.description || "",
+        color: hotline.color || "bg-gray-500",
+        isPopular: hotline.isPopular || false,
+        numbers: hotline.numbers && hotline.numbers.length > 0
+            ? hotline.numbers.map(n => ({ id: generateId(), value: n }))
+            : (hotline.number ? [{ id: generateId(), value: hotline.number }] : [{ id: generateId(), value: "" }]),
     });
 
     const {
@@ -36,7 +54,7 @@ export default function HotlinesAdminPage() {
         handleDelete,
         handleEdit,
         handleCreate
-    } = useAdminCrud<Hotline>(
+    } = useAdminCrud<Hotline, HotlineForm>(
         "/api/hotlines",
         initialFormData,
         transformPayload,
@@ -45,17 +63,17 @@ export default function HotlinesAdminPage() {
 
     // Helper to update numbers array
     const updateNumber = (index: number, value: string) => {
-        const newNumbers = [...(formData.numbers || [])];
-        newNumbers[index] = value;
+        const newNumbers = [...formData.numbers];
+        newNumbers[index] = { ...newNumbers[index], value };
         setFormData({ ...formData, numbers: newNumbers });
     };
 
     const addNumberField = () => {
-        setFormData({ ...formData, numbers: [...(formData.numbers || []), ""] });
+        setFormData({ ...formData, numbers: [...formData.numbers, { id: generateId(), value: "" }] });
     };
 
     const removeNumberField = (index: number) => {
-        const newNumbers = [...(formData.numbers || [])];
+        const newNumbers = [...formData.numbers];
         newNumbers.splice(index, 1);
         setFormData({ ...formData, numbers: newNumbers });
     };
@@ -102,7 +120,7 @@ export default function HotlinesAdminPage() {
                                     <td className="px-6 py-4">
                                         <div className="flex flex-col gap-1">
                                             {hotline.numbers?.map((num, idx) => (
-                                                <span key={idx} className="text-neutral-600 font-mono bg-neutral-100 px-2 py-0.5 rounded w-fit text-sm">
+                                                <span key={`${num}-${idx}`} className="text-neutral-600 font-mono bg-neutral-100 px-2 py-0.5 rounded w-fit text-sm">
                                                     {num}
                                                 </span>
                                             )) || (hotline.number && (
@@ -193,12 +211,12 @@ export default function HotlinesAdminPage() {
                         <label htmlFor="numbers" className="block text-sm font-medium text-neutral-700 mb-1">เบอร์โทรศัพท์</label>
                         <div id="numbers" className="space-y-2">
                             {formData.numbers?.map((num, index) => (
-                                <div key={`number-${index}`} className="flex gap-2">
+                                <div key={num.id} className="flex gap-2">
                                     <input
                                         aria-label={`เบอร์โทรศัพท์ ${index + 1}`}
                                         type="text"
                                         name={`numbers.${index}`}
-                                        value={num}
+                                        value={num.value}
                                         onChange={(e) => updateNumber(index, e.target.value)}
                                         className="flex-1 px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                                         placeholder="08x-xxx-xxxx"

@@ -93,10 +93,10 @@ const externalLinkUpdateSchema = t.Partial(externalLinkSchema);
 export const app = new Elysia({ prefix: "/api" })
     .use(cors())
     .get("/", () => "FireflyBridge API is Running 🚀")
-    .group("/hotlines", (app) => createCrudHandlers(hotlines, hotlineSchema, hotlineUpdateSchema)(app) as any)
-    .group("/shelters", (app) => createCrudHandlers(shelters, shelterSchema, shelterUpdateSchema)(app) as any)
-    .group("/donations", (app) => createCrudHandlers(donations, donationSchema, donationUpdateSchema)(app) as any)
-    .group("/external-links", (app) => createCrudHandlers(externalLinks, externalLinkSchema, externalLinkUpdateSchema)(app) as any);
+    .group("/hotlines", (app) => createCrudHandlers(hotlines, hotlineSchema, hotlineUpdateSchema)(app))
+    .group("/shelters", (app) => createCrudHandlers(shelters, shelterSchema, shelterUpdateSchema)(app))
+    .group("/donations", (app) => createCrudHandlers(donations, donationSchema, donationUpdateSchema)(app))
+    .group("/external-links", (app) => createCrudHandlers(externalLinks, externalLinkSchema, externalLinkUpdateSchema)(app));
 
 export const GET = app.handle;
 export const POST = app.handle;

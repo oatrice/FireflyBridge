@@ -1,16 +1,16 @@
 import { useState, useEffect, useCallback } from 'react';
 
-export function useAdminCrud<T extends { id: string }>(
+export function useAdminCrud<T extends { id: string }, F = Partial<T>>(
     apiEndpoint: string,
-    initialFormData: Partial<T>,
-    transformPayload?: (data: Partial<T>) => any,
-    transformEditData?: (data: T) => Partial<T>
+    initialFormData: F,
+    transformPayload?: (data: F) => any,
+    transformEditData?: (data: T) => F
 ) {
     const [items, setItems] = useState<T[]>([]);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<T | null>(null);
-    const [formData, setFormData] = useState<Partial<T>>(initialFormData);
+    const [formData, setFormData] = useState<F>(initialFormData);
 
     const fetchData = useCallback(async () => {
         try {
@@ -87,7 +87,7 @@ export function useAdminCrud<T extends { id: string }>(
 
     const handleEdit = (item: T) => {
         setEditingItem(item);
-        setFormData(transformEditData ? transformEditData(item) : item);
+        setFormData(transformEditData ? transformEditData(item) : (item as unknown as F));
         setIsModalOpen(true);
     };
 

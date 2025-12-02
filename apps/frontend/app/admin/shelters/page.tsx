@@ -4,25 +4,44 @@ import { AdminModal } from "@/components/ui/AdminModal";
 import { useAdminCrud } from "@/hooks/useAdminCrud";
 import type { Shelter } from "@/lib/types";
 
+interface ShelterForm {
+    name: string;
+    location: string;
+    status: string;
+    contacts: { id: string; name: string; phone: string }[];
+    area: string;
+    icon: string;
+    link: string;
+}
+
+const generateId = () => Math.random().toString(36).substring(7);
+
 export default function SheltersAdminPage() {
-    const initialFormData: Partial<Shelter> = {
+    const initialFormData: ShelterForm = {
         name: "",
         location: "",
         status: "open",
-        contacts: [{ name: "", phone: "" }],
+        contacts: [{ id: generateId(), name: "", phone: "" }],
         area: "",
         icon: "🏠",
         link: "",
     };
 
-    const transformPayload = (data: Partial<Shelter>) => {
-        const cleanedContacts = data.contacts?.filter(c => c.name.trim() !== "" || c.phone.trim() !== "") || [];
+    const transformPayload = (data: ShelterForm) => {
+        const cleanedContacts = data.contacts
+            ?.filter(c => c.name.trim() !== "" || c.phone.trim() !== "")
+            .map(({ name, phone }) => ({ name, phone })) || [];
         return { ...data, contacts: cleanedContacts };
     };
 
-    const transformEditData = (shelter: Shelter) => ({
+    const transformEditData = (shelter: Shelter): ShelterForm => ({
         ...shelter,
-        contacts: shelter.contacts && shelter.contacts.length > 0 ? shelter.contacts : [{ name: "", phone: "" }],
+        area: shelter.area || "",
+        icon: shelter.icon || "🏠",
+        link: shelter.link || "",
+        contacts: shelter.contacts && shelter.contacts.length > 0
+            ? shelter.contacts.map(c => ({ ...c, id: generateId() }))
+            : [{ id: generateId(), name: "", phone: "" }],
     });
 
     const {
@@ -37,7 +56,7 @@ export default function SheltersAdminPage() {
         handleDelete,
         handleEdit,
         handleCreate
-    } = useAdminCrud<Shelter>(
+    } = useAdminCrud<Shelter, ShelterForm>(
         "/api/shelters",
         initialFormData,
         transformPayload,
@@ -46,18 +65,17 @@ export default function SheltersAdminPage() {
 
     // Helper to update contacts
     const updateContact = (index: number, field: 'name' | 'phone', value: string) => {
-        const newContacts = [...(formData.contacts || [])];
-        if (!newContacts[index]) newContacts[index] = { name: "", phone: "" };
+        const newContacts = [...formData.contacts];
         newContacts[index] = { ...newContacts[index], [field]: value };
         setFormData({ ...formData, contacts: newContacts });
     };
 
     const addContactField = () => {
-        setFormData({ ...formData, contacts: [...(formData.contacts || []), { name: "", phone: "" }] });
+        setFormData({ ...formData, contacts: [...formData.contacts, { id: generateId(), name: "", phone: "" }] });
     };
 
     const removeContactField = (index: number) => {
-        const newContacts = [...(formData.contacts || [])];
+        const newContacts = [...formData.contacts];
         newContacts.splice(index, 1);
         setFormData({ ...formData, contacts: newContacts });
     };
@@ -118,7 +136,7 @@ export default function SheltersAdminPage() {
                                     <td className="px-6 py-4">
                                         <div className="flex flex-col gap-1 text-sm">
                                             {shelter.contacts?.map((contact, idx) => (
-                                                <div key={idx} className="text-neutral-600">
+                                                <div key={`${contact.name}-${idx}`} className="text-neutral-600">
                                                     <span className="font-medium">{contact.name}:</span> {contact.phone}
                                                 </div>
                                             ))}
@@ -233,7 +251,7 @@ export default function SheltersAdminPage() {
                         <label htmlFor="contacts" className="block text-sm font-medium text-neutral-700 mb-1">ผู้ติดต่อ</label>
                         <div id="contacts" className="space-y-2">
                             {formData.contacts?.map((contact, index) => (
-                                <div key={`contact-${index}`} className="flex gap-2">
+                                <div key={contact.id} className="flex gap-2">
                                     <input
                                         aria-label={`ชื่อผู้ติดต่อ ${index + 1}`}
                                         type="text"

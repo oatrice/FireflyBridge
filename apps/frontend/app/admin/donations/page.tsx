@@ -4,22 +4,42 @@ import { AdminModal } from "@/components/ui/AdminModal";
 import { useAdminCrud } from "@/hooks/useAdminCrud";
 import type { DonationChannel } from "@/lib/types";
 
+interface DonationForm {
+    name: string;
+    bankName: string;
+    accountNumber: string;
+    accountName: string;
+    description: string;
+    qrCodeUrl: string;
+    contacts: { id: string; name: string; phone: string }[];
+    donationPoints: { id: string; value: string }[];
+    acceptsMoney: boolean;
+}
+
+const generateId = () => Math.random().toString(36).substring(7);
+
 export default function DonationsAdminPage() {
-    const initialFormData: Partial<DonationChannel> = {
+    const initialFormData: DonationForm = {
         name: "",
         bankName: "",
         accountNumber: "",
         accountName: "",
         description: "",
         qrCodeUrl: "",
-        contacts: [{ name: "", phone: "" }],
-        donationPoints: [""],
+        contacts: [{ id: generateId(), name: "", phone: "" }],
+        donationPoints: [{ id: generateId(), value: "" }],
         acceptsMoney: true,
     };
 
-    const transformPayload = (data: Partial<DonationChannel>) => {
-        const cleanedContacts = data.contacts?.filter(c => c.name.trim() !== "" || c.phone.trim() !== "") || [];
-        const cleanedPoints = data.donationPoints?.filter(p => p.trim() !== "") || [];
+    const transformPayload = (data: DonationForm) => {
+        const cleanedContacts = data.contacts
+            ?.filter(c => c.name.trim() !== "" || c.phone.trim() !== "")
+            .map(({ name, phone }) => ({ name, phone })) || [];
+
+        const cleanedPoints = data.donationPoints
+            ?.filter(p => p.value.trim() !== "")
+            .map(p => p.value) || [];
+
         return {
             ...data,
             contacts: cleanedContacts,
@@ -27,10 +47,20 @@ export default function DonationsAdminPage() {
         };
     };
 
-    const transformEditData = (donation: DonationChannel) => ({
+    const transformEditData = (donation: DonationChannel): DonationForm => ({
         ...donation,
-        contacts: donation.contacts && donation.contacts.length > 0 ? donation.contacts : [{ name: "", phone: "" }],
-        donationPoints: donation.donationPoints && donation.donationPoints.length > 0 ? donation.donationPoints : [""],
+        bankName: donation.bankName || "",
+        accountNumber: donation.accountNumber || "",
+        accountName: donation.accountName || "",
+        description: donation.description || "",
+        qrCodeUrl: donation.qrCodeUrl || "",
+        acceptsMoney: donation.acceptsMoney || false,
+        contacts: donation.contacts && donation.contacts.length > 0
+            ? donation.contacts.map(c => ({ ...c, id: generateId() }))
+            : [{ id: generateId(), name: "", phone: "" }],
+        donationPoints: donation.donationPoints && donation.donationPoints.length > 0
+            ? donation.donationPoints.map(p => ({ id: generateId(), value: p }))
+            : [{ id: generateId(), value: "" }],
     });
 
     const {
@@ -45,7 +75,7 @@ export default function DonationsAdminPage() {
         handleDelete,
         handleEdit,
         handleCreate
-    } = useAdminCrud<DonationChannel>(
+    } = useAdminCrud<DonationChannel, DonationForm>(
         "/api/donations",
         initialFormData,
         transformPayload,
@@ -54,34 +84,33 @@ export default function DonationsAdminPage() {
 
     // Helper functions
     const updateContact = (index: number, field: 'name' | 'phone', value: string) => {
-        const newContacts = [...(formData.contacts || [])];
-        if (!newContacts[index]) newContacts[index] = { name: "", phone: "" };
+        const newContacts = [...formData.contacts];
         newContacts[index] = { ...newContacts[index], [field]: value };
         setFormData({ ...formData, contacts: newContacts });
     };
 
     const addContactField = () => {
-        setFormData({ ...formData, contacts: [...(formData.contacts || []), { name: "", phone: "" }] });
+        setFormData({ ...formData, contacts: [...formData.contacts, { id: generateId(), name: "", phone: "" }] });
     };
 
     const removeContactField = (index: number) => {
-        const newContacts = [...(formData.contacts || [])];
+        const newContacts = [...formData.contacts];
         newContacts.splice(index, 1);
         setFormData({ ...formData, contacts: newContacts });
     };
 
     const updatePoint = (index: number, value: string) => {
-        const newPoints = [...(formData.donationPoints || [])];
-        newPoints[index] = value;
+        const newPoints = [...formData.donationPoints];
+        newPoints[index] = { ...newPoints[index], value };
         setFormData({ ...formData, donationPoints: newPoints });
     };
 
     const addPointField = () => {
-        setFormData({ ...formData, donationPoints: [...(formData.donationPoints || []), ""] });
+        setFormData({ ...formData, donationPoints: [...formData.donationPoints, { id: generateId(), value: "" }] });
     };
 
     const removePointField = (index: number) => {
-        const newPoints = [...(formData.donationPoints || [])];
+        const newPoints = [...formData.donationPoints];
         newPoints.splice(index, 1);
         setFormData({ ...formData, donationPoints: newPoints });
     };
@@ -143,7 +172,7 @@ export default function DonationsAdminPage() {
                                         {donation.donationPoints && donation.donationPoints.length > 0 ? (
                                             <div className="flex flex-col gap-1">
                                                 {donation.donationPoints.slice(0, 2).map((point, idx) => (
-                                                    <div key={idx} className="text-sm text-neutral-600 truncate max-w-xs">📍 {point}</div>
+                                                    <div key={`${point}-${idx}`} className="text-sm text-neutral-600 truncate max-w-xs">📍 {point}</div>
                                                 ))}
                                                 {donation.donationPoints.length > 2 && (
                                                     <div className="text-xs text-neutral-400">+{donation.donationPoints.length - 2} จุดเพิ่มเติม</div>
@@ -274,11 +303,11 @@ export default function DonationsAdminPage() {
                         </h3>
                         <div className="space-y-2">
                             {formData.donationPoints?.map((point, index) => (
-                                <div key={`point-${index}`} className="flex gap-2">
+                                <div key={point.id} className="flex gap-2">
                                     <input
                                         aria-label={`จุดรับบริจาค ${index + 1}`}
                                         type="text"
-                                        value={point}
+                                        value={point.value}
                                         onChange={(e) => updatePoint(index, e.target.value)}
                                         className="flex-1 px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none"
                                         placeholder="ระบุสถานที่รับบริจาค..."
@@ -311,7 +340,7 @@ export default function DonationsAdminPage() {
                         </h3>
                         <div className="space-y-2">
                             {formData.contacts?.map((contact, index) => (
-                                <div key={`contact-${index}`} className="flex gap-2">
+                                <div key={contact.id} className="flex gap-2">
                                     <input
                                         aria-label={`ชื่อผู้ติดต่อ ${index + 1}`}
                                         type="text"
