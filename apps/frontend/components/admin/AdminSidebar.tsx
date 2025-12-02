@@ -32,6 +32,11 @@ export default function AdminSidebar() {
             path: "/admin/external-links",
             icon: "🔗",
         },
+        {
+            title: "รายงานผลทดสอบ (QA Reports)",
+            path: "/admin/qa-dashboard",
+            icon: "🧪",
+        },
     ];
 
     return (
