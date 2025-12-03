@@ -4,6 +4,8 @@ import { AdminModal } from "@/components/ui/AdminModal";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { useAdminCrud } from "@/hooks/useAdminCrud";
 import type { Shelter } from "@/lib/types";
+import { AdminInput } from "@/components/ui/AdminInput";
+import { AdminSelect } from "@/components/ui/AdminSelect";
 
 interface ShelterForm {
     name: string;
@@ -189,65 +191,65 @@ export default function SheltersAdminPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label htmlFor="name" className="block text-sm font-medium text-neutral-700 mb-1">ชื่อศูนย์พักพิง</label>
-                            <input
+                            <AdminInput
                                 id="name"
                                 type="text"
                                 required
                                 value={formData.name}
                                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none text-neutral-900 placeholder-neutral-500"
                                 placeholder="เช่น วัด..."
+                                theme="green"
                             />
                         </div>
                         <div>
                             <label htmlFor="area" className="block text-sm font-medium text-neutral-700 mb-1">พื้นที่ (อำเภอ/ตำบล)</label>
-                            <input
+                            <AdminInput
                                 id="area"
                                 type="text"
                                 value={formData.area || ""}
                                 onChange={(e) => setFormData({ ...formData, area: e.target.value })}
-                                className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none text-neutral-900 placeholder-neutral-500"
                                 placeholder="เช่น อ.หาดใหญ่"
+                                theme="green"
                             />
                         </div>
                     </div>
 
                     <div>
                         <label htmlFor="location" className="block text-sm font-medium text-neutral-700 mb-1">ที่ตั้ง (Google Maps Link หรือที่อยู่)</label>
-                        <input
+                        <AdminInput
                             id="location"
                             type="text"
                             required
                             value={formData.location}
                             onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                            className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none text-neutral-900 placeholder-neutral-500"
                             placeholder="https://maps.google.com/..."
+                            theme="green"
                         />
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label htmlFor="status" className="block text-sm font-medium text-neutral-700 mb-1">สถานะ</label>
-                            <select
+                            <AdminSelect
                                 id="status"
                                 value={formData.status}
                                 onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                                className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none text-neutral-900"
+                                theme="green"
                             >
                                 <option value="open">🟢 เปิดรับ (Open)</option>
                                 <option value="full">🟡 เต็ม (Full)</option>
                                 <option value="closed">🔴 ปิด (Closed)</option>
-                            </select>
+                            </AdminSelect>
                         </div>
                         <div>
                             <label htmlFor="icon" className="block text-sm font-medium text-neutral-700 mb-1">ไอคอน (Emoji)</label>
-                            <input
+                            <AdminInput
                                 id="icon"
                                 type="text"
                                 value={formData.icon || "🏠"}
                                 onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
-                                className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none text-neutral-900 placeholder-neutral-500"
                                 placeholder="🏠"
+                                theme="green"
                             />
                         </div>
                     </div>
@@ -257,21 +259,23 @@ export default function SheltersAdminPage() {
                         <div id="contacts" className="space-y-2">
                             {formData.contacts?.map((contact, index) => (
                                 <div key={contact.id} className="flex gap-2">
-                                    <input
+                                    <AdminInput
                                         aria-label={`ชื่อผู้ติดต่อ ${index + 1}`}
                                         type="text"
                                         value={contact.name}
                                         onChange={(e) => updateContact(index, 'name', e.target.value)}
-                                        className="flex-1 px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none text-neutral-900 placeholder-neutral-500"
+                                        className="flex-1"
                                         placeholder="ชื่อผู้ติดต่อ"
+                                        theme="green"
                                     />
-                                    <input
+                                    <AdminInput
                                         aria-label={`เบอร์โทรผู้ติดต่อ ${index + 1}`}
                                         type="text"
                                         value={contact.phone}
                                         onChange={(e) => updateContact(index, 'phone', e.target.value)}
-                                        className="flex-1 px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none text-neutral-900 placeholder-neutral-500"
+                                        className="flex-1"
                                         placeholder="เบอร์โทร"
+                                        theme="green"
                                     />
                                     {index > 0 && (
                                         <button
@@ -297,13 +301,13 @@ export default function SheltersAdminPage() {
 
                     <div>
                         <label htmlFor="link" className="block text-sm font-medium text-neutral-700 mb-1">ลิงก์เพิ่มเติม (ถ้ามี)</label>
-                        <input
+                        <AdminInput
                             id="link"
                             type="text"
                             value={formData.link || ""}
                             onChange={(e) => setFormData({ ...formData, link: e.target.value })}
-                            className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none text-neutral-900 placeholder-neutral-500"
                             placeholder="https://..."
+                            theme="green"
                         />
                     </div>
 

@@ -4,6 +4,8 @@ import { AdminModal } from "@/components/ui/AdminModal";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { useAdminCrud } from "@/hooks/useAdminCrud";
 import type { DonationChannel } from "@/lib/types";
+import { AdminInput } from "@/components/ui/AdminInput";
+import { AdminTextarea } from "@/components/ui/AdminTextarea";
 
 interface DonationForm {
     name: string;
@@ -228,25 +230,26 @@ export default function DonationsAdminPage() {
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
                         <label htmlFor="name" className="block text-sm font-medium text-neutral-700 mb-1">ชื่อหน่วยงาน/โครงการ</label>
-                        <input
+                        <AdminInput
                             id="name"
                             type="text"
                             required
                             value={formData.name}
                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                            className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none text-neutral-900 placeholder-neutral-500"
                             placeholder="เช่น สภากาชาดไทย..."
+                            theme="purple"
                         />
                     </div>
 
                     <div>
                         <label htmlFor="description" className="block text-sm font-medium text-neutral-700 mb-1">รายละเอียด</label>
-                        <textarea
+                        <AdminTextarea
                             id="description"
                             value={formData.description || ""}
                             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                            className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none h-20 text-neutral-900 placeholder-neutral-500"
+                            className="h-20"
                             placeholder="รายละเอียดโครงการ..."
+                            theme="purple"
                         />
                     </div>
 
@@ -257,35 +260,35 @@ export default function DonationsAdminPage() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label htmlFor="bankName" className="block text-sm font-medium text-neutral-700 mb-1">ธนาคาร</label>
-                                <input
+                                <AdminInput
                                     id="bankName"
                                     type="text"
                                     value={formData.bankName || ""}
                                     onChange={(e) => setFormData({ ...formData, bankName: e.target.value })}
-                                    className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none text-neutral-900 placeholder-neutral-500"
                                     placeholder="เช่น กสิกรไทย"
+                                    theme="purple"
                                 />
                             </div>
                             <div>
                                 <label htmlFor="accountNumber" className="block text-sm font-medium text-neutral-700 mb-1">เลขที่บัญชี</label>
-                                <input
+                                <AdminInput
                                     id="accountNumber"
                                     type="text"
                                     value={formData.accountNumber || ""}
                                     onChange={(e) => setFormData({ ...formData, accountNumber: e.target.value })}
-                                    className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none text-neutral-900 placeholder-neutral-500"
                                     placeholder="xxx-x-xxxxx-x"
+                                    theme="purple"
                                 />
                             </div>
                             <div className="md:col-span-2">
                                 <label htmlFor="accountName" className="block text-sm font-medium text-neutral-700 mb-1">ชื่อบัญชี</label>
-                                <input
+                                <AdminInput
                                     id="accountName"
                                     type="text"
                                     value={formData.accountName || ""}
                                     onChange={(e) => setFormData({ ...formData, accountName: e.target.value })}
-                                    className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none text-neutral-900 placeholder-neutral-500"
                                     placeholder="ชื่อบัญชี..."
+                                    theme="purple"
                                 />
                             </div>
                         </div>
@@ -309,13 +312,14 @@ export default function DonationsAdminPage() {
                         <div className="space-y-2">
                             {formData.donationPoints?.map((point, index) => (
                                 <div key={point.id} className="flex gap-2">
-                                    <input
+                                    <AdminInput
                                         aria-label={`จุดรับบริจาค ${index + 1}`}
                                         type="text"
                                         value={point.value}
                                         onChange={(e) => updatePoint(index, e.target.value)}
-                                        className="flex-1 px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none text-neutral-900 placeholder-neutral-500"
+                                        className="flex-1"
                                         placeholder="ระบุสถานที่รับบริจาค..."
+                                        theme="purple"
                                     />
                                     {index > 0 && (
                                         <button
@@ -346,21 +350,23 @@ export default function DonationsAdminPage() {
                         <div className="space-y-2">
                             {formData.contacts?.map((contact, index) => (
                                 <div key={contact.id} className="flex gap-2">
-                                    <input
+                                    <AdminInput
                                         aria-label={`ชื่อผู้ติดต่อ ${index + 1}`}
                                         type="text"
                                         value={contact.name}
                                         onChange={(e) => updateContact(index, 'name', e.target.value)}
-                                        className="flex-1 px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none text-neutral-900 placeholder-neutral-500"
+                                        className="flex-1"
                                         placeholder="ชื่อผู้ติดต่อ"
+                                        theme="purple"
                                     />
-                                    <input
+                                    <AdminInput
                                         aria-label={`เบอร์โทรผู้ติดต่อ ${index + 1}`}
                                         type="text"
                                         value={contact.phone}
                                         onChange={(e) => updateContact(index, 'phone', e.target.value)}
-                                        className="flex-1 px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none text-neutral-900 placeholder-neutral-500"
+                                        className="flex-1"
                                         placeholder="เบอร์โทร"
+                                        theme="purple"
                                     />
                                     {index > 0 && (
                                         <button
