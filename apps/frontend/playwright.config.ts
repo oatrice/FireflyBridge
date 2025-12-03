@@ -44,30 +44,32 @@ export default defineConfig({
 
     /* Configure projects for major browsers */
     projects: [
+        // Setup project
         {
-            name: 'chromium',
-            use: { ...devices['Desktop Chrome'] },
+            name: 'setup',
+            testMatch: /auth\.setup\.ts/,
         },
 
-        // {
-        //   name: 'firefox',
-        //   use: { ...devices['Desktop Firefox'] },
-        // },
-
-        // {
-        //   name: 'webkit',
-        //   use: { ...devices['Desktop Safari'] },
-        // },
+        {
+            name: 'chromium',
+            use: {
+                ...devices['Desktop Chrome'],
+                // Use prepared auth state.
+                storageState: 'playwright/.auth/user.json',
+            },
+            dependencies: ['setup'],
+        },
 
         /* Test against mobile viewports. */
         {
             name: 'Mobile Chrome',
-            use: { ...devices['Pixel 5'] },
+            use: {
+                ...devices['Pixel 5'],
+                // Use prepared auth state.
+                storageState: 'playwright/.auth/user.json',
+            },
+            dependencies: ['setup'],
         },
-        // {
-        //   name: 'Mobile Safari',
-        //   use: { ...devices['iPhone 12'] },
-        // },
     ],
 
     /* Run your local dev server before starting the tests */
