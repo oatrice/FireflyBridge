@@ -104,7 +104,7 @@ export default function SheltersAdminPage() {
                 <h1 className="text-2xl font-bold text-neutral-900">จัดการศูนย์พักพิง (Shelters)</h1>
                 <button
                     onClick={handleCreate}
-                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2"
+                    className="px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-800 transition-colors flex items-center gap-2"
                 >
                     <span>➕</span> เพิ่มข้อมูล
                 </button>

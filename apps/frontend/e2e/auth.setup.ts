@@ -24,8 +24,6 @@ setup('authenticate', async ({ page }) => {
     const email = process.env.TEST_EMAIL || 'admin@example.com';
     const password = process.env.TEST_PASSWORD || 'password123';
 
-    console.log(`Debug: Attempting login with Email: ${email}, Password: ${password}`);
-
     await page.fill('input[name="email"]', email);
     await page.fill('input[name="password"]', password);
 

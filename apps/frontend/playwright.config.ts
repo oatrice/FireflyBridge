@@ -8,10 +8,6 @@ import path from 'path';
  */
 dotenv.config({ path: path.resolve(__dirname, '.env.local') });
 
-console.log('--- Playwright Config ---');
-console.log('TEST_EMAIL:', process.env.TEST_EMAIL);
-console.log('-------------------------');
-
 export default defineConfig({
     testDir: './e2e',
     /* Run tests in files in parallel */
