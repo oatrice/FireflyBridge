@@ -286,4 +286,36 @@ describe('DonationsAdminPage', () => {
             }));
         });
     });
+
+    it('handles API error on create', async () => {
+        (global.fetch as unknown as jest.Mock).mockImplementation((url, options) => {
+            if (url === '/api/donations' && options?.method === 'POST') {
+                return Promise.resolve({
+                    ok: false,
+                    status: 500,
+                    json: async () => ({}),
+                });
+            }
+            return Promise.resolve({
+                ok: true,
+                json: async () => mockDonations,
+            });
+        });
+
+        window.alert = jest.fn();
+
+        render(<DonationsAdminPage />);
+
+        await waitFor(() => {
+            expect(screen.getByText('เพิ่มข้อมูล')).toBeInTheDocument();
+        });
+
+        fireEvent.click(screen.getByText('เพิ่มข้อมูล'));
+        fireEvent.change(screen.getByPlaceholderText('เช่น สภากาชาดไทย...'), { target: { value: 'Error Donation' } });
+        fireEvent.click(screen.getByText('บันทึกข้อมูล'));
+
+        await waitFor(() => {
+            expect(window.alert).toHaveBeenCalledWith('Failed to save item: Unknown error');
+        });
+    });
 });

@@ -261,4 +261,58 @@ describe('SheltersAdminPage', () => {
             }));
         });
     });
+
+    it('renders correct status badges', async () => {
+        const statusMockShelters = [
+            { ...mockShelters[0], id: '1', status: 'open' },
+            { ...mockShelters[0], id: '2', status: 'full' },
+            { ...mockShelters[0], id: '3', status: 'closed' },
+            { ...mockShelters[0], id: '4', status: 'unknown' },
+        ];
+
+        (global.fetch as unknown as jest.Mock).mockResolvedValue({
+            ok: true,
+            json: async () => statusMockShelters,
+        });
+
+        render(<SheltersAdminPage />);
+
+        await waitFor(() => {
+            expect(screen.getByText('เปิดรับ')).toBeInTheDocument();
+            expect(screen.getByText('เต็ม')).toBeInTheDocument();
+            expect(screen.getByText('ปิด')).toBeInTheDocument();
+            expect(screen.getByText('unknown')).toBeInTheDocument();
+        });
+    });
+
+    it('handles API error on update', async () => {
+        (global.fetch as unknown as jest.Mock).mockImplementation((url, options) => {
+            if (url === '/api/shelters/1' && options?.method === 'PUT') {
+                return Promise.resolve({
+                    ok: false,
+                    status: 500,
+                    json: async () => ({}),
+                });
+            }
+            return Promise.resolve({
+                ok: true,
+                json: async () => mockShelters,
+            });
+        });
+
+        window.alert = jest.fn();
+
+        render(<SheltersAdminPage />);
+
+        await waitFor(() => {
+            expect(screen.getByTitle('แก้ไข')).toBeInTheDocument();
+        });
+
+        fireEvent.click(screen.getByTitle('แก้ไข'));
+        fireEvent.click(screen.getByText('บันทึกข้อมูล'));
+
+        await waitFor(() => {
+            expect(window.alert).toHaveBeenCalledWith('Failed to save item: Unknown error');
+        });
+    });
 });

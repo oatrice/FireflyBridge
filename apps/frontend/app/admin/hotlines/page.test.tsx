@@ -258,4 +258,66 @@ describe('HotlinesAdminPage', () => {
             }));
         });
     });
+
+    it('handles API error on create', async () => {
+        (global.fetch as unknown as jest.Mock).mockImplementation((url, options) => {
+            if (url === '/api/hotlines' && options?.method === 'POST') {
+                return Promise.resolve({
+                    ok: false,
+                    status: 500,
+                    json: async () => ({ message: 'Internal Server Error' }),
+                });
+            }
+            return Promise.resolve({
+                ok: true,
+                json: async () => mockHotlines,
+            });
+        });
+
+        window.alert = jest.fn();
+
+        render(<HotlinesAdminPage />);
+
+        await waitFor(() => {
+            expect(screen.getByText('เพิ่มข้อมูล')).toBeInTheDocument();
+        });
+
+        fireEvent.click(screen.getByText('เพิ่มข้อมูล'));
+        fireEvent.change(screen.getByPlaceholderText('เช่น มูลนิธิกู้ภัย...'), { target: { value: 'Error Hotline' } });
+        fireEvent.click(screen.getByText('บันทึกข้อมูล'));
+
+        await waitFor(() => {
+            expect(window.alert).toHaveBeenCalledWith('Failed to save item: Internal Server Error');
+        });
+    });
+
+    it('handles API error on delete', async () => {
+        window.confirm = jest.fn(() => true);
+        (global.fetch as unknown as jest.Mock).mockImplementation((url, options) => {
+            if (url === '/api/hotlines/1' && options?.method === 'DELETE') {
+                return Promise.resolve({
+                    ok: false,
+                    status: 500,
+                });
+            }
+            return Promise.resolve({
+                ok: true,
+                json: async () => mockHotlines,
+            });
+        });
+
+        window.alert = jest.fn();
+
+        render(<HotlinesAdminPage />);
+
+        await waitFor(() => {
+            expect(screen.getByTitle('ลบ')).toBeInTheDocument();
+        });
+
+        fireEvent.click(screen.getByTitle('ลบ'));
+
+        await waitFor(() => {
+            expect(window.alert).toHaveBeenCalledWith('Failed to delete item. Please try again.');
+        });
+    });
 });

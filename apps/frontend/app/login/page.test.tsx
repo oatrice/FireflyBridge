@@ -257,4 +257,66 @@ describe('LoginPage', () => {
             expect(window.alert).toHaveBeenCalledWith('Invalid credentials');
         });
     });
+
+    it('handles registration error', async () => {
+        (authClient.signUp.email as jest.Mock).mockImplementation((data, options) => {
+            options.onError({ error: { message: 'Email already exists' } });
+            return Promise.resolve();
+        });
+
+        window.alert = jest.fn();
+
+        render(<LoginPage />);
+
+        fireEvent.click(screen.getByText("Don't have an account? Sign up"));
+        fireEvent.click(screen.getByText('Email'));
+
+        fireEvent.change(screen.getByPlaceholderText('Full Name'), { target: { value: 'Test User' } });
+        fireEvent.change(screen.getByPlaceholderText('Email address'), { target: { value: 'existing@example.com' } });
+        fireEvent.change(screen.getByPlaceholderText('Password'), { target: { value: 'password123' } });
+
+        fireEvent.click(screen.getByText('Sign Up'));
+
+        await waitFor(() => {
+            expect(window.alert).toHaveBeenCalledWith('Email already exists');
+        });
+    });
+
+    it('handles OTP verification error', async () => {
+        // Mock successful signup to get to OTP screen
+        (authClient.signUp.email as jest.Mock).mockImplementation((data, options) => {
+            options.onSuccess();
+            return Promise.resolve();
+        });
+
+        render(<LoginPage />);
+
+        fireEvent.click(screen.getByText("Don't have an account? Sign up"));
+        fireEvent.click(screen.getByText('Email'));
+
+        fireEvent.change(screen.getByPlaceholderText('Full Name'), { target: { value: 'Test User' } });
+        fireEvent.change(screen.getByPlaceholderText('Email address'), { target: { value: 'test@example.com' } });
+        fireEvent.change(screen.getByPlaceholderText('Password'), { target: { value: 'password123' } });
+
+        fireEvent.click(screen.getByText('Sign Up'));
+
+        await waitFor(() => {
+            expect(screen.getByRole('heading', { name: 'Verify OTP' })).toBeInTheDocument();
+        });
+
+        // Mock OTP error
+        (authClient.emailOtp.verifyEmail as jest.Mock).mockImplementation((data, options) => {
+            options.onError({ error: { message: 'Invalid OTP' } });
+            return Promise.resolve();
+        });
+
+        window.alert = jest.fn();
+
+        fireEvent.change(screen.getByPlaceholderText('Enter OTP'), { target: { value: '000000' } });
+        fireEvent.click(screen.getByRole('button', { name: 'Verify OTP' }));
+
+        await waitFor(() => {
+            expect(window.alert).toHaveBeenCalledWith('Invalid OTP');
+        });
+    });
 });
