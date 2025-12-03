@@ -4,6 +4,9 @@ import { AdminModal } from "@/components/ui/AdminModal";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { useAdminCrud } from "@/hooks/useAdminCrud";
 import type { ExternalLink } from "@/lib/types";
+import { AdminInput } from "@/components/ui/AdminInput";
+import { AdminSelect } from "@/components/ui/AdminSelect";
+import { AdminTextarea } from "@/components/ui/AdminTextarea";
 
 export default function ExternalLinksAdminPage() {
     const initialFormData: Partial<ExternalLink> = {
@@ -39,7 +42,7 @@ export default function ExternalLinksAdminPage() {
                 <h1 className="text-2xl font-bold text-neutral-900">จัดการลิงก์ภายนอก (External Links)</h1>
                 <button
                     onClick={handleCreate}
-                    className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors flex items-center gap-2"
+                    className="px-4 py-2 bg-orange-700 text-white rounded-lg hover:bg-orange-800 transition-colors flex items-center gap-2"
                 >
                     <span>➕</span> เพิ่มข้อมูล
                 </button>
@@ -126,40 +129,40 @@ export default function ExternalLinksAdminPage() {
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
                         <label htmlFor="name" className="block text-sm font-medium text-neutral-700 mb-1">ชื่อเว็บไซต์/แพลตฟอร์ม</label>
-                        <input
+                        <AdminInput
                             id="name"
                             type="text"
                             name="name"
                             required
                             value={formData.name}
                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                            className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                             placeholder="เช่น HatYaiFlood.com"
+                            theme="orange"
                         />
                     </div>
 
                     <div>
                         <label htmlFor="url" className="block text-sm font-medium text-neutral-700 mb-1">URL</label>
-                        <input
+                        <AdminInput
                             id="url"
                             type="url"
                             name="url"
                             required
                             value={formData.url}
                             onChange={(e) => setFormData({ ...formData, url: e.target.value })}
-                            className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                             placeholder="https://..."
+                            theme="orange"
                         />
                     </div>
 
                     <div>
                         <label htmlFor="category" className="block text-sm font-medium text-neutral-700 mb-1">หมวดหมู่</label>
-                        <select
+                        <AdminSelect
                             id="category"
                             name="category"
                             value={formData.category}
                             onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                            className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                            theme="orange"
                         >
                             <option value="ทั่วไป">ทั่วไป</option>
                             <option value="น้ำท่วม">น้ำท่วม</option>
@@ -167,31 +170,32 @@ export default function ExternalLinksAdminPage() {
                             <option value="กล้อง CCTV">กล้อง CCTV</option>
                             <option value="หน่วยงานรัฐ">หน่วยงานรัฐ</option>
                             <option value="อื่นๆ">อื่นๆ</option>
-                        </select>
+                        </AdminSelect>
                     </div>
 
                     <div>
                         <label htmlFor="description" className="block text-sm font-medium text-neutral-700 mb-1">รายละเอียด</label>
-                        <textarea
+                        <AdminTextarea
                             id="description"
                             name="description"
                             value={formData.description || ""}
                             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                            className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none h-24"
+                            className="h-24"
                             placeholder="รายละเอียดเกี่ยวกับเว็บไซต์..."
+                            theme="orange"
                         />
                     </div>
 
                     <div>
                         <label htmlFor="icon" className="block text-sm font-medium text-neutral-700 mb-1">ไอคอน (Emoji)</label>
-                        <input
+                        <AdminInput
                             id="icon"
                             type="text"
                             name="icon"
                             value={formData.icon || ""}
                             onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
-                            className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                            placeholder="🌊"
+                            placeholder="🔗"
+                            theme="orange"
                         />
                     </div>
 

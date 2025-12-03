@@ -4,6 +4,9 @@ import { AdminModal } from "@/components/ui/AdminModal";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { useAdminCrud } from "@/hooks/useAdminCrud";
 import type { Hotline } from "@/lib/types";
+import { AdminInput } from "@/components/ui/AdminInput";
+import { AdminSelect } from "@/components/ui/AdminSelect";
+import { AdminTextarea } from "@/components/ui/AdminTextarea";
 
 interface HotlineForm {
     name: string;
@@ -191,26 +194,26 @@ export default function HotlinesAdminPage() {
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
                         <label htmlFor="name" className="block text-sm font-medium text-neutral-700 mb-1">ชื่อหน่วยงาน</label>
-                        <input
+                        <AdminInput
                             id="name"
                             type="text"
                             name="name"
                             required
                             value={formData.name}
                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                            className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                             placeholder="เช่น มูลนิธิกู้ภัย..."
+                            theme="blue"
                         />
                     </div>
 
                     <div>
                         <label htmlFor="category" className="block text-sm font-medium text-neutral-700 mb-1">หมวดหมู่</label>
-                        <select
+                        <AdminSelect
                             id="category"
                             name="category"
                             value={formData.category}
                             onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                            className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                            theme="blue"
                         >
                             <option value="ทั่วไป">ทั่วไป</option>
                             <option value="มูลนิธิ">มูลนิธิ</option>
@@ -219,7 +222,7 @@ export default function HotlinesAdminPage() {
                             <option value="โรงพยาบาล">โรงพยาบาล</option>
                             <option value="ตำรวจ">ตำรวจ</option>
                             <option value="อื่นๆ">อื่นๆ</option>
-                        </select>
+                        </AdminSelect>
                     </div>
 
                     <div>
@@ -227,14 +230,15 @@ export default function HotlinesAdminPage() {
                         <div id="numbers" className="space-y-2">
                             {formData.numbers?.map((num, index) => (
                                 <div key={num.id} className="flex gap-2">
-                                    <input
+                                    <AdminInput
                                         aria-label={`เบอร์โทรศัพท์ ${index + 1}`}
                                         type="text"
                                         name={`numbers.${index}`}
                                         value={num.value}
                                         onChange={(e) => updateNumber(index, e.target.value)}
-                                        className="flex-1 px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                                        className="flex-1"
                                         placeholder="08x-xxx-xxxx"
+                                        theme="blue"
                                     />
                                     {index > 0 && (
                                         <button
@@ -260,27 +264,28 @@ export default function HotlinesAdminPage() {
 
                     <div>
                         <label htmlFor="description" className="block text-sm font-medium text-neutral-700 mb-1">รายละเอียดเพิ่มเติม</label>
-                        <textarea
+                        <AdminTextarea
                             id="description"
                             name="description"
                             value={formData.description || ""}
                             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                            className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none h-24"
+                            className="h-24"
                             placeholder="รายละเอียดเกี่ยวกับหน่วยงาน หรือพื้นที่ให้บริการ..."
+                            theme="blue"
                         />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <label htmlFor="color" className="block text-sm font-medium text-neutral-700 mb-1">สีป้ายกำกับ (Tailwind Class)</label>
-                            <input
+                            <AdminInput
                                 id="color"
                                 type="text"
                                 name="color"
                                 value={formData.color || ""}
                                 onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                                className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                                 placeholder="bg-blue-500"
+                                theme="blue"
                             />
                         </div>
                         <div className="flex items-center pt-6">

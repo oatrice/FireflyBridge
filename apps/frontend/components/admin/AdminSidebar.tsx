@@ -42,7 +42,7 @@ export default function AdminSidebar() {
     return (
         <aside className="w-64 bg-white border-r border-neutral-200 min-h-screen fixed left-0 top-0 pt-20 hidden md:block z-40">
             <div className="px-6 mb-8">
-                <h2 className="text-xs font-semibold text-neutral-400 uppercase tracking-wider">
+                <h2 className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
                     Admin Menu
                 </h2>
             </div>
