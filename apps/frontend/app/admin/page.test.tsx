@@ -32,6 +32,14 @@ describe('AdminPage', () => {
         (useRouter as jest.Mock).mockReturnValue({ push: mockPush });
     });
 
+    it('shows loading spinner initially', () => {
+        // Mock getSession to not resolve immediately
+        (authClient.getSession as jest.Mock).mockReturnValue(new Promise(() => { }));
+
+        const { container } = render(<AdminPage />);
+        expect(container.querySelector('.animate-spin')).toBeInTheDocument();
+    });
+
     it('redirects to login if no session', async () => {
         (authClient.getSession as jest.Mock).mockResolvedValue({ data: null });
 
