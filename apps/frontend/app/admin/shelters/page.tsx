@@ -195,7 +195,7 @@ export default function SheltersAdminPage() {
                                 required
                                 value={formData.name}
                                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none placeholder-neutral-500"
+                                className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none text-neutral-900 placeholder-neutral-500"
                                 placeholder="เช่น วัด..."
                             />
                         </div>
@@ -206,7 +206,7 @@ export default function SheltersAdminPage() {
                                 type="text"
                                 value={formData.area || ""}
                                 onChange={(e) => setFormData({ ...formData, area: e.target.value })}
-                                className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none placeholder-neutral-500"
+                                className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none text-neutral-900 placeholder-neutral-500"
                                 placeholder="เช่น อ.หาดใหญ่"
                             />
                         </div>
@@ -232,7 +232,7 @@ export default function SheltersAdminPage() {
                                 id="status"
                                 value={formData.status}
                                 onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                                className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
+                                className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none text-neutral-900"
                             >
                                 <option value="open">🟢 เปิดรับ (Open)</option>
                                 <option value="full">🟡 เต็ม (Full)</option>
@@ -246,7 +246,7 @@ export default function SheltersAdminPage() {
                                 type="text"
                                 value={formData.icon || "🏠"}
                                 onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
-                                className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none placeholder-neutral-500"
+                                className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none text-neutral-900 placeholder-neutral-500"
                                 placeholder="🏠"
                             />
                         </div>
@@ -262,7 +262,7 @@ export default function SheltersAdminPage() {
                                         type="text"
                                         value={contact.name}
                                         onChange={(e) => updateContact(index, 'name', e.target.value)}
-                                        className="flex-1 px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none placeholder-neutral-500"
+                                        className="flex-1 px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none text-neutral-900 placeholder-neutral-500"
                                         placeholder="ชื่อผู้ติดต่อ"
                                     />
                                     <input
@@ -270,7 +270,7 @@ export default function SheltersAdminPage() {
                                         type="text"
                                         value={contact.phone}
                                         onChange={(e) => updateContact(index, 'phone', e.target.value)}
-                                        className="flex-1 px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none placeholder-neutral-500"
+                                        className="flex-1 px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none text-neutral-900 placeholder-neutral-500"
                                         placeholder="เบอร์โทร"
                                     />
                                     {index > 0 && (
