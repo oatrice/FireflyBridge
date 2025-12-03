@@ -1,6 +1,7 @@
 "use client";
 
 import { AdminModal } from "@/components/ui/AdminModal";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { useAdminCrud } from "@/hooks/useAdminCrud";
 import type { Hotline } from "@/lib/types";
 
@@ -92,7 +93,7 @@ export default function HotlinesAdminPage() {
         setFormData({ ...formData, numbers: newNumbers });
     };
 
-    if (loading) return <div className="p-8 text-center">Loading...</div>;
+    if (loading) return <LoadingSpinner />;
 
     return (
         <div>

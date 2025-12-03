@@ -1,6 +1,7 @@
 "use client";
 
 import { AdminModal } from "@/components/ui/AdminModal";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { useAdminCrud } from "@/hooks/useAdminCrud";
 import type { ExternalLink } from "@/lib/types";
 
@@ -30,7 +31,7 @@ export default function ExternalLinksAdminPage() {
         initialFormData
     );
 
-    if (loading) return <div className="p-8 text-center">Loading...</div>;
+    if (loading) return <LoadingSpinner color="border-orange-600" />;
 
     return (
         <div>
