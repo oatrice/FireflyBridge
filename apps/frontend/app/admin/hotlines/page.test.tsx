@@ -194,4 +194,68 @@ describe('HotlinesAdminPage', () => {
         const inputs = screen.getAllByPlaceholderText('08x-xxx-xxxx');
         expect(inputs).toHaveLength(2);
     });
+
+    it('removes number field', async () => {
+        render(<HotlinesAdminPage />);
+
+        await waitFor(() => {
+            expect(screen.getByText('เพิ่มข้อมูล')).toBeInTheDocument();
+        });
+
+        fireEvent.click(screen.getByText('เพิ่มข้อมูล'));
+
+        // Add number first to have 2 fields
+        const addNumberBtn = screen.getByText('เพิ่มเบอร์โทร');
+        fireEvent.click(addNumberBtn);
+
+        const inputsBefore = screen.getAllByPlaceholderText('08x-xxx-xxxx');
+        expect(inputsBefore).toHaveLength(2);
+
+        // Remove the second number (index 1)
+        const removeBtns = screen.getAllByTitle('ลบเบอร์โทร');
+        fireEvent.click(removeBtns[0]); // The first remove button corresponds to the second input (index 1)
+
+        const inputsAfter = screen.getAllByPlaceholderText('08x-xxx-xxxx');
+        expect(inputsAfter).toHaveLength(1);
+    });
+
+    it('filters empty numbers on submission', async () => {
+        (global.fetch as unknown as jest.Mock).mockImplementation((url, options) => {
+            if (url === '/api/hotlines' && options?.method === 'POST') {
+                return Promise.resolve({
+                    ok: true,
+                    json: async () => ({ ...mockHotlines[0], id: '3', name: 'Filtered Hotline' }),
+                });
+            }
+            return Promise.resolve({
+                ok: true,
+                json: async () => mockHotlines,
+            });
+        });
+
+        render(<HotlinesAdminPage />);
+
+        await waitFor(() => {
+            expect(screen.getByText('เพิ่มข้อมูล')).toBeInTheDocument();
+        });
+
+        fireEvent.click(screen.getByText('เพิ่มข้อมูล'));
+
+        fireEvent.change(screen.getByPlaceholderText('เช่น มูลนิธิกู้ภัย...'), { target: { value: 'Filtered Hotline' } });
+
+        // First number is empty by default
+
+        // Add another number and leave it empty
+        fireEvent.click(screen.getByText('เพิ่มเบอร์โทร'));
+
+        // Submit
+        fireEvent.click(screen.getByText('บันทึกข้อมูล'));
+
+        await waitFor(() => {
+            expect(global.fetch).toHaveBeenCalledWith('/api/hotlines', expect.objectContaining({
+                method: 'POST',
+                body: expect.stringContaining('"numbers":[]') // Should be empty array or filtered
+            }));
+        });
+    });
 });

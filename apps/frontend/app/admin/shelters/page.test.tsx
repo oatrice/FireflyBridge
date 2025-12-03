@@ -196,4 +196,69 @@ describe('SheltersAdminPage', () => {
         const inputs = screen.getAllByPlaceholderText('ชื่อผู้ติดต่อ');
         expect(inputs).toHaveLength(2);
     });
+
+    it('removes contact field', async () => {
+        render(<SheltersAdminPage />);
+
+        await waitFor(() => {
+            expect(screen.getByText('เพิ่มข้อมูล')).toBeInTheDocument();
+        });
+
+        fireEvent.click(screen.getByText('เพิ่มข้อมูล'));
+
+        // Add contact first to have 2 fields
+        const addContactBtn = screen.getByText('เพิ่มผู้ติดต่อ');
+        fireEvent.click(addContactBtn);
+
+        const inputsBefore = screen.getAllByPlaceholderText('ชื่อผู้ติดต่อ');
+        expect(inputsBefore).toHaveLength(2);
+
+        // Remove the second contact (index 1)
+        const removeBtns = screen.getAllByTitle('ลบผู้ติดต่อ');
+        fireEvent.click(removeBtns[0]); // The first remove button corresponds to the second input (index 1)
+
+        const inputsAfter = screen.getAllByPlaceholderText('ชื่อผู้ติดต่อ');
+        expect(inputsAfter).toHaveLength(1);
+    });
+
+    it('filters empty contacts on submission', async () => {
+        (global.fetch as unknown as jest.Mock).mockImplementation((url, options) => {
+            if (url === '/api/shelters' && options?.method === 'POST') {
+                return Promise.resolve({
+                    ok: true,
+                    json: async () => ({ ...mockShelters[0], id: '3', name: 'Filtered Shelter' }),
+                });
+            }
+            return Promise.resolve({
+                ok: true,
+                json: async () => mockShelters,
+            });
+        });
+
+        render(<SheltersAdminPage />);
+
+        await waitFor(() => {
+            expect(screen.getByText('เพิ่มข้อมูล')).toBeInTheDocument();
+        });
+
+        fireEvent.click(screen.getByText('เพิ่มข้อมูล'));
+
+        fireEvent.change(screen.getByPlaceholderText('เช่น วัด...'), { target: { value: 'Filtered Shelter' } });
+        fireEvent.change(screen.getByPlaceholderText('https://maps.google.com/...'), { target: { value: 'Location' } });
+
+        // First contact is empty by default
+
+        // Add another contact and leave it empty
+        fireEvent.click(screen.getByText('เพิ่มผู้ติดต่อ'));
+
+        // Submit
+        fireEvent.click(screen.getByText('บันทึกข้อมูล'));
+
+        await waitFor(() => {
+            expect(global.fetch).toHaveBeenCalledWith('/api/shelters', expect.objectContaining({
+                method: 'POST',
+                body: expect.stringContaining('"contacts":[]') // Should be empty array or filtered
+            }));
+        });
+    });
 });

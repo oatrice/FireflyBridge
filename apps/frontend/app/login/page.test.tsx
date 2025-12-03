@@ -104,4 +104,157 @@ describe('LoginPage', () => {
         fireEvent.click(screen.getByText('Already have an account? Sign in'));
         expect(screen.getByText('Admin Login')).toBeInTheDocument();
     });
+    it('handles email login submission', async () => {
+        render(<LoginPage />);
+
+        fireEvent.click(screen.getByText('Email'));
+
+        fireEvent.change(screen.getByPlaceholderText('Email address'), {
+            target: { value: 'test@example.com' },
+        });
+        fireEvent.change(screen.getByPlaceholderText('Password'), {
+            target: { value: 'password123' },
+        });
+
+        fireEvent.click(screen.getByText('Sign In'));
+
+        await waitFor(() => {
+            expect(authClient.signIn.email).toHaveBeenCalledWith({
+                email: 'test@example.com',
+                password: 'password123',
+                callbackURL: '/admin',
+            }, expect.any(Object));
+        });
+    });
+
+    it('handles email registration flow', async () => {
+        // Mock successful signup and OTP send
+        (authClient.signUp.email as jest.Mock).mockImplementation((data, options) => {
+            options.onSuccess();
+            return Promise.resolve();
+        });
+
+        render(<LoginPage />);
+
+        // Switch to Sign Up
+        fireEvent.click(screen.getByText("Don't have an account? Sign up"));
+
+        // Switch to Email
+        fireEvent.click(screen.getByText('Email'));
+
+        fireEvent.change(screen.getByPlaceholderText('Full Name'), {
+            target: { value: 'Test User' },
+        });
+        fireEvent.change(screen.getByPlaceholderText('Email address'), {
+            target: { value: 'new@example.com' },
+        });
+        fireEvent.change(screen.getByPlaceholderText('Password'), {
+            target: { value: 'password123' },
+        });
+
+        fireEvent.click(screen.getByText('Sign Up'));
+
+        await waitFor(() => {
+            expect(authClient.signUp.email).toHaveBeenCalled();
+            expect(authClient.emailOtp.sendVerificationOtp).toHaveBeenCalled();
+            expect(screen.getByRole('heading', { name: 'Verify OTP' })).toBeInTheDocument();
+        });
+
+        // Verify OTP
+        fireEvent.change(screen.getByPlaceholderText('Enter OTP'), {
+            target: { value: '123456' },
+        });
+
+        // Mock successful verification
+        (authClient.emailOtp.verifyEmail as jest.Mock).mockImplementation((data, options) => {
+            options.onSuccess();
+            return Promise.resolve();
+        });
+
+        // Mock window.alert
+        window.alert = jest.fn();
+
+        fireEvent.click(screen.getByRole('button', { name: 'Verify OTP' }));
+
+        await waitFor(() => {
+            expect(authClient.emailOtp.verifyEmail).toHaveBeenCalledWith({
+                email: 'new@example.com',
+                otp: '123456',
+            }, expect.any(Object));
+            expect(window.alert).toHaveBeenCalledWith(expect.stringContaining('verified successfully'));
+            expect(screen.getByText('Admin Login')).toBeInTheDocument();
+        });
+    });
+
+    it('handles phone registration flow', async () => {
+        // Mock successful OTP send
+        (authClient.phoneNumber.sendOtp as jest.Mock).mockImplementation((data, options) => {
+            options.onSuccess();
+            return Promise.resolve();
+        });
+
+        render(<LoginPage />);
+
+        // Switch to Sign Up
+        fireEvent.click(screen.getByText("Don't have an account? Sign up"));
+
+        // Default is Phone
+
+        fireEvent.change(screen.getByPlaceholderText('Phone Number (e.g. +66...)'), {
+            target: { value: '+66812345678' },
+        });
+
+        fireEvent.click(screen.getByText('Send OTP'));
+
+        await waitFor(() => {
+            expect(authClient.phoneNumber.sendOtp).toHaveBeenCalled();
+            expect(screen.getByRole('heading', { name: 'Verify OTP' })).toBeInTheDocument();
+        });
+
+        // Verify OTP
+        fireEvent.change(screen.getByPlaceholderText('Enter OTP'), {
+            target: { value: '123456' },
+        });
+
+        // Mock successful verification
+        (authClient.phoneNumber.verify as jest.Mock).mockImplementation((data, options) => {
+            options.onSuccess();
+            return Promise.resolve();
+        });
+
+        // Mock window.alert
+        window.alert = jest.fn();
+
+        fireEvent.click(screen.getByRole('button', { name: 'Verify OTP' }));
+
+        await waitFor(() => {
+            expect(authClient.phoneNumber.verify).toHaveBeenCalledWith({
+                phoneNumber: '+66812345678',
+                code: '123456',
+            }, expect.any(Object));
+            expect(window.alert).toHaveBeenCalledWith(expect.stringContaining('verified successfully'));
+            expect(mockPush).toHaveBeenCalledWith('/admin');
+        });
+    });
+
+    it('handles login error', async () => {
+        // Mock login error
+        (authClient.signIn.email as jest.Mock).mockImplementation((data, options) => {
+            options.onError({ error: { message: 'Invalid credentials' } });
+            return Promise.resolve();
+        });
+
+        window.alert = jest.fn();
+
+        render(<LoginPage />);
+
+        fireEvent.click(screen.getByText('Email'));
+        fireEvent.change(screen.getByPlaceholderText('Email address'), { target: { value: 'wrong@example.com' } });
+        fireEvent.change(screen.getByPlaceholderText('Password'), { target: { value: 'wrong' } });
+        fireEvent.click(screen.getByText('Sign In'));
+
+        await waitFor(() => {
+            expect(window.alert).toHaveBeenCalledWith('Invalid credentials');
+        });
+    });
 });

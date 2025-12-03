@@ -203,4 +203,87 @@ describe('DonationsAdminPage', () => {
         expect(addContactBtn).toBeInTheDocument();
         expect(addPointBtn).toBeInTheDocument();
     });
+
+    it('removes contact and point fields', async () => {
+        render(<DonationsAdminPage />);
+
+        await waitFor(() => {
+            expect(screen.getByText('เพิ่มข้อมูล')).toBeInTheDocument();
+        });
+
+        fireEvent.click(screen.getByText('เพิ่มข้อมูล'));
+
+        // Add contact first to have 2 fields
+        const addContactBtn = screen.getByText('เพิ่มผู้ติดต่อ');
+        fireEvent.click(addContactBtn);
+
+        const contactInputsBefore = screen.getAllByPlaceholderText('ชื่อผู้ติดต่อ');
+        expect(contactInputsBefore).toHaveLength(2);
+
+        // Remove the second contact (index 1)
+        const removeContactBtns = screen.getAllByTitle('ลบผู้ติดต่อ');
+        fireEvent.click(removeContactBtns[0]);
+
+        const contactInputsAfter = screen.getAllByPlaceholderText('ชื่อผู้ติดต่อ');
+        expect(contactInputsAfter).toHaveLength(1);
+
+        // Add point first to have 2 fields
+        const addPointBtn = screen.getByText('เพิ่มจุดรับบริจาค');
+        fireEvent.click(addPointBtn);
+
+        const pointInputsBefore = screen.getAllByPlaceholderText('ระบุสถานที่รับบริจาค...');
+        expect(pointInputsBefore).toHaveLength(2);
+
+        // Remove the second point (index 1)
+        const removePointBtns = screen.getAllByTitle('ลบจุดรับบริจาค');
+        fireEvent.click(removePointBtns[0]);
+
+        const pointInputsAfter = screen.getAllByPlaceholderText('ระบุสถานที่รับบริจาค...');
+        expect(pointInputsAfter).toHaveLength(1);
+    });
+
+    it('filters empty fields on submission', async () => {
+        (global.fetch as unknown as jest.Mock).mockImplementation((url, options) => {
+            if (url === '/api/donations' && options?.method === 'POST') {
+                return Promise.resolve({
+                    ok: true,
+                    json: async () => ({ ...mockDonations[0], id: '3', name: 'Filtered Donation' }),
+                });
+            }
+            return Promise.resolve({
+                ok: true,
+                json: async () => mockDonations,
+            });
+        });
+
+        render(<DonationsAdminPage />);
+
+        await waitFor(() => {
+            expect(screen.getByText('เพิ่มข้อมูล')).toBeInTheDocument();
+        });
+
+        fireEvent.click(screen.getByText('เพิ่มข้อมูล'));
+
+        fireEvent.change(screen.getByPlaceholderText('เช่น สภากาชาดไทย...'), { target: { value: 'Filtered Donation' } });
+
+        // First contact and point are empty by default
+
+        // Add another contact and point and leave them empty
+        fireEvent.click(screen.getByText('เพิ่มผู้ติดต่อ'));
+        fireEvent.click(screen.getByText('เพิ่มจุดรับบริจาค'));
+
+        // Submit
+        fireEvent.click(screen.getByText('บันทึกข้อมูล'));
+
+        await waitFor(() => {
+            expect(global.fetch).toHaveBeenCalledWith('/api/donations', expect.objectContaining({
+                method: 'POST',
+                body: expect.stringContaining('"contacts":[]') // Should be empty array or filtered
+            }));
+            expect(global.fetch).toHaveBeenCalledWith('/api/donations', expect.objectContaining({
+                method: 'POST',
+                body: expect.stringContaining('"donationPoints":[]') // Should be empty array or filtered
+            }));
+        });
+    });
 });
