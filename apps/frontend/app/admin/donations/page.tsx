@@ -234,7 +234,7 @@ export default function DonationsAdminPage() {
                             required
                             value={formData.name}
                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                            className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none"
+                            className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none placeholder-neutral-500"
                             placeholder="เช่น สภากาชาดไทย..."
                         />
                     </div>
@@ -245,7 +245,7 @@ export default function DonationsAdminPage() {
                             id="description"
                             value={formData.description || ""}
                             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                            className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none h-20"
+                            className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none h-20 placeholder-neutral-500"
                             placeholder="รายละเอียดโครงการ..."
                         />
                     </div>
@@ -262,7 +262,7 @@ export default function DonationsAdminPage() {
                                     type="text"
                                     value={formData.bankName || ""}
                                     onChange={(e) => setFormData({ ...formData, bankName: e.target.value })}
-                                    className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none"
+                                    className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none placeholder-neutral-500"
                                     placeholder="เช่น กสิกรไทย"
                                 />
                             </div>
@@ -273,7 +273,7 @@ export default function DonationsAdminPage() {
                                     type="text"
                                     value={formData.accountNumber || ""}
                                     onChange={(e) => setFormData({ ...formData, accountNumber: e.target.value })}
-                                    className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none"
+                                    className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none placeholder-neutral-500"
                                     placeholder="xxx-x-xxxxx-x"
                                 />
                             </div>
@@ -284,7 +284,7 @@ export default function DonationsAdminPage() {
                                     type="text"
                                     value={formData.accountName || ""}
                                     onChange={(e) => setFormData({ ...formData, accountName: e.target.value })}
-                                    className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none"
+                                    className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none placeholder-neutral-500"
                                     placeholder="ชื่อบัญชี..."
                                 />
                             </div>
@@ -314,7 +314,7 @@ export default function DonationsAdminPage() {
                                         type="text"
                                         value={point.value}
                                         onChange={(e) => updatePoint(index, e.target.value)}
-                                        className="flex-1 px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none"
+                                        className="flex-1 px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none placeholder-neutral-500"
                                         placeholder="ระบุสถานที่รับบริจาค..."
                                     />
                                     {index > 0 && (
@@ -351,7 +351,7 @@ export default function DonationsAdminPage() {
                                         type="text"
                                         value={contact.name}
                                         onChange={(e) => updateContact(index, 'name', e.target.value)}
-                                        className="flex-1 px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none"
+                                        className="flex-1 px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none placeholder-neutral-500"
                                         placeholder="ชื่อผู้ติดต่อ"
                                     />
                                     <input
@@ -359,7 +359,7 @@ export default function DonationsAdminPage() {
                                         type="text"
                                         value={contact.phone}
                                         onChange={(e) => updateContact(index, 'phone', e.target.value)}
-                                        className="flex-1 px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none"
+                                        className="flex-1 px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none placeholder-neutral-500"
                                         placeholder="เบอร์โทร"
                                     />
                                     {index > 0 && (

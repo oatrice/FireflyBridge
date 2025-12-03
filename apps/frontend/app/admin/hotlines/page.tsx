@@ -198,7 +198,7 @@ export default function HotlinesAdminPage() {
                             required
                             value={formData.name}
                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                            className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                            className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none placeholder-neutral-500"
                             placeholder="เช่น มูลนิธิกู้ภัย..."
                         />
                     </div>
@@ -233,7 +233,7 @@ export default function HotlinesAdminPage() {
                                         name={`numbers.${index}`}
                                         value={num.value}
                                         onChange={(e) => updateNumber(index, e.target.value)}
-                                        className="flex-1 px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                                        className="flex-1 px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none placeholder-neutral-500"
                                         placeholder="08x-xxx-xxxx"
                                     />
                                     {index > 0 && (
@@ -265,7 +265,7 @@ export default function HotlinesAdminPage() {
                             name="description"
                             value={formData.description || ""}
                             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                            className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none h-24"
+                            className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none h-24 placeholder-neutral-500"
                             placeholder="รายละเอียดเกี่ยวกับหน่วยงาน หรือพื้นที่ให้บริการ..."
                         />
                     </div>
@@ -279,7 +279,7 @@ export default function HotlinesAdminPage() {
                                 name="color"
                                 value={formData.color || ""}
                                 onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                                className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                                className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none placeholder-neutral-500"
                                 placeholder="bg-blue-500"
                             />
                         </div>
