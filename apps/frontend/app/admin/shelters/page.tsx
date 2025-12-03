@@ -220,7 +220,7 @@ export default function SheltersAdminPage() {
                             required
                             value={formData.location}
                             onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                            className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none placeholder-neutral-500"
+                            className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none text-neutral-900 placeholder-neutral-500"
                             placeholder="https://maps.google.com/..."
                         />
                     </div>
@@ -302,7 +302,7 @@ export default function SheltersAdminPage() {
                             type="text"
                             value={formData.link || ""}
                             onChange={(e) => setFormData({ ...formData, link: e.target.value })}
-                            className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none placeholder-neutral-500"
+                            className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none text-neutral-900 placeholder-neutral-500"
                             placeholder="https://..."
                         />
                     </div>

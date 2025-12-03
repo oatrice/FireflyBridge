@@ -133,7 +133,7 @@ export default function ExternalLinksAdminPage() {
                             required
                             value={formData.name}
                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                            className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                            className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-neutral-900 placeholder-neutral-500"
                             placeholder="เช่น HatYaiFlood.com"
                         />
                     </div>
@@ -147,7 +147,7 @@ export default function ExternalLinksAdminPage() {
                             required
                             value={formData.url}
                             onChange={(e) => setFormData({ ...formData, url: e.target.value })}
-                            className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                            className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-neutral-900 placeholder-neutral-500"
                             placeholder="https://..."
                         />
                     </div>
@@ -159,7 +159,7 @@ export default function ExternalLinksAdminPage() {
                             name="category"
                             value={formData.category}
                             onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                            className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                            className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-neutral-900"
                         >
                             <option value="ทั่วไป">ทั่วไป</option>
                             <option value="น้ำท่วม">น้ำท่วม</option>
@@ -177,7 +177,7 @@ export default function ExternalLinksAdminPage() {
                             name="description"
                             value={formData.description || ""}
                             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                            className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none h-24"
+                            className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none h-24 text-neutral-900 placeholder-neutral-500"
                             placeholder="รายละเอียดเกี่ยวกับเว็บไซต์..."
                         />
                     </div>
@@ -190,8 +190,8 @@ export default function ExternalLinksAdminPage() {
                             name="icon"
                             value={formData.icon || ""}
                             onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
-                            className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                            placeholder="🌊"
+                            className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-neutral-900 placeholder-neutral-500"
+                            placeholder="🔗"
                         />
                     </div>
 
