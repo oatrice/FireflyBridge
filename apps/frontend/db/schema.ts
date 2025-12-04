@@ -126,3 +126,12 @@ export const cases = pgTable("cases", {
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),
 });
+
+// Banks
+export const banks = pgTable("banks", {
+    id: serial("id").primaryKey(),
+    value: text("value").notNull().unique(),
+    label: text("label").notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
+});
