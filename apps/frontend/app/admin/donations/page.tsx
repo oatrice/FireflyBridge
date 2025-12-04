@@ -12,7 +12,6 @@ interface DonationForm {
     name: string;
     bankAccounts: { id: string; bankName: string; accountNumber: string; accountName: string }[];
     description: string;
-    qrCodeUrl: string;
     images: string[];
     contacts: { id: string; name: string; phone: string; type: string }[];
     donationPoints: { id: string; value: string }[];
@@ -30,7 +29,6 @@ export default function DonationsAdminPage() {
         name: "",
         bankAccounts: [{ id: generateId(), bankName: "", accountNumber: "", accountName: "" }],
         description: "",
-        qrCodeUrl: "",
         images: [],
         contacts: [{ id: generateId(), name: "", phone: "", type: "เบอร์โทรศัพท์" }],
         donationPoints: [{ id: generateId(), value: "" }],
@@ -95,12 +93,19 @@ export default function DonationsAdminPage() {
             bankAccounts.push({ id: generateId(), bankName: "", accountNumber: "", accountName: "" });
         }
 
+        // Migrate legacy qrCodeUrl to images
+        const images = [...(donation.images || [])];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        if ((donation as any).qrCodeUrl && !images.includes((donation as any).qrCodeUrl)) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            images.unshift((donation as any).qrCodeUrl);
+        }
+
         return {
             ...donation,
             bankAccounts,
             description: donation.description || "",
-            qrCodeUrl: donation.qrCodeUrl || "",
-            images: donation.images || [],
+            images,
             acceptsMoney: donation.acceptsMoney || false,
             contacts: donation.contacts && donation.contacts.length > 0
                 ? donation.contacts.map(c => ({ ...c, id: generateId(), type: c.type || "เบอร์โทรศัพท์" }))
@@ -177,17 +182,6 @@ export default function DonationsAdminPage() {
         const newBankAccounts = [...formData.bankAccounts];
         newBankAccounts.splice(index, 1);
         setFormData({ ...formData, bankAccounts: newBankAccounts });
-    };
-
-    const handleQrCodeUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setFormData(prev => ({ ...prev, qrCodeUrl: reader.result as string }));
-            };
-            reader.readAsDataURL(file);
-        }
     };
 
     const handleGalleryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -359,34 +353,7 @@ export default function DonationsAdminPage() {
                     </div>
 
                     <div>
-                        <label htmlFor="qrCode" className="block text-sm font-medium text-neutral-700 mb-1">QR Code (รูปภาพ)</label>
-                        <div className="flex items-center gap-4">
-                            <AdminInput
-                                id="qrCode"
-                                type="file"
-                                accept="image/*"
-                                onChange={handleQrCodeUpload}
-                                theme="purple"
-                            />
-                            {formData.qrCodeUrl && (
-                                <div className="w-16 h-16 relative border rounded overflow-hidden shrink-0 group">
-                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                    <img src={formData.qrCodeUrl} alt="QR Code Preview" className="object-cover w-full h-full" />
-                                    <button
-                                        type="button"
-                                        onClick={() => setFormData({ ...formData, qrCodeUrl: "" })}
-                                        className="absolute top-0 right-0 bg-red-500 text-white w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
-                                        title="ลบรูปภาพ"
-                                    >
-                                        ✕
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-
-                    <div>
-                        <label htmlFor="gallery" className="block text-sm font-medium text-neutral-700 mb-1">รูปภาพเพิ่มเติม (Gallery)</label>
+                        <label htmlFor="gallery" className="block text-sm font-medium text-neutral-700 mb-1">รูปภาพ (Images)</label>
                         <div className="space-y-4">
                             <AdminInput
                                 id="gallery"

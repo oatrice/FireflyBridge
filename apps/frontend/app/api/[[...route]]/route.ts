@@ -73,7 +73,6 @@ const donationSchema = t.Object({
     accountNumber: t.Optional(t.String()),
     accountName: t.Optional(t.String()),
     description: t.Optional(t.String()),
-    qrCodeUrl: t.Optional(t.String()),
     contacts: t.Optional(t.Array(contactSchema)),
     donationPoints: t.Optional(t.Array(t.String())),
     acceptsMoney: t.Optional(t.Boolean()),

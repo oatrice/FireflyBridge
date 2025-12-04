@@ -16,9 +16,7 @@ export default function DonationsSection({ donations, loading }: DonationsSectio
     const [donationFilter, setDonationFilter] = useState("ทั้งหมด");
     const [donationSortBy, setDonationSortBy] = useState<"name" | "bank">("name");
     const [showAllDonations, setShowAllDonations] = useState(false);
-    const [qrModalOpen, setQrModalOpen] = useState(false);
-    const [qrModalImage, setQrModalImage] = useState("");
-    const [qrModalTitle, setQrModalTitle] = useState("");
+
 
     const getCategory = (d: DonationChannel) => {
         if (d.name.includes("โรงพยาบาล") || d.name.includes("รพ.")) return "โรงพยาบาล";
@@ -215,26 +213,7 @@ export default function DonationsSection({ donations, loading }: DonationsSectio
                                             </div>
                                         )}
 
-                                        {donation.qrCodeUrl && (
-                                            <div className="mb-4 flex justify-center bg-neutral-50 p-4 rounded-xl group relative">
-                                                <Image
-                                                    src={donation.qrCodeUrl}
-                                                    alt={`QR Code for ${donation.name}`}
-                                                    width={180}
-                                                    height={180}
-                                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                                                    onClick={() => {
-                                                        setQrModalImage(donation.qrCodeUrl!);
-                                                        setQrModalTitle(donation.name);
-                                                        setQrModalOpen(true);
-                                                    }}
-                                                    className="rounded-lg border border-neutral-200 shadow-sm hover:scale-105 hover:shadow-xl transition-all duration-300 cursor-pointer object-contain bg-white"
-                                                />
-                                                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-black/75 text-white text-xs px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
-                                                    🔍 คลิกเพื่อขยาย
-                                                </div>
-                                            </div>
-                                        )}
+
 
                                         {bankAccounts.length > 0 ? (
                                             <div className="space-y-3 mb-4">
@@ -338,40 +317,7 @@ export default function DonationsSection({ donations, loading }: DonationsSectio
                 )}
             </section>
 
-            {/* QR Code Modal */}
-            {qrModalOpen && (
-                <div
-                    className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
-                    onClick={() => setQrModalOpen(false)}
-                >
-                    <div className="relative max-w-4xl w-full">
-                        <button
-                            onClick={() => setQrModalOpen(false)}
-                            className="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors text-4xl font-light"
-                        >
-                            ×
-                        </button>
-                        <div className="bg-white rounded-2xl p-8 shadow-2xl">
-                            <h3 className="text-2xl font-bold text-neutral-800 mb-4 text-center">
-                                {qrModalTitle}
-                            </h3>
-                            <div className="flex justify-center">
-                                <Image
-                                    src={qrModalImage}
-                                    alt={qrModalTitle}
-                                    width={600}
-                                    height={600}
-                                    className="max-w-full max-h-[70vh] w-auto h-auto rounded-lg shadow-lg object-contain"
-                                    onClick={(e) => e.stopPropagation()}
-                                />
-                            </div>
-                            <p className="text-center text-neutral-500 text-sm mt-4">
-                                คลิกนอกกรอบเพื่อปิด
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            )}
+            {/* QR Code Modal Removed */}
         </>
     );
 }

@@ -117,25 +117,7 @@ describe('DonationsSection', () => {
         expect(sortSelect).toHaveValue('bank')
     })
 
-    it('opens and closes QR modal', () => {
-        const donationsWithQR = [
-            { ...mockDonations[0], qrCodeUrl: '/qr-test.png' }
-        ]
-        render(<DonationsSection donations={donationsWithQR} loading={false} />)
 
-        // Click QR code image
-        const qrImage = screen.getByAltText(/QR Code for/i)
-        fireEvent.click(qrImage)
-
-        // Check if modal is open (look for close button or modal content)
-        expect(screen.getByText('คลิกนอกกรอบเพื่อปิด')).toBeInTheDocument()
-
-        // Close modal
-        const closeBtn = screen.getByText('×')
-        fireEvent.click(closeBtn)
-
-        expect(screen.queryByText('คลิกนอกกรอบเพื่อปิด')).not.toBeInTheDocument()
-    })
 
     it('copies account number to clipboard', () => {
         const writeText = jest.fn()
@@ -234,29 +216,20 @@ describe('DonationsSection', () => {
         expect(items.length).toBe(2)
     })
 
-    it('handles QR modal backdrop click and propagation', () => {
-        const donationsWithQR = [
-            { ...mockDonations[0], qrCodeUrl: '/qr-test.png' }
+
+    it('renders ImageCarousel when images are present', () => {
+        const donationsWithImages = [
+            { ...mockDonations[0], images: ['/img1.png', '/img2.png'] }
         ]
-        render(<DonationsSection donations={donationsWithQR} loading={false} />)
+        render(<DonationsSection donations={donationsWithImages} loading={false} />)
 
-        // Open modal
-        fireEvent.click(screen.getByAltText(/QR Code for/i))
-        expect(screen.getByText('คลิกนอกกรอบเพื่อปิด')).toBeInTheDocument()
-
-        // Click on the image inside modal (should NOT close)
-        // The modal image alt text is just the donation name, while the trigger is "QR Code for ..."
-        const modalImage = screen.getByAltText(donationsWithQR[0].name)
-        fireEvent.click(modalImage)
-        expect(screen.getByText('คลิกนอกกรอบเพื่อปิด')).toBeInTheDocument()
-
-        // Click on backdrop (should close)
-        const backdrop = screen.getByText('คลิกนอกกรอบเพื่อปิด').closest('div')?.parentElement?.parentElement
-        if (backdrop) {
-            fireEvent.click(backdrop)
-            expect(screen.queryByText('คลิกนอกกรอบเพื่อปิด')).not.toBeInTheDocument()
-        }
+        // ImageCarousel renders images with alt text containing the passed alt prop
+        // In DonationsSection we pass `Gallery for ${donation.name}`
+        // The Carousel renders the first image initially
+        const carouselImage = screen.getByAltText(`Gallery for ${donationsWithImages[0].name} - Image 1`)
+        expect(carouselImage).toBeInTheDocument()
     })
+
     it('does not show isItems badge when donationPoints is empty array', () => {
         const donationsWithEmptyPoints = [
             {

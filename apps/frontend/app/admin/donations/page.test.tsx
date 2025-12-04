@@ -28,7 +28,7 @@ describe('DonationsAdminPage', () => {
             accountNumber: '123-456-7890',
             accountName: 'Test Account',
             description: 'Test Description',
-            qrCodeUrl: 'https://example.com/qr.png',
+
             contacts: [{ name: 'Contact 1', phone: '0812345678' }],
             donationPoints: ['Point 1'],
             acceptsMoney: true,
@@ -329,10 +329,10 @@ describe('DonationsAdminPage', () => {
         await user.type(screen.getByPlaceholderText('เช่น สภากาชาดไทย...'), 'Test Image Donation');
 
         await waitFor(() => {
-            expect(screen.getByLabelText('รูปภาพเพิ่มเติม (Gallery)')).toBeInTheDocument();
+            expect(screen.getByLabelText('รูปภาพ (Images)')).toBeInTheDocument();
         });
 
-        const fileInput = screen.getByLabelText('รูปภาพเพิ่มเติม (Gallery)');
+        const fileInput = screen.getByLabelText('รูปภาพ (Images)');
         const file1 = new File(['(⌐□_□)'], 'cool.png', { type: 'image/png' });
         const file2 = new File(['(o_o)'], 'wow.png', { type: 'image/png' });
 
@@ -579,15 +579,7 @@ describe('DonationsAdminPage', () => {
         });
     });
 
-    it('renders qr code upload field', async () => {
-        render(<DonationsAdminPage />);
-        await waitFor(() => {
-            expect(screen.getByText('เพิ่มข้อมูล')).toBeInTheDocument();
-        });
-        fireEvent.click(screen.getByText('เพิ่มข้อมูล'));
 
-        expect(screen.getByLabelText('QR Code (รูปภาพ)')).toBeInTheDocument();
-    });
 
 });
 

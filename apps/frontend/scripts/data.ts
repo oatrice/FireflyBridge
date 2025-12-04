@@ -924,7 +924,7 @@ export const donations = [
     {
         name: "มหาวิทยาลัยสงขลานครินทร์ (Prince of Songkla University)",
         description: "เพื่อช่วยเหลือผู้ประสบอุทกภัย (บริจาคผ่าน QR Code เท่านั้น)",
-        qrCodeUrl: "/images/psu-donation-qr.png",
+        images: ["/images/psu-donation-qr.png"],
         acceptsMoney: true,
         contacts: [
             { name: "คุณเยาวลักษณ์ คุณาวรกุล", phone: "087-287-8713" }
@@ -936,7 +936,7 @@ export const donations = [
         bankName: "ไทยพาณิชย์ (SCB)",
         accountNumber: "4102450202",
         accountName: "นายสุวิทย์ เพ็งทิพย์นาง / นางสาวอังคณาที่พย์ เพ็ชรประสิทธิ์ / นางสาวยุภาวัลย์ ปาณะศรี",
-        qrCodeUrl: "/images/skru-donation.jpg",
+        images: ["/images/skru-donation.jpg"],
         contacts: [
             { name: "กองพัฒนานักศึกษา", phone: "098-514-9295" }
         ]
@@ -947,7 +947,7 @@ export const donations = [
         bankName: "ธนาคารกรุงเทพ สาขาสยามสแควร์",
         accountNumber: "152-4-87883-0",
         accountName: "จุฬาลงกรณ์มหาวิทยาลัย (เพื่อรับเงินบริจาค)",
-        qrCodeUrl: "/images/chula-donation.jpg",
+        images: ["/images/chula-donation.jpg"],
         donationPoints: [
             "สยามสแควร์ (Siam Square)",
             "จามจุรีสแควร์ (ChamChuri Square)"
@@ -960,7 +960,7 @@ export const donations = [
     {
         name: "Charmar Dog Services - รับบริจาคสิ่งของช่วยผู้ประสบภัยน้ำท่วมใต้",
         description: "สระว่ายน้ำสุนัข โรงแรมสุนัข ฝากเลี้ยง อาบน้ำตัดขน - เปิดรับบริจาคสิ่งของเพื่อจัดส่งต่อให้ผู้ประสบภัยน้ำท่วมทางภาคใต้",
-        qrCodeUrl: "/images/charmar-donation.png",
+        images: ["/images/charmar-donation.png"],
         donationPoints: [
             "ร้านชามา ซอยเคหะร่มเกล้า 78",
             "17 ซอยเคหะร่มเกล้า 78 ถนนเคหะร่มเกล้า เขตสะพานสูง แขวงสะพานสูง กทม 10240"
@@ -975,7 +975,7 @@ export const donations = [
         bankName: "ธนาคารกรุงศรีอยุธยา (BAY)",
         accountNumber: "205-1-45201-1",
         accountName: "วิศณีย์ เรืองติก (ผู้ประสานงานพรรคประชาชน)",
-        qrCodeUrl: "/images/phatthalung-donation.jpg",
+        images: ["/images/phatthalung-donation.jpg"],
         donationPoints: [
             "ศูนย์ประสานงานพรรคประชาชน จังหวัดพัทลุง",
             "เลขที่ 11 ถ.เอเชีย ต.คูหาสวรรค์ อ.เมือง จ.พัทลุง"
