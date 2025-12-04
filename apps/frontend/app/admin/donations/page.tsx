@@ -444,7 +444,7 @@ export default function DonationsAdminPage() {
                                                 onChange={(e) => updateBankAccount(index, 'bankName', e.target.value)}
                                                 className="w-full px-4 py-2 rounded-lg border border-neutral-200 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all text-neutral-900"
                                             >
-                                                <option value="">เลือกธนาคาร...</option>
+                                                <option key="default" value="">เลือกธนาคาร...</option>
                                                 {bankOptions.map((bank) => (
                                                     <option key={bank.value} value={bank.value}>
                                                         {bank.label}
@@ -550,11 +550,11 @@ export default function DonationsAdminPage() {
                                             onChange={(e) => updateContact(index, 'type', e.target.value)}
                                             className="w-full px-3 py-2 rounded-lg border border-neutral-200 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none text-sm text-neutral-900"
                                         >
-                                            <option value="เบอร์โทรศัพท์">เบอร์โทรศัพท์</option>
-                                            <option value="Line">Line</option>
-                                            <option value="Facebook">Facebook</option>
-                                            <option value="Website">Website</option>
-                                            <option value="Other">อื่นๆ</option>
+                                            <option key="phone" value="เบอร์โทรศัพท์">เบอร์โทรศัพท์</option>
+                                            <option key="line" value="Line">Line</option>
+                                            <option key="facebook" value="Facebook">Facebook</option>
+                                            <option key="website" value="Website">Website</option>
+                                            <option key="other" value="Other">อื่นๆ</option>
                                         </select>
                                     </div>
                                     <AdminInput
