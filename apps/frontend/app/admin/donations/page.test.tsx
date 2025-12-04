@@ -132,7 +132,7 @@ describe('DonationsAdminPage', () => {
 
         // Fill form
         fireEvent.change(screen.getByPlaceholderText('เช่น สภากาชาดไทย...'), { target: { value: 'New Donation' } });
-        fireEvent.change(screen.getByPlaceholderText('เช่น กสิกรไทย'), { target: { value: 'New Bank' } });
+        fireEvent.change(screen.getByLabelText('ธนาคาร'), { target: { value: 'กสิกรไทย (KBANK)' } });
 
         // Submit
         fireEvent.click(screen.getByText('บันทึกข้อมูล'));
@@ -217,14 +217,14 @@ describe('DonationsAdminPage', () => {
         const addContactBtn = screen.getByText('เพิ่มผู้ติดต่อ');
         fireEvent.click(addContactBtn);
 
-        const contactInputsBefore = screen.getAllByPlaceholderText('ชื่อผู้ติดต่อ');
+        const contactInputsBefore = screen.getAllByPlaceholderText('ชื่อ/รายละเอียด');
         expect(contactInputsBefore).toHaveLength(2);
 
         // Remove the second contact (index 1)
         const removeContactBtns = screen.getAllByTitle('ลบผู้ติดต่อ');
         fireEvent.click(removeContactBtns[0]);
 
-        const contactInputsAfter = screen.getAllByPlaceholderText('ชื่อผู้ติดต่อ');
+        const contactInputsAfter = screen.getAllByPlaceholderText('ชื่อ/รายละเอียด');
         expect(contactInputsAfter).toHaveLength(1);
 
         // Add point first to have 2 fields
@@ -317,5 +317,43 @@ describe('DonationsAdminPage', () => {
         await waitFor(() => {
             expect(window.alert).toHaveBeenCalledWith('Failed to save item: Unknown error');
         });
+    });
+
+    it('renders bank name as dropdown options', async () => {
+        render(<DonationsAdminPage />);
+
+        await waitFor(() => {
+            expect(screen.getByText('เพิ่มข้อมูล')).toBeInTheDocument();
+        });
+
+        fireEvent.click(screen.getByText('เพิ่มข้อมูล'));
+
+        // Should find a select/combobox for bank
+        const bankSelect = screen.getByLabelText('ธนาคาร');
+        expect(bankSelect.tagName).toBe('SELECT');
+
+        // Check for some options
+        expect(screen.getByText('กสิกรไทย (KBANK)')).toBeInTheDocument();
+        expect(screen.getByText('ไทยพาณิชย์ (SCB)')).toBeInTheDocument();
+    });
+
+    it('renders contact type dropdown', async () => {
+        render(<DonationsAdminPage />);
+
+        await waitFor(() => {
+            expect(screen.getByText('เพิ่มข้อมูล')).toBeInTheDocument();
+        });
+
+        fireEvent.click(screen.getByText('เพิ่มข้อมูล'));
+
+        // Should find contact type select (first one is default)
+        const typeSelects = screen.getAllByLabelText(/ประเภท/);
+        expect(typeSelects.length).toBeGreaterThan(0);
+        expect(typeSelects[0].tagName).toBe('SELECT');
+
+        // Check options
+        expect(screen.getByText('เบอร์โทรศัพท์')).toBeInTheDocument();
+        expect(screen.getByText('Line')).toBeInTheDocument();
+        expect(screen.getByText('Facebook')).toBeInTheDocument();
     });
 });

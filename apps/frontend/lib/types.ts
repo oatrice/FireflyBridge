@@ -48,7 +48,7 @@ export interface DonationChannel {
     accountName?: string;
     description?: string;
     qrCodeUrl?: string;
-    contacts?: { name: string; phone: string }[];
+    contacts?: { name: string; phone: string; type?: string }[];
     donationPoints?: string[];
     acceptsMoney?: boolean;
 }

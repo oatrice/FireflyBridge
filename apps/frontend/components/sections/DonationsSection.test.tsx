@@ -257,4 +257,17 @@ describe('DonationsSection', () => {
             expect(screen.queryByText('คลิกนอกกรอบเพื่อปิด')).not.toBeInTheDocument()
         }
     })
+    it('does not show isItems badge when donationPoints is empty array', () => {
+        const donationsWithEmptyPoints = [
+            {
+                id: '1',
+                name: 'Test Donation',
+                donationPoints: [], // Empty array
+                acceptsMoney: false
+            }
+        ]
+        render(<DonationsSection donations={donationsWithEmptyPoints} loading={false} />)
+
+        expect(screen.queryByText('📦 บริจาคสิ่งของ')).not.toBeInTheDocument()
+    })
 })

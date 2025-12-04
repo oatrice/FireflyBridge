@@ -4,6 +4,7 @@ import { AdminModal } from "@/components/ui/AdminModal";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { useAdminCrud } from "@/hooks/useAdminCrud";
 import type { DonationChannel } from "@/lib/types";
+import { BANK_OPTIONS } from "@/lib/utils/bankInfo";
 import { AdminInput } from "@/components/ui/AdminInput";
 import { AdminTextarea } from "@/components/ui/AdminTextarea";
 
@@ -14,7 +15,7 @@ interface DonationForm {
     accountName: string;
     description: string;
     qrCodeUrl: string;
-    contacts: { id: string; name: string; phone: string }[];
+    contacts: { id: string; name: string; phone: string; type: string }[];
     donationPoints: { id: string; value: string }[];
     acceptsMoney: boolean;
 }
@@ -33,7 +34,7 @@ export default function DonationsAdminPage() {
         accountName: "",
         description: "",
         qrCodeUrl: "",
-        contacts: [{ id: generateId(), name: "", phone: "" }],
+        contacts: [{ id: generateId(), name: "", phone: "", type: "เบอร์โทรศัพท์" }],
         donationPoints: [{ id: generateId(), value: "" }],
         acceptsMoney: true,
     };
@@ -41,7 +42,7 @@ export default function DonationsAdminPage() {
     const transformPayload = (data: DonationForm) => {
         const cleanedContacts = data.contacts
             ?.filter(c => c.name.trim() !== "" || c.phone.trim() !== "")
-            .map(({ name, phone }) => ({ name, phone })) || [];
+            .map(({ name, phone, type }) => ({ name, phone, type })) || [];
 
         const cleanedPoints = data.donationPoints
             ?.filter(p => p.value.trim() !== "")
@@ -63,8 +64,8 @@ export default function DonationsAdminPage() {
         qrCodeUrl: donation.qrCodeUrl || "",
         acceptsMoney: donation.acceptsMoney || false,
         contacts: donation.contacts && donation.contacts.length > 0
-            ? donation.contacts.map(c => ({ ...c, id: generateId() }))
-            : [{ id: generateId(), name: "", phone: "" }],
+            ? donation.contacts.map(c => ({ ...c, id: generateId(), type: c.type || "เบอร์โทรศัพท์" }))
+            : [{ id: generateId(), name: "", phone: "", type: "เบอร์โทรศัพท์" }],
         donationPoints: donation.donationPoints && donation.donationPoints.length > 0
             ? donation.donationPoints.map(p => ({ id: generateId(), value: p }))
             : [{ id: generateId(), value: "" }],
@@ -90,14 +91,14 @@ export default function DonationsAdminPage() {
     );
 
     // Helper functions
-    const updateContact = (index: number, field: 'name' | 'phone', value: string) => {
+    const updateContact = (index: number, field: 'name' | 'phone' | 'type', value: string) => {
         const newContacts = [...formData.contacts];
         newContacts[index] = { ...newContacts[index], [field]: value };
         setFormData({ ...formData, contacts: newContacts });
     };
 
     const addContactField = () => {
-        setFormData({ ...formData, contacts: [...formData.contacts, { id: generateId(), name: "", phone: "" }] });
+        setFormData({ ...formData, contacts: [...formData.contacts, { id: generateId(), name: "", phone: "", type: "เบอร์โทรศัพท์" }] });
     };
 
     const removeContactField = (index: number) => {
@@ -260,14 +261,19 @@ export default function DonationsAdminPage() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label htmlFor="bankName" className="block text-sm font-medium text-neutral-700 mb-1">ธนาคาร</label>
-                                <AdminInput
+                                <select
                                     id="bankName"
-                                    type="text"
                                     value={formData.bankName || ""}
                                     onChange={(e) => setFormData({ ...formData, bankName: e.target.value })}
-                                    placeholder="เช่น กสิกรไทย"
-                                    theme="purple"
-                                />
+                                    className="w-full px-4 py-2 rounded-lg border border-neutral-200 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all"
+                                >
+                                    <option value="">เลือกธนาคาร...</option>
+                                    {BANK_OPTIONS.map((bank) => (
+                                        <option key={bank.value} value={bank.value}>
+                                            {bank.label}
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
                             <div>
                                 <label htmlFor="accountNumber" className="block text-sm font-medium text-neutral-700 mb-1">เลขที่บัญชี</label>
@@ -350,22 +356,36 @@ export default function DonationsAdminPage() {
                         <div className="space-y-2">
                             {formData.contacts?.map((contact, index) => (
                                 <div key={contact.id} className="flex gap-2">
+                                    <div className="w-1/3">
+                                        <select
+                                            aria-label={`ประเภทการติดต่อ ${index + 1}`}
+                                            value={contact.type}
+                                            onChange={(e) => updateContact(index, 'type', e.target.value)}
+                                            className="w-full px-3 py-2 rounded-lg border border-neutral-200 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none text-sm"
+                                        >
+                                            <option value="เบอร์โทรศัพท์">เบอร์โทรศัพท์</option>
+                                            <option value="Line">Line</option>
+                                            <option value="Facebook">Facebook</option>
+                                            <option value="Website">Website</option>
+                                            <option value="Other">อื่นๆ</option>
+                                        </select>
+                                    </div>
                                     <AdminInput
                                         aria-label={`ชื่อผู้ติดต่อ ${index + 1}`}
                                         type="text"
                                         value={contact.name}
                                         onChange={(e) => updateContact(index, 'name', e.target.value)}
                                         className="flex-1"
-                                        placeholder="ชื่อผู้ติดต่อ"
+                                        placeholder="ชื่อ/รายละเอียด"
                                         theme="purple"
                                     />
                                     <AdminInput
-                                        aria-label={`เบอร์โทรผู้ติดต่อ ${index + 1}`}
+                                        aria-label={`ข้อมูลติดต่อ ${index + 1}`}
                                         type="text"
                                         value={contact.phone}
                                         onChange={(e) => updateContact(index, 'phone', e.target.value)}
                                         className="flex-1"
-                                        placeholder="เบอร์โทร"
+                                        placeholder="เบอร์โทร/ID/Link"
                                         theme="purple"
                                     />
                                     {index > 0 && (
