@@ -319,7 +319,28 @@ describe('DonationsAdminPage', () => {
         });
     });
 
-    it('renders bank name as dropdown options', async () => {
+    it('renders bank name as dropdown options from API', async () => {
+        const mockBanks = [
+            { value: 'Test Bank 1', label: 'Test Bank 1 (TB1)' },
+            { value: 'Test Bank 2', label: 'Test Bank 2 (TB2)' },
+        ];
+
+        (global.fetch as unknown as jest.Mock).mockImplementation((url) => {
+            if (url === '/api/banks') {
+                return Promise.resolve({
+                    ok: true,
+                    json: async () => mockBanks,
+                });
+            }
+            if (url === '/api/donations') {
+                return Promise.resolve({
+                    ok: true,
+                    json: async () => mockDonations,
+                });
+            }
+            return Promise.resolve({ ok: false });
+        });
+
         render(<DonationsAdminPage />);
 
         await waitFor(() => {
@@ -328,13 +349,18 @@ describe('DonationsAdminPage', () => {
 
         fireEvent.click(screen.getByText('เพิ่มข้อมูล'));
 
+        // Wait for banks to load
+        await waitFor(() => {
+            expect(screen.getByText('Test Bank 1 (TB1)')).toBeInTheDocument();
+        });
+
         // Should find a select/combobox for bank
         const bankSelect = screen.getByLabelText('ธนาคาร');
         expect(bankSelect.tagName).toBe('SELECT');
 
         // Check for some options
-        expect(screen.getByText('กสิกรไทย (KBANK)')).toBeInTheDocument();
-        expect(screen.getByText('ไทยพาณิชย์ (SCB)')).toBeInTheDocument();
+        expect(screen.getByText('Test Bank 1 (TB1)')).toBeInTheDocument();
+        expect(screen.getByText('Test Bank 2 (TB2)')).toBeInTheDocument();
     });
 
     it('renders contact type dropdown', async () => {

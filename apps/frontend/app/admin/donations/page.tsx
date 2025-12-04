@@ -4,7 +4,7 @@ import { AdminModal } from "@/components/ui/AdminModal";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { useAdminCrud } from "@/hooks/useAdminCrud";
 import type { DonationChannel } from "@/lib/types";
-import { BANK_OPTIONS } from "@/lib/utils/bankInfo";
+import { useEffect, useState } from "react";
 import { AdminInput } from "@/components/ui/AdminInput";
 import { AdminTextarea } from "@/components/ui/AdminTextarea";
 
@@ -38,6 +38,23 @@ export default function DonationsAdminPage() {
         donationPoints: [{ id: generateId(), value: "" }],
         acceptsMoney: true,
     };
+
+    const [bankOptions, setBankOptions] = useState<{ value: string; label: string }[]>([]);
+
+    useEffect(() => {
+        const fetchBanks = async () => {
+            try {
+                const res = await fetch("/api/banks");
+                if (res.ok) {
+                    const data = await res.json();
+                    setBankOptions(data);
+                }
+            } catch (error) {
+                console.error("Failed to fetch banks:", error);
+            }
+        };
+        fetchBanks();
+    }, []);
 
     const transformPayload = (data: DonationForm) => {
         const cleanedContacts = data.contacts
@@ -268,7 +285,7 @@ export default function DonationsAdminPage() {
                                     className="w-full px-4 py-2 rounded-lg border border-neutral-200 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all"
                                 >
                                     <option value="">เลือกธนาคาร...</option>
-                                    {BANK_OPTIONS.map((bank) => (
+                                    {bankOptions.map((bank) => (
                                         <option key={bank.value} value={bank.value}>
                                             {bank.label}
                                         </option>
