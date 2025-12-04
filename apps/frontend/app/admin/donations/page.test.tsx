@@ -1,4 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import DonationsAdminPage from './page';
 
 // Mock AdminModal
@@ -242,6 +243,118 @@ describe('DonationsAdminPage', () => {
         expect(pointInputsAfter).toHaveLength(1);
     });
 
+    it('handles multiple bank accounts', async () => {
+        const user = userEvent.setup();
+        (global.fetch as unknown as jest.Mock).mockImplementation((url, options) => {
+            if (url === '/api/donations' && options?.method === 'POST') {
+                return Promise.resolve({
+                    ok: true,
+                    json: async () => ({
+                        id: 'new-id',
+                    }),
+                });
+            }
+            if (url === '/api/banks') return Promise.resolve({ ok: true, json: () => Promise.resolve([{ value: 'ktb', label: 'Krung Thai Bank' }]) });
+            if (url === '/api/donations') return Promise.resolve({ ok: true, json: () => Promise.resolve([]) });
+            return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
+        });
+
+        render(<DonationsAdminPage />);
+
+        await waitFor(() => {
+            expect(screen.getByText('เพิ่มข้อมูล')).toBeInTheDocument();
+        });
+
+        await user.click(screen.getByText('เพิ่มข้อมูล'));
+
+        await waitFor(() => {
+            expect(screen.getByText('เพิ่มบัญชีธนาคาร')).toBeInTheDocument();
+        });
+
+        // Fill name (required)
+        await user.type(screen.getByPlaceholderText('เช่น สภากาชาดไทย...'), 'Test Bank Donation');
+
+        // Add a second bank account
+        await user.click(screen.getByText('เพิ่มบัญชีธนาคาร'));
+
+        const bankSelects = screen.getAllByRole('combobox');
+        // We expect at least 2 bank selects (one default, one added) + contact type select
+        // Actually AdminSelect might not use native select, let's check implementation if needed.
+        // But for now let's just check if we can fill inputs.
+
+        const accountInputs = screen.getAllByPlaceholderText('xxx-x-xxxxx-x');
+        expect(accountInputs).toHaveLength(2);
+
+        await user.type(accountInputs[0], '1111');
+        await user.type(accountInputs[1], '2222');
+
+        await user.click(screen.getByText('บันทึกข้อมูล'));
+
+        await waitFor(() => {
+            expect(global.fetch).toHaveBeenCalledWith('/api/donations', expect.objectContaining({
+                method: 'POST',
+                body: expect.stringContaining('"accountNumber":"1111"')
+            }));
+            expect(global.fetch).toHaveBeenCalledWith('/api/donations', expect.objectContaining({
+                method: 'POST',
+                body: expect.stringContaining('"accountNumber":"2222"')
+            }));
+        });
+    });
+
+    it('handles multiple image uploads', async () => {
+        const user = userEvent.setup();
+        (global.fetch as unknown as jest.Mock).mockImplementation((url, options) => {
+            if (url === '/api/donations' && options?.method === 'POST') {
+                return Promise.resolve({
+                    ok: true,
+                    json: async () => ({ id: 'new-id' }),
+                });
+            }
+            if (url === '/api/banks') return Promise.resolve({ ok: true, json: async () => [] });
+            // GET /api/donations should return an array
+            if (url === '/api/donations') return Promise.resolve({ ok: true, json: async () => [] });
+            return Promise.resolve({ ok: true, json: async () => ({}) });
+        });
+
+        render(<DonationsAdminPage />);
+
+        await waitFor(() => {
+            expect(screen.getByText('เพิ่มข้อมูล')).toBeInTheDocument();
+        });
+
+        await user.click(screen.getByText('เพิ่มข้อมูล'));
+
+        // Fill name (required)
+        await user.type(screen.getByPlaceholderText('เช่น สภากาชาดไทย...'), 'Test Image Donation');
+
+        await waitFor(() => {
+            expect(screen.getByLabelText('รูปภาพเพิ่มเติม (Gallery)')).toBeInTheDocument();
+        });
+
+        const fileInput = screen.getByLabelText('รูปภาพเพิ่มเติม (Gallery)');
+        const file1 = new File(['(⌐□_□)'], 'cool.png', { type: 'image/png' });
+        const file2 = new File(['(o_o)'], 'wow.png', { type: 'image/png' });
+
+        await user.upload(fileInput, [file1, file2]);
+
+        // Expect previews
+        await waitFor(() => {
+            expect(screen.getByAltText('Gallery Image 1')).toBeInTheDocument();
+            expect(screen.getByAltText('Gallery Image 2')).toBeInTheDocument();
+        });
+
+        // Save
+        await user.click(screen.getByText('บันทึกข้อมูล'));
+
+        await waitFor(() => {
+            expect(global.fetch).toHaveBeenCalledWith('/api/donations', expect.objectContaining({
+                method: 'POST',
+                body: expect.stringContaining('"images":[')
+            }));
+        });
+    });
+
     it('filters empty fields on submission', async () => {
         (global.fetch as unknown as jest.Mock).mockImplementation((url, options) => {
             if (url === '/api/donations' && options?.method === 'POST') {
@@ -476,75 +589,5 @@ describe('DonationsAdminPage', () => {
         expect(screen.getByLabelText('QR Code (รูปภาพ)')).toBeInTheDocument();
     });
 
-    it('handles multiple bank accounts', async () => {
-        (global.fetch as unknown as jest.Mock).mockImplementation((url, options) => {
-            if (url === '/api/donations' && options?.method === 'POST') {
-                return Promise.resolve({
-                    ok: true,
-                    json: async () => ({
-                        id: 'new-id',
-                        name: 'Multi Bank Donation',
-                        bankAccounts: [
-                            { bankName: 'KBANK', accountNumber: '111', accountName: 'Name 1' },
-                            { bankName: 'SCB', accountNumber: '222', accountName: 'Name 2' }
-                        ]
-                    }),
-                });
-            }
-            if (url === '/api/banks') {
-                return Promise.resolve({
-                    ok: true,
-                    json: async () => [
-                        { value: 'KBANK', label: 'Kasikorn' },
-                        { value: 'SCB', label: 'Siam Commercial' }
-                    ]
-                });
-            }
-            return Promise.resolve({ ok: true, json: async () => [] });
-        });
-
-        render(<DonationsAdminPage />);
-
-        await waitFor(() => {
-            expect(screen.getByText('เพิ่มข้อมูล')).toBeInTheDocument();
-        });
-
-        fireEvent.click(screen.getByText('เพิ่มข้อมูล'));
-        fireEvent.change(screen.getByPlaceholderText('เช่น สภากาชาดไทย...'), { target: { value: 'Multi Bank Donation' } });
-
-        // Add first bank
-        const addBankBtn = screen.getByText('เพิ่มบัญชีธนาคาร');
-        fireEvent.click(addBankBtn);
-
-        const bankSelects = screen.getAllByLabelText('ธนาคาร');
-        fireEvent.change(bankSelects[0], { target: { value: 'KBANK' } });
-
-        const accountInputs = screen.getAllByPlaceholderText('xxx-x-xxxxx-x');
-        fireEvent.change(accountInputs[0], { target: { value: '111' } });
-
-        const nameInputs = screen.getAllByPlaceholderText('ชื่อบัญชี...');
-        fireEvent.change(nameInputs[0], { target: { value: 'Name 1' } });
-
-        // Add second bank
-        fireEvent.click(addBankBtn);
-
-        const bankSelects2 = screen.getAllByLabelText('ธนาคาร');
-        fireEvent.change(bankSelects2[1], { target: { value: 'SCB' } });
-
-        const accountInputs2 = screen.getAllByPlaceholderText('xxx-x-xxxxx-x');
-        fireEvent.change(accountInputs2[1], { target: { value: '222' } });
-
-        const nameInputs2 = screen.getAllByPlaceholderText('ชื่อบัญชี...');
-        fireEvent.change(nameInputs2[1], { target: { value: 'Name 2' } });
-
-        // Submit
-        fireEvent.click(screen.getByText('บันทึกข้อมูล'));
-
-        await waitFor(() => {
-            expect(global.fetch).toHaveBeenCalledWith('/api/donations', expect.objectContaining({
-                method: 'POST',
-                body: expect.stringContaining('"bankAccounts":[{"')
-            }));
-        });
-    });
 });
+

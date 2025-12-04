@@ -52,6 +52,7 @@ export interface DonationChannel {
     donationPoints?: string[];
     acceptsMoney?: boolean;
     bankAccounts?: { id?: string; bankName: string; accountNumber: string; accountName: string }[];
+    images?: string[];
 }
 
 export interface BankInfo {

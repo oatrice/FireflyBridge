@@ -81,7 +81,8 @@ const donationSchema = t.Object({
         bankName: t.String(),
         accountNumber: t.String(),
         accountName: t.String()
-    })))
+    }))),
+    images: t.Optional(t.Array(t.String()))
 });
 
 const donationUpdateSchema = t.Partial(donationSchema);

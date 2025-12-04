@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { ImageCarousel } from "@/components/ui/ImageCarousel";
 import type { DonationChannel } from "@/lib/types";
 import { getBankInfo } from "@/lib/utils/bankInfo";
 
@@ -203,6 +204,15 @@ export default function DonationsSection({ donations, loading }: DonationsSectio
                                             <p className="text-neutral-600 text-sm mb-4">
                                                 {donation.description}
                                             </p>
+                                        )}
+
+                                        {donation.images && donation.images.length > 0 && (
+                                            <div className="mb-4">
+                                                <ImageCarousel
+                                                    images={donation.images}
+                                                    alt={`Gallery for ${donation.name}`}
+                                                />
+                                            </div>
                                         )}
 
                                         {donation.qrCodeUrl && (

@@ -92,6 +92,7 @@ export const donations = pgTable("donations", {
     donationPoints: text("donation_points").array(),
     acceptsMoney: boolean("accepts_money").default(true),
     bankAccounts: jsonb("bank_accounts"),
+    images: jsonb("images"),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),
 });

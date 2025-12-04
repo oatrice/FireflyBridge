@@ -13,6 +13,7 @@ interface DonationForm {
     bankAccounts: { id: string; bankName: string; accountNumber: string; accountName: string }[];
     description: string;
     qrCodeUrl: string;
+    images: string[];
     contacts: { id: string; name: string; phone: string; type: string }[];
     donationPoints: { id: string; value: string }[];
     acceptsMoney: boolean;
@@ -30,6 +31,7 @@ export default function DonationsAdminPage() {
         bankAccounts: [{ id: generateId(), bankName: "", accountNumber: "", accountName: "" }],
         description: "",
         qrCodeUrl: "",
+        images: [],
         contacts: [{ id: generateId(), name: "", phone: "", type: "เบอร์โทรศัพท์" }],
         donationPoints: [{ id: generateId(), value: "" }],
         acceptsMoney: true,
@@ -70,6 +72,7 @@ export default function DonationsAdminPage() {
             contacts: cleanedContacts,
             donationPoints: cleanedPoints,
             bankAccounts: cleanedBankAccounts,
+            images: data.images || [],
         };
     };
 
@@ -97,6 +100,7 @@ export default function DonationsAdminPage() {
             bankAccounts,
             description: donation.description || "",
             qrCodeUrl: donation.qrCodeUrl || "",
+            images: donation.images || [],
             acceptsMoney: donation.acceptsMoney || false,
             contacts: donation.contacts && donation.contacts.length > 0
                 ? donation.contacts.map(c => ({ ...c, id: generateId(), type: c.type || "เบอร์โทรศัพท์" }))
@@ -184,6 +188,32 @@ export default function DonationsAdminPage() {
             };
             reader.readAsDataURL(file);
         }
+    };
+
+    const handleGalleryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files;
+        if (files && files.length > 0) {
+            const promises = Array.from(files).map(file => {
+                return new Promise<string>((resolve) => {
+                    const reader = new FileReader();
+                    reader.onloadend = () => resolve(reader.result as string);
+                    reader.readAsDataURL(file);
+                });
+            });
+
+            const results = await Promise.all(promises);
+            setFormData(prev => ({
+                ...prev,
+                images: [...(prev.images || []), ...results]
+            }));
+        }
+    };
+
+    const removeGalleryImage = (index: number) => {
+        setFormData(prev => ({
+            ...prev,
+            images: prev.images.filter((_, i) => i !== index)
+        }));
     };
 
     if (loading) return <LoadingSpinner color="border-purple-600" />;
@@ -350,6 +380,38 @@ export default function DonationsAdminPage() {
                                     >
                                         ✕
                                     </button>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    <div>
+                        <label htmlFor="gallery" className="block text-sm font-medium text-neutral-700 mb-1">รูปภาพเพิ่มเติม (Gallery)</label>
+                        <div className="space-y-4">
+                            <AdminInput
+                                id="gallery"
+                                type="file"
+                                accept="image/*"
+                                multiple
+                                onChange={handleGalleryUpload}
+                                theme="purple"
+                            />
+                            {formData.images && formData.images.length > 0 && (
+                                <div className="flex flex-wrap gap-4">
+                                    {formData.images.map((img, index) => (
+                                        <div key={index} className="w-24 h-24 relative border rounded overflow-hidden shrink-0 group">
+                                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                                            <img src={img} alt={`Gallery Image ${index + 1}`} className="object-cover w-full h-full" />
+                                            <button
+                                                type="button"
+                                                onClick={() => removeGalleryImage(index)}
+                                                className="absolute top-0 right-0 bg-red-500 text-white w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                                                title="ลบรูปภาพ"
+                                            >
+                                                ✕
+                                            </button>
+                                        </div>
+                                    ))}
                                 </div>
                             )}
                         </div>
