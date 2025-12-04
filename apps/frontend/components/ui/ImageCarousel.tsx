@@ -1,63 +1,96 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 
 interface ImageCarouselProps {
     images: string[];
     alt: string;
     className?: string;
+    autoPlay?: boolean;
+    interval?: number;
 }
 
-export function ImageCarousel({ images, alt, className = "" }: ImageCarouselProps) {
+export function ImageCarousel({
+    images,
+    alt,
+    className = "",
+    autoPlay = true,
+    interval = 5000
+}: ImageCarouselProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [modalOpen, setModalOpen] = useState(false);
+    const [isHovered, setIsHovered] = useState(false);
 
     if (!images || images.length === 0) return null;
 
-    const nextSlide = (e: React.MouseEvent) => {
-        e.stopPropagation();
+    const nextSlide = useCallback((e?: React.MouseEvent) => {
+        e?.stopPropagation();
         setCurrentIndex((prev) => (prev + 1) % images.length);
-    };
+    }, [images.length]);
 
-    const prevSlide = (e: React.MouseEvent) => {
-        e.stopPropagation();
+    const prevSlide = useCallback((e?: React.MouseEvent) => {
+        e?.stopPropagation();
         setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
-    };
+    }, [images.length]);
 
     const goToSlide = (index: number, e: React.MouseEvent) => {
         e.stopPropagation();
         setCurrentIndex(index);
     };
 
+    useEffect(() => {
+        if (!autoPlay || modalOpen || isHovered || images.length <= 1) return;
+
+        const timer = setInterval(() => {
+            nextSlide();
+        }, interval);
+
+        return () => clearInterval(timer);
+    }, [autoPlay, modalOpen, isHovered, images.length, interval, nextSlide]);
+
     return (
         <>
-            <div className={`relative group ${className}`}>
+            <div
+                className={`relative group ${className}`}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+            >
                 <div
                     className="relative overflow-hidden rounded-xl border border-neutral-200 bg-neutral-50 aspect-video cursor-pointer"
                     onClick={() => setModalOpen(true)}
                 >
-                    <Image
-                        src={images[currentIndex]}
-                        alt={`${alt} - Image ${currentIndex + 1}`}
-                        fill
-                        className="object-contain"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    />
+                    <div
+                        className="flex h-full transition-transform duration-500 ease-out"
+                        style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+                    >
+                        {images.map((src, index) => (
+                            <div key={index} className="relative min-w-full h-full">
+                                <Image
+                                    src={src}
+                                    alt={`${alt} - Image ${index + 1}`}
+                                    fill
+                                    className="object-contain"
+                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                    priority={index === 0}
+                                />
+                            </div>
+                        ))}
+                    </div>
 
                     {/* Navigation Buttons */}
                     {images.length > 1 && (
                         <>
                             <button
                                 onClick={prevSlide}
-                                className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                                className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10"
                                 aria-label="Previous image"
                             >
                                 ◀
                             </button>
                             <button
                                 onClick={nextSlide}
-                                className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                                className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10"
                                 aria-label="Next image"
                             >
                                 ▶
@@ -67,7 +100,7 @@ export function ImageCarousel({ images, alt, className = "" }: ImageCarouselProp
 
                     {/* Dots */}
                     {images.length > 1 && (
-                        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
+                        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
                             {images.map((_, idx) => (
                                 <button
                                     key={idx}
@@ -80,7 +113,7 @@ export function ImageCarousel({ images, alt, className = "" }: ImageCarouselProp
                         </div>
                     )}
 
-                    <div className="absolute top-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                    <div className="absolute top-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
                         🔍 คลิกเพื่อขยาย
                     </div>
                 </div>
