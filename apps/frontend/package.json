@@ -35,9 +35,9 @@
     "better-auth": "^1.4.4",
     "drizzle-orm": "^0.44.7",
     "elysia": "^1.4.16",
-    "next": "16.0.4",
-    "react": "19.2.0",
-    "react-dom": "19.2.0",
+    "next": "^16.0.7",
+    "react": "^19.2.1",
+    "react-dom": "^19.2.1",
     "sharp": "^0.34.5"
   },
   "devDependencies": {
@@ -58,7 +58,7 @@
     "dotenv": "^17.2.3",
     "drizzle-kit": "^0.31.7",
     "eslint": "^9",
-    "eslint-config-next": "16.0.4",
+    "eslint-config-next": "^16.0.7",
     "jest": "^30.2.0",
     "jest-environment-jsdom": "^30.2.0",
     "tailwindcss": "^4",
