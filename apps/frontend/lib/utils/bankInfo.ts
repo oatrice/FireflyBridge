@@ -32,3 +32,5 @@ export function getBankInfo(bankName: string): BankInfo {
 
     return { color: "bg-neutral-800", icon: "🏦", short: "Bank" };
 }
+
+

@@ -132,7 +132,7 @@ describe('DonationsAdminPage', () => {
 
         // Fill form
         fireEvent.change(screen.getByPlaceholderText('เช่น สภากาชาดไทย...'), { target: { value: 'New Donation' } });
-        fireEvent.change(screen.getByPlaceholderText('เช่น กสิกรไทย'), { target: { value: 'New Bank' } });
+        fireEvent.change(screen.getByLabelText('ธนาคาร'), { target: { value: 'กสิกรไทย (KBANK)' } });
 
         // Submit
         fireEvent.click(screen.getByText('บันทึกข้อมูล'));
@@ -217,14 +217,14 @@ describe('DonationsAdminPage', () => {
         const addContactBtn = screen.getByText('เพิ่มผู้ติดต่อ');
         fireEvent.click(addContactBtn);
 
-        const contactInputsBefore = screen.getAllByPlaceholderText('ชื่อผู้ติดต่อ');
+        const contactInputsBefore = screen.getAllByPlaceholderText('ชื่อ/รายละเอียด');
         expect(contactInputsBefore).toHaveLength(2);
 
         // Remove the second contact (index 1)
         const removeContactBtns = screen.getAllByTitle('ลบผู้ติดต่อ');
         fireEvent.click(removeContactBtns[0]);
 
-        const contactInputsAfter = screen.getAllByPlaceholderText('ชื่อผู้ติดต่อ');
+        const contactInputsAfter = screen.getAllByPlaceholderText('ชื่อ/รายละเอียด');
         expect(contactInputsAfter).toHaveLength(1);
 
         // Add point first to have 2 fields
@@ -316,6 +316,153 @@ describe('DonationsAdminPage', () => {
 
         await waitFor(() => {
             expect(window.alert).toHaveBeenCalledWith('Failed to save item: Unknown error');
+        });
+    });
+
+    it('renders bank name as dropdown options from API', async () => {
+        const mockBanks = [
+            { value: 'Test Bank 1', label: 'Test Bank 1 (TB1)' },
+            { value: 'Test Bank 2', label: 'Test Bank 2 (TB2)' },
+        ];
+
+        (global.fetch as unknown as jest.Mock).mockImplementation((url) => {
+            if (url === '/api/banks') {
+                return Promise.resolve({
+                    ok: true,
+                    json: async () => mockBanks,
+                });
+            }
+            if (url === '/api/donations') {
+                return Promise.resolve({
+                    ok: true,
+                    json: async () => mockDonations,
+                });
+            }
+            return Promise.resolve({ ok: false });
+        });
+
+        render(<DonationsAdminPage />);
+
+        await waitFor(() => {
+            expect(screen.getByText('เพิ่มข้อมูล')).toBeInTheDocument();
+        });
+
+        fireEvent.click(screen.getByText('เพิ่มข้อมูล'));
+
+        // Wait for banks to load
+        await waitFor(() => {
+            expect(screen.getByText('Test Bank 1 (TB1)')).toBeInTheDocument();
+        });
+
+        // Should find a select/combobox for bank
+        const bankSelect = screen.getByLabelText('ธนาคาร');
+        expect(bankSelect.tagName).toBe('SELECT');
+
+        // Check for some options
+        expect(screen.getByText('Test Bank 1 (TB1)')).toBeInTheDocument();
+        expect(screen.getByText('Test Bank 2 (TB2)')).toBeInTheDocument();
+    });
+
+    it('renders contact type dropdown', async () => {
+        render(<DonationsAdminPage />);
+
+        await waitFor(() => {
+            expect(screen.getByText('เพิ่มข้อมูล')).toBeInTheDocument();
+        });
+
+        fireEvent.click(screen.getByText('เพิ่มข้อมูล'));
+
+        // Should find contact type select (first one is default)
+        const typeSelects = screen.getAllByLabelText(/ประเภท/);
+        expect(typeSelects.length).toBeGreaterThan(0);
+        expect(typeSelects[0].tagName).toBe('SELECT');
+
+        // Check options
+        expect(screen.getByText('เบอร์โทรศัพท์')).toBeInTheDocument();
+        expect(screen.getByText('Line')).toBeInTheDocument();
+        expect(screen.getByText('Facebook')).toBeInTheDocument();
+
+        // Check for high contrast class
+        expect(typeSelects[0]).toHaveClass('text-neutral-900');
+    });
+
+    it('renders bank name dropdown with high contrast text', async () => {
+        const mockBanks = [{ value: 'Test Bank', label: 'Test Bank' }];
+        (global.fetch as unknown as jest.Mock).mockImplementation((url) => {
+            if (url === '/api/banks') return Promise.resolve({ ok: true, json: async () => mockBanks });
+            if (url === '/api/donations') return Promise.resolve({ ok: true, json: async () => mockDonations });
+            return Promise.resolve({ ok: false });
+        });
+
+        render(<DonationsAdminPage />);
+        await waitFor(() => expect(screen.getByText('เพิ่มข้อมูล')).toBeInTheDocument());
+        fireEvent.click(screen.getByText('เพิ่มข้อมูล'));
+
+        await waitFor(() => {
+            const options = screen.getAllByText('Test Bank');
+            expect(options.length).toBeGreaterThan(0);
+        });
+
+        const bankSelect = screen.getByLabelText('ธนาคาร');
+        expect(bankSelect).toHaveClass('text-neutral-900');
+    });
+
+    it('handles fetch banks error', async () => {
+        const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => { });
+        (global.fetch as unknown as jest.Mock).mockImplementation((url) => {
+            if (url === '/api/banks') {
+                return Promise.reject(new Error('Network error'));
+            }
+            if (url === '/api/donations') {
+                return Promise.resolve({ ok: true, json: async () => [] });
+            }
+            return Promise.resolve({ ok: false });
+        });
+
+        render(<DonationsAdminPage />);
+
+        await waitFor(() => {
+            expect(consoleSpy).toHaveBeenCalledWith('Failed to fetch banks:', expect.any(Error));
+        });
+
+        consoleSpy.mockRestore();
+    });
+
+    it('handles edit donation with empty contacts and points', async () => {
+        const mockDonationEmpty = {
+            id: '1',
+            name: 'Empty Donation',
+            contacts: [],
+            donationPoints: [],
+            acceptsMoney: true,
+        };
+
+        (global.fetch as unknown as jest.Mock).mockImplementation((url) => {
+            if (url === '/api/donations') {
+                return Promise.resolve({
+                    ok: true,
+                    json: async () => [mockDonationEmpty],
+                });
+            }
+            if (url === '/api/banks') {
+                return Promise.resolve({ ok: true, json: async () => [] });
+            }
+            return Promise.resolve({ ok: false });
+        });
+
+        render(<DonationsAdminPage />);
+
+        await waitFor(() => {
+            expect(screen.getByTitle('แก้ไข')).toBeInTheDocument();
+        });
+
+        fireEvent.click(screen.getByTitle('แก้ไข'));
+
+        await waitFor(() => {
+            expect(screen.getByDisplayValue('Empty Donation')).toBeInTheDocument();
+            // Should have default empty contact and point fields added by transformEditData
+            expect(screen.getAllByPlaceholderText('ชื่อ/รายละเอียด')).toHaveLength(1);
+            expect(screen.getAllByPlaceholderText('ระบุสถานที่รับบริจาค...')).toHaveLength(1);
         });
     });
 });

@@ -168,7 +168,7 @@ export default function DonationsSection({ donations, loading }: DonationsSectio
                         <div className="columns-1 md:columns-2 gap-6 space-y-6">
                             {(showAllDonations ? sortedDonations : sortedDonations.slice(0, 6)).map((donation, i) => {
                                 const isMoney = !!donation.bankName || !!donation.acceptsMoney;
-                                const isItems = !!donation.donationPoints;
+                                const isItems = !!donation.donationPoints && donation.donationPoints.length > 0;
                                 const bankInfo = donation.bankName ? getBankInfo(donation.bankName) : null;
 
                                 return (
