@@ -282,7 +282,7 @@ export default function DonationsAdminPage() {
                                     id="bankName"
                                     value={formData.bankName || ""}
                                     onChange={(e) => setFormData({ ...formData, bankName: e.target.value })}
-                                    className="w-full px-4 py-2 rounded-lg border border-neutral-200 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all"
+                                    className="w-full px-4 py-2 rounded-lg border border-neutral-200 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all text-neutral-900"
                                 >
                                     <option value="">เลือกธนาคาร...</option>
                                     {bankOptions.map((bank) => (
@@ -378,7 +378,7 @@ export default function DonationsAdminPage() {
                                             aria-label={`ประเภทการติดต่อ ${index + 1}`}
                                             value={contact.type}
                                             onChange={(e) => updateContact(index, 'type', e.target.value)}
-                                            className="w-full px-3 py-2 rounded-lg border border-neutral-200 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none text-sm"
+                                            className="w-full px-3 py-2 rounded-lg border border-neutral-200 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none text-sm text-neutral-900"
                                         >
                                             <option value="เบอร์โทรศัพท์">เบอร์โทรศัพท์</option>
                                             <option value="Line">Line</option>

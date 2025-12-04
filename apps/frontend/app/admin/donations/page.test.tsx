@@ -381,5 +381,29 @@ describe('DonationsAdminPage', () => {
         expect(screen.getByText('เบอร์โทรศัพท์')).toBeInTheDocument();
         expect(screen.getByText('Line')).toBeInTheDocument();
         expect(screen.getByText('Facebook')).toBeInTheDocument();
+
+        // Check for high contrast class
+        expect(typeSelects[0]).toHaveClass('text-neutral-900');
+    });
+
+    it('renders bank name dropdown with high contrast text', async () => {
+        const mockBanks = [{ value: 'Test Bank', label: 'Test Bank' }];
+        (global.fetch as unknown as jest.Mock).mockImplementation((url) => {
+            if (url === '/api/banks') return Promise.resolve({ ok: true, json: async () => mockBanks });
+            if (url === '/api/donations') return Promise.resolve({ ok: true, json: async () => mockDonations });
+            return Promise.resolve({ ok: false });
+        });
+
+        render(<DonationsAdminPage />);
+        await waitFor(() => expect(screen.getByText('เพิ่มข้อมูล')).toBeInTheDocument());
+        fireEvent.click(screen.getByText('เพิ่มข้อมูล'));
+
+        await waitFor(() => {
+            const options = screen.getAllByText('Test Bank');
+            expect(options.length).toBeGreaterThan(0);
+        });
+
+        const bankSelect = screen.getByLabelText('ธนาคาร');
+        expect(bankSelect).toHaveClass('text-neutral-900');
     });
 });
