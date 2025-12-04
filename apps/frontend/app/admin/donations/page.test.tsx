@@ -465,4 +465,14 @@ describe('DonationsAdminPage', () => {
             expect(screen.getAllByPlaceholderText('ระบุสถานที่รับบริจาค...')).toHaveLength(1);
         });
     });
+
+    it('renders qr code upload field', async () => {
+        render(<DonationsAdminPage />);
+        await waitFor(() => {
+            expect(screen.getByText('เพิ่มข้อมูล')).toBeInTheDocument();
+        expect(screen.getByLabelText('QR Code (รูปภาพ)')).toBeInTheDocument();
+
+        fireEvent.click(screen.getByText('เพิ่มข้อมูล'));
+        });
+    });
 });

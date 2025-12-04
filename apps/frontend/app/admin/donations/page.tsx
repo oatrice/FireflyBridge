@@ -140,6 +140,17 @@ export default function DonationsAdminPage() {
         setFormData({ ...formData, donationPoints: newPoints });
     };
 
+    const handleQrCodeUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setFormData(prev => ({ ...prev, qrCodeUrl: reader.result as string }));
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
     if (loading) return <LoadingSpinner color="border-purple-600" />;
 
     return (
@@ -269,6 +280,33 @@ export default function DonationsAdminPage() {
                             placeholder="รายละเอียดโครงการ..."
                             theme="purple"
                         />
+                    </div>
+
+                    <div>
+                        <label htmlFor="qrCode" className="block text-sm font-medium text-neutral-700 mb-1">QR Code (รูปภาพ)</label>
+                        <div className="flex items-center gap-4">
+                            <AdminInput
+                                id="qrCode"
+                                type="file"
+                                accept="image/*"
+                                onChange={handleQrCodeUpload}
+                                theme="purple"
+                            />
+                            {formData.qrCodeUrl && (
+                                <div className="w-16 h-16 relative border rounded overflow-hidden shrink-0 group">
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                                    <img src={formData.qrCodeUrl} alt="QR Code Preview" className="object-cover w-full h-full" />
+                                    <button
+                                        type="button"
+                                        onClick={() => setFormData({ ...formData, qrCodeUrl: "" })}
+                                        className="absolute top-0 right-0 bg-red-500 text-white w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                                        title="ลบรูปภาพ"
+                                    >
+                                        ✕
+                                    </button>
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     <div className="border-t border-neutral-100 pt-4 mt-4">
