@@ -406,4 +406,63 @@ describe('DonationsAdminPage', () => {
         const bankSelect = screen.getByLabelText('ธนาคาร');
         expect(bankSelect).toHaveClass('text-neutral-900');
     });
+
+    it('handles fetch banks error', async () => {
+        const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => { });
+        (global.fetch as unknown as jest.Mock).mockImplementation((url) => {
+            if (url === '/api/banks') {
+                return Promise.reject(new Error('Network error'));
+            }
+            if (url === '/api/donations') {
+                return Promise.resolve({ ok: true, json: async () => [] });
+            }
+            return Promise.resolve({ ok: false });
+        });
+
+        render(<DonationsAdminPage />);
+
+        await waitFor(() => {
+            expect(consoleSpy).toHaveBeenCalledWith('Failed to fetch banks:', expect.any(Error));
+        });
+
+        consoleSpy.mockRestore();
+    });
+
+    it('handles edit donation with empty contacts and points', async () => {
+        const mockDonationEmpty = {
+            id: '1',
+            name: 'Empty Donation',
+            contacts: [],
+            donationPoints: [],
+            acceptsMoney: true,
+        };
+
+        (global.fetch as unknown as jest.Mock).mockImplementation((url) => {
+            if (url === '/api/donations') {
+                return Promise.resolve({
+                    ok: true,
+                    json: async () => [mockDonationEmpty],
+                });
+            }
+            if (url === '/api/banks') {
+                return Promise.resolve({ ok: true, json: async () => [] });
+            }
+            return Promise.resolve({ ok: false });
+        });
+
+        render(<DonationsAdminPage />);
+
+        await waitFor(() => {
+            expect(screen.getByTitle('แก้ไข')).toBeInTheDocument();
+        });
+
+        fireEvent.click(screen.getByTitle('แก้ไข'));
+
+        await waitFor(() => {
+            expect(screen.getByDisplayValue('Empty Donation')).toBeInTheDocument();
+            // Should have default empty contact and point fields added by transformEditData
+            expect(screen.getAllByPlaceholderText('ชื่อ/รายละเอียด')).toHaveLength(1);
+            expect(screen.getAllByPlaceholderText('ระบุสถานที่รับบริจาค...')).toHaveLength(1);
+        });
+    });
 });

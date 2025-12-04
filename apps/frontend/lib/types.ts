@@ -58,3 +58,5 @@ export interface BankInfo {
     icon: string;
     short: string;
 }
+
+export const TYPES_VERSION = '1.0.0';
