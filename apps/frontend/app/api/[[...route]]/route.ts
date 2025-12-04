@@ -38,7 +38,8 @@ const createCrudHandlers = (
 
 const contactSchema = t.Object({
     name: t.String(),
-    phone: t.String()
+    phone: t.String(),
+    type: t.Optional(t.String())
 });
 
 const hotlineSchema = t.Object({
@@ -75,7 +76,12 @@ const donationSchema = t.Object({
     qrCodeUrl: t.Optional(t.String()),
     contacts: t.Optional(t.Array(contactSchema)),
     donationPoints: t.Optional(t.Array(t.String())),
-    acceptsMoney: t.Optional(t.Boolean())
+    acceptsMoney: t.Optional(t.Boolean()),
+    bankAccounts: t.Optional(t.Array(t.Object({
+        bankName: t.String(),
+        accountNumber: t.String(),
+        accountName: t.String()
+    })))
 });
 
 const donationUpdateSchema = t.Partial(donationSchema);

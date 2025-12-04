@@ -167,9 +167,12 @@ export default function DonationsSection({ donations, loading }: DonationsSectio
                         </div>
                         <div className="columns-1 md:columns-2 gap-6 space-y-6">
                             {(showAllDonations ? sortedDonations : sortedDonations.slice(0, 6)).map((donation, i) => {
-                                const isMoney = !!donation.bankName || !!donation.acceptsMoney;
+                                const bankAccounts = donation.bankAccounts && donation.bankAccounts.length > 0
+                                    ? donation.bankAccounts
+                                    : (donation.bankName ? [{ bankName: donation.bankName, accountNumber: donation.accountNumber, accountName: donation.accountName }] : []);
+
+                                const isMoney = bankAccounts.length > 0 || !!donation.acceptsMoney;
                                 const isItems = !!donation.donationPoints && donation.donationPoints.length > 0;
-                                const bankInfo = donation.bankName ? getBankInfo(donation.bankName) : null;
 
                                 return (
                                     <div
@@ -223,36 +226,43 @@ export default function DonationsSection({ donations, loading }: DonationsSectio
                                             </div>
                                         )}
 
-                                        {donation.bankName && bankInfo ? (
-                                            <div className="bg-neutral-50 p-4 rounded-xl mb-4 border border-neutral-100">
-                                                <div className="flex items-center gap-2 mb-2">
-                                                    <span className="text-xl">{bankInfo.icon}</span>
-                                                    <div>
-                                                        <p className="text-xs text-neutral-500 font-medium">ธนาคาร</p>
-                                                        <p className={`font-bold text-sm ${bankInfo.color.replace("bg-", "text-")}`}>
-                                                            {donation.bankName}
-                                                        </p>
-                                                    </div>
-                                                </div>
+                                        {bankAccounts.length > 0 ? (
+                                            <div className="space-y-3 mb-4">
+                                                {bankAccounts.map((account, idx) => {
+                                                    const bankInfo = getBankInfo(account.bankName);
+                                                    return (
+                                                        <div key={idx} className="bg-neutral-50 p-4 rounded-xl border border-neutral-100">
+                                                            <div className="flex items-center gap-2 mb-2">
+                                                                <span className="text-xl">{bankInfo?.icon || '🏦'}</span>
+                                                                <div>
+                                                                    <p className="text-xs text-neutral-500 font-medium">ธนาคาร</p>
+                                                                    <p className={`font-bold text-sm ${bankInfo?.color?.replace("bg-", "text-") || 'text-neutral-700'}`}>
+                                                                        {account.bankName}
+                                                                    </p>
+                                                                </div>
+                                                            </div>
 
-                                                <div className="flex items-center justify-between gap-2 bg-white p-3 rounded-lg border border-neutral-200 shadow-sm">
-                                                    <p className="text-lg font-mono font-bold text-neutral-800 tracking-wide">
-                                                        {donation.accountNumber}
-                                                    </p>
-                                                    <button
-                                                        onClick={() => {
-                                                            navigator.clipboard.writeText(donation.accountNumber || "");
-                                                            alert("คัดลอกเลขบัญชีแล้ว");
-                                                        }}
-                                                        className="flex items-center gap-1 text-xs bg-neutral-100 hover:bg-neutral-200 text-neutral-700 px-3 py-1.5 rounded-md font-medium transition-colors"
-                                                    >
-                                                        <span>📋</span>
-                                                        <span>คัดลอก</span>
-                                                    </button>
-                                                </div>
-                                                <p className="text-xs text-neutral-500 mt-2 truncate">
-                                                    ชื่อบัญชี: {donation.accountName}
-                                                </p>
+                                                            <div className="flex items-center justify-between gap-2 bg-white p-3 rounded-lg border border-neutral-200 shadow-sm">
+                                                                <p className="text-lg font-mono font-bold text-neutral-800 tracking-wide">
+                                                                    {account.accountNumber}
+                                                                </p>
+                                                                <button
+                                                                    onClick={() => {
+                                                                        navigator.clipboard.writeText(account.accountNumber || "");
+                                                                        alert("คัดลอกเลขบัญชีแล้ว");
+                                                                    }}
+                                                                    className="flex items-center gap-1 text-xs bg-neutral-100 hover:bg-neutral-200 text-neutral-700 px-3 py-1.5 rounded-md font-medium transition-colors"
+                                                                >
+                                                                    <span>📋</span>
+                                                                    <span>คัดลอก</span>
+                                                                </button>
+                                                            </div>
+                                                            <p className="text-xs text-neutral-500 mt-2 truncate">
+                                                                ชื่อบัญชี: {account.accountName}
+                                                            </p>
+                                                        </div>
+                                                    );
+                                                })}
                                             </div>
                                         ) : (
                                             <div className="bg-neutral-50 p-4 rounded-xl mb-4 border border-neutral-100 text-center py-6 flex-1 flex flex-col justify-center">
