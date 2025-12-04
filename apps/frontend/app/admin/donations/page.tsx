@@ -10,9 +10,7 @@ import { AdminTextarea } from "@/components/ui/AdminTextarea";
 
 interface DonationForm {
     name: string;
-    bankName: string;
-    accountNumber: string;
-    accountName: string;
+    bankAccounts: { id: string; bankName: string; accountNumber: string; accountName: string }[];
     description: string;
     qrCodeUrl: string;
     contacts: { id: string; name: string; phone: string; type: string }[];
@@ -29,9 +27,7 @@ const generateId = () => {
 export default function DonationsAdminPage() {
     const initialFormData: DonationForm = {
         name: "",
-        bankName: "",
-        accountNumber: "",
-        accountName: "",
+        bankAccounts: [{ id: generateId(), bankName: "", accountNumber: "", accountName: "" }],
         description: "",
         qrCodeUrl: "",
         contacts: [{ id: generateId(), name: "", phone: "", type: "เบอร์โทรศัพท์" }],
@@ -65,28 +61,51 @@ export default function DonationsAdminPage() {
             ?.filter(p => p.value.trim() !== "")
             .map(p => p.value) || [];
 
+        const cleanedBankAccounts = data.bankAccounts
+            ?.filter(b => b.bankName !== "" || b.accountNumber.trim() !== "" || b.accountName.trim() !== "")
+            .map(({ bankName, accountNumber, accountName }) => ({ bankName, accountNumber, accountName })) || [];
+
         return {
             ...data,
             contacts: cleanedContacts,
-            donationPoints: cleanedPoints
+            donationPoints: cleanedPoints,
+            bankAccounts: cleanedBankAccounts,
         };
     };
 
-    const transformEditData = (donation: DonationChannel): DonationForm => ({
-        ...donation,
-        bankName: donation.bankName || "",
-        accountNumber: donation.accountNumber || "",
-        accountName: donation.accountName || "",
-        description: donation.description || "",
-        qrCodeUrl: donation.qrCodeUrl || "",
-        acceptsMoney: donation.acceptsMoney || false,
-        contacts: donation.contacts && donation.contacts.length > 0
-            ? donation.contacts.map(c => ({ ...c, id: generateId(), type: c.type || "เบอร์โทรศัพท์" }))
-            : [{ id: generateId(), name: "", phone: "", type: "เบอร์โทรศัพท์" }],
-        donationPoints: donation.donationPoints && donation.donationPoints.length > 0
-            ? donation.donationPoints.map(p => ({ id: generateId(), value: p }))
-            : [{ id: generateId(), value: "" }],
-    });
+    const transformEditData = (donation: DonationChannel): DonationForm => {
+        // Migrate legacy single bank account to array if array is empty
+        let bankAccounts = donation.bankAccounts && donation.bankAccounts.length > 0
+            ? donation.bankAccounts.map(b => ({ ...b, id: generateId() }))
+            : [];
+
+        if (bankAccounts.length === 0 && (donation.bankName || donation.accountNumber)) {
+            bankAccounts.push({
+                id: generateId(),
+                bankName: donation.bankName || "",
+                accountNumber: donation.accountNumber || "",
+                accountName: donation.accountName || ""
+            });
+        }
+
+        if (bankAccounts.length === 0) {
+            bankAccounts.push({ id: generateId(), bankName: "", accountNumber: "", accountName: "" });
+        }
+
+        return {
+            ...donation,
+            bankAccounts,
+            description: donation.description || "",
+            qrCodeUrl: donation.qrCodeUrl || "",
+            acceptsMoney: donation.acceptsMoney || false,
+            contacts: donation.contacts && donation.contacts.length > 0
+                ? donation.contacts.map(c => ({ ...c, id: generateId(), type: c.type || "เบอร์โทรศัพท์" }))
+                : [{ id: generateId(), name: "", phone: "", type: "เบอร์โทรศัพท์" }],
+            donationPoints: donation.donationPoints && donation.donationPoints.length > 0
+                ? donation.donationPoints.map(p => ({ id: generateId(), value: p }))
+                : [{ id: generateId(), value: "" }],
+        };
+    };
 
     const {
         items: donations,
@@ -138,6 +157,22 @@ export default function DonationsAdminPage() {
         const newPoints = [...formData.donationPoints];
         newPoints.splice(index, 1);
         setFormData({ ...formData, donationPoints: newPoints });
+    };
+
+    const updateBankAccount = (index: number, field: 'bankName' | 'accountNumber' | 'accountName', value: string) => {
+        const newBankAccounts = [...formData.bankAccounts];
+        newBankAccounts[index] = { ...newBankAccounts[index], [field]: value };
+        setFormData({ ...formData, bankAccounts: newBankAccounts });
+    };
+
+    const addBankAccount = () => {
+        setFormData({ ...formData, bankAccounts: [...formData.bankAccounts, { id: generateId(), bankName: "", accountNumber: "", accountName: "" }] });
+    };
+
+    const removeBankAccount = (index: number) => {
+        const newBankAccounts = [...formData.bankAccounts];
+        newBankAccounts.splice(index, 1);
+        setFormData({ ...formData, bankAccounts: newBankAccounts });
     };
 
     const handleQrCodeUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -194,7 +229,18 @@ export default function DonationsAdminPage() {
                                         </div>
                                     </td>
                                     <td className="px-6 py-4">
-                                        {donation.bankName ? (
+                                        {/* Display multiple bank accounts or fallback to legacy */}
+                                        {(donation.bankAccounts && donation.bankAccounts.length > 0) ? (
+                                            <div className="flex flex-col gap-2">
+                                                {donation.bankAccounts.map((bank, idx) => (
+                                                    <div key={idx} className="text-sm border-b border-neutral-100 last:border-0 pb-1 last:pb-0">
+                                                        <div className="font-medium text-neutral-900">{bank.bankName}</div>
+                                                        <div className="text-neutral-600 font-mono">{bank.accountNumber}</div>
+                                                        <div className="text-neutral-500 text-xs">{bank.accountName}</div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        ) : donation.bankName ? (
                                             <div className="text-sm">
                                                 <div className="font-medium text-neutral-900">{donation.bankName}</div>
                                                 <div className="text-neutral-600 font-mono">{donation.accountNumber}</div>
@@ -313,45 +359,69 @@ export default function DonationsAdminPage() {
                         <h3 className="font-medium text-neutral-900 mb-3 flex items-center gap-2">
                             <span>💰</span> ข้อมูลบัญชีธนาคาร (ถ้ามี)
                         </h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label htmlFor="bankName" className="block text-sm font-medium text-neutral-700 mb-1">ธนาคาร</label>
-                                <select
-                                    id="bankName"
-                                    value={formData.bankName || ""}
-                                    onChange={(e) => setFormData({ ...formData, bankName: e.target.value })}
-                                    className="w-full px-4 py-2 rounded-lg border border-neutral-200 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all text-neutral-900"
-                                >
-                                    <option value="">เลือกธนาคาร...</option>
-                                    {bankOptions.map((bank) => (
-                                        <option key={bank.value} value={bank.value}>
-                                            {bank.label}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div>
-                                <label htmlFor="accountNumber" className="block text-sm font-medium text-neutral-700 mb-1">เลขที่บัญชี</label>
-                                <AdminInput
-                                    id="accountNumber"
-                                    type="text"
-                                    value={formData.accountNumber || ""}
-                                    onChange={(e) => setFormData({ ...formData, accountNumber: e.target.value })}
-                                    placeholder="xxx-x-xxxxx-x"
-                                    theme="purple"
-                                />
-                            </div>
-                            <div className="md:col-span-2">
-                                <label htmlFor="accountName" className="block text-sm font-medium text-neutral-700 mb-1">ชื่อบัญชี</label>
-                                <AdminInput
-                                    id="accountName"
-                                    type="text"
-                                    value={formData.accountName || ""}
-                                    onChange={(e) => setFormData({ ...formData, accountName: e.target.value })}
-                                    placeholder="ชื่อบัญชี..."
-                                    theme="purple"
-                                />
-                            </div>
+                        <div className="space-y-4">
+                            {formData.bankAccounts.map((account, index) => (
+                                <div key={account.id} className="p-4 bg-neutral-50 rounded-lg border border-neutral-200 relative">
+                                    {index > 0 && (
+                                        <button
+                                            type="button"
+                                            onClick={() => removeBankAccount(index)}
+                                            className="absolute top-2 right-2 text-red-500 hover:text-red-700"
+                                            title="ลบบัญชี"
+                                        >
+                                            ✕
+                                        </button>
+                                    )}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label htmlFor={`bankName-${index}`} className="block text-sm font-medium text-neutral-700 mb-1">ธนาคาร</label>
+                                            <select
+                                                id={`bankName-${index}`}
+                                                aria-label="ธนาคาร"
+                                                value={account.bankName || ""}
+                                                onChange={(e) => updateBankAccount(index, 'bankName', e.target.value)}
+                                                className="w-full px-4 py-2 rounded-lg border border-neutral-200 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all text-neutral-900"
+                                            >
+                                                <option value="">เลือกธนาคาร...</option>
+                                                {bankOptions.map((bank) => (
+                                                    <option key={bank.value} value={bank.value}>
+                                                        {bank.label}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label htmlFor={`accountNumber-${index}`} className="block text-sm font-medium text-neutral-700 mb-1">เลขที่บัญชี</label>
+                                            <AdminInput
+                                                id={`accountNumber-${index}`}
+                                                type="text"
+                                                value={account.accountNumber || ""}
+                                                onChange={(e) => updateBankAccount(index, 'accountNumber', e.target.value)}
+                                                placeholder="xxx-x-xxxxx-x"
+                                                theme="purple"
+                                            />
+                                        </div>
+                                        <div className="md:col-span-2">
+                                            <label htmlFor={`accountName-${index}`} className="block text-sm font-medium text-neutral-700 mb-1">ชื่อบัญชี</label>
+                                            <AdminInput
+                                                id={`accountName-${index}`}
+                                                type="text"
+                                                value={account.accountName || ""}
+                                                onChange={(e) => updateBankAccount(index, 'accountName', e.target.value)}
+                                                placeholder="ชื่อบัญชี..."
+                                                theme="purple"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                            <button
+                                type="button"
+                                onClick={addBankAccount}
+                                className="text-sm text-purple-600 hover:underline flex items-center gap-1"
+                            >
+                                <span>➕</span> เพิ่มบัญชีธนาคาร
+                            </button>
                         </div>
                         <div className="mt-3">
                             <label className="flex items-center gap-2 cursor-pointer">

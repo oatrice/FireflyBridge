@@ -470,9 +470,81 @@ describe('DonationsAdminPage', () => {
         render(<DonationsAdminPage />);
         await waitFor(() => {
             expect(screen.getByText('เพิ่มข้อมูล')).toBeInTheDocument();
+        });
+        fireEvent.click(screen.getByText('เพิ่มข้อมูล'));
+
         expect(screen.getByLabelText('QR Code (รูปภาพ)')).toBeInTheDocument();
+    });
+
+    it('handles multiple bank accounts', async () => {
+        (global.fetch as unknown as jest.Mock).mockImplementation((url, options) => {
+            if (url === '/api/donations' && options?.method === 'POST') {
+                return Promise.resolve({
+                    ok: true,
+                    json: async () => ({
+                        id: 'new-id',
+                        name: 'Multi Bank Donation',
+                        bankAccounts: [
+                            { bankName: 'KBANK', accountNumber: '111', accountName: 'Name 1' },
+                            { bankName: 'SCB', accountNumber: '222', accountName: 'Name 2' }
+                        ]
+                    }),
+                });
+            }
+            if (url === '/api/banks') {
+                return Promise.resolve({
+                    ok: true,
+                    json: async () => [
+                        { value: 'KBANK', label: 'Kasikorn' },
+                        { value: 'SCB', label: 'Siam Commercial' }
+                    ]
+                });
+            }
+            return Promise.resolve({ ok: true, json: async () => [] });
+        });
+
+        render(<DonationsAdminPage />);
+
+        await waitFor(() => {
+            expect(screen.getByText('เพิ่มข้อมูล')).toBeInTheDocument();
+        });
 
         fireEvent.click(screen.getByText('เพิ่มข้อมูล'));
+        fireEvent.change(screen.getByPlaceholderText('เช่น สภากาชาดไทย...'), { target: { value: 'Multi Bank Donation' } });
+
+        // Add first bank
+        const addBankBtn = screen.getByText('เพิ่มบัญชีธนาคาร');
+        fireEvent.click(addBankBtn);
+
+        const bankSelects = screen.getAllByLabelText('ธนาคาร');
+        fireEvent.change(bankSelects[0], { target: { value: 'KBANK' } });
+
+        const accountInputs = screen.getAllByPlaceholderText('xxx-x-xxxxx-x');
+        fireEvent.change(accountInputs[0], { target: { value: '111' } });
+
+        const nameInputs = screen.getAllByPlaceholderText('ชื่อบัญชี...');
+        fireEvent.change(nameInputs[0], { target: { value: 'Name 1' } });
+
+        // Add second bank
+        fireEvent.click(addBankBtn);
+
+        const bankSelects2 = screen.getAllByLabelText('ธนาคาร');
+        fireEvent.change(bankSelects2[1], { target: { value: 'SCB' } });
+
+        const accountInputs2 = screen.getAllByPlaceholderText('xxx-x-xxxxx-x');
+        fireEvent.change(accountInputs2[1], { target: { value: '222' } });
+
+        const nameInputs2 = screen.getAllByPlaceholderText('ชื่อบัญชี...');
+        fireEvent.change(nameInputs2[1], { target: { value: 'Name 2' } });
+
+        // Submit
+        fireEvent.click(screen.getByText('บันทึกข้อมูล'));
+
+        await waitFor(() => {
+            expect(global.fetch).toHaveBeenCalledWith('/api/donations', expect.objectContaining({
+                method: 'POST',
+                body: expect.stringContaining('"bankAccounts":[{"')
+            }));
         });
     });
 });
