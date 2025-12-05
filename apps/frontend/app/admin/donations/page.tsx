@@ -4,7 +4,7 @@ import { AdminModal } from "@/components/ui/AdminModal";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { useAdminCrud } from "@/hooks/useAdminCrud";
 import type { DonationChannel } from "@/lib/types";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { AdminInput } from "@/components/ui/AdminInput";
 import { AdminTextarea } from "@/components/ui/AdminTextarea";
 
@@ -37,6 +37,7 @@ export default function DonationsAdminPage() {
 
     const [bankOptions, setBankOptions] = useState<{ value: string; label: string }[]>([]);
     const [isProcessingOCR, setIsProcessingOCR] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         const fetchBanks = async () => {
@@ -424,14 +425,24 @@ export default function DonationsAdminPage() {
                     <div>
                         <label htmlFor="gallery" className="block text-sm font-medium text-neutral-700 mb-1">รูปภาพ (Images)</label>
                         <div className="space-y-4">
-                            <AdminInput
+                            <input
                                 id="gallery"
                                 type="file"
+                                ref={fileInputRef}
+                                className="hidden"
                                 accept="image/*"
                                 multiple
                                 onChange={handleGalleryUpload}
-                                theme="purple"
                             />
+                            <button
+                                type="button"
+                                onClick={() => fileInputRef.current?.click()}
+                                className="w-full py-6 border-2 border-dashed border-purple-200 rounded-xl bg-purple-50 hover:bg-purple-100 transition-colors flex flex-col items-center justify-center gap-2 text-purple-600 cursor-pointer"
+                            >
+                                <span className="text-2xl">☁️</span>
+                                <span className="font-medium">คลิกเพื่อ Upload ไฟล์รูปภาพ</span>
+                            </button>
+
                             {formData.images && formData.images.length > 0 && (
                                 <div className="flex flex-wrap gap-4">
                                     {formData.images.map((img, index) => (
