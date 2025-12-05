@@ -22,7 +22,7 @@
 # 🚀 Migration/Deployment
 - [ ] Database migration required
 - [ ] Environment variables updated
-- [ ] Dependencies installed
+- [ ] Dependencies installed(Dep1, Dep2, ...)
 
 ```bash
 # Migration commands if applicable
