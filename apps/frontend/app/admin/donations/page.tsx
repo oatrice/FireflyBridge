@@ -448,7 +448,7 @@ export default function DonationsAdminPage() {
                                     {formData.images.map((img, index) => (
                                         <div key={index} className="w-24 h-24 relative border rounded overflow-hidden shrink-0 group">
                                             {/* eslint-disable-next-line @next/next/no-img-element */}
-                                            <img src={img} alt={`Gallery Image ${index + 1}`} className="object-cover w-full h-full" />
+                                            <img src={img} alt={`Gallery item ${index + 1}`} className="object-cover w-full h-full" />
                                             <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2">
                                                 <button
                                                     type="button"
@@ -474,7 +474,7 @@ export default function DonationsAdminPage() {
                             )}
                         </div>
                     </div>
-                    
+
                     <div>
                         <label htmlFor="name" className="block text-sm font-medium text-neutral-700 mb-1">ชื่อหน่วยงาน/โครงการ</label>
                         <AdminInput

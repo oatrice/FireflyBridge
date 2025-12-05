@@ -47,7 +47,7 @@ export async function POST(req: Request) {
         const text = response.text();
 
         // Clean up markdown code blocks if present
-        const jsonStr = text.replace(/```json\n?|\n?```/g, "").trim();
+        const jsonStr = text.replaceAll(/```json\n?|\n?```/g, "").trim();
 
         try {
             const data = JSON.parse(jsonStr);

@@ -340,8 +340,8 @@ describe('DonationsAdminPage', () => {
 
         // Expect previews
         await waitFor(() => {
-            expect(screen.getByAltText('Gallery Image 1')).toBeInTheDocument();
-            expect(screen.getByAltText('Gallery Image 2')).toBeInTheDocument();
+            expect(screen.getByAltText('Gallery item 1')).toBeInTheDocument();
+            expect(screen.getByAltText('Gallery item 2')).toBeInTheDocument();
         });
 
         // Save
