@@ -7,6 +7,8 @@ import type { DonationChannel } from "@/lib/types";
 import { useEffect, useState } from "react";
 import { AdminInput } from "@/components/ui/AdminInput";
 import { AdminTextarea } from "@/components/ui/AdminTextarea";
+import { createWorker } from "tesseract.js";
+import { parseDonationText } from "@/lib/utils/donation-parser";
 
 interface DonationForm {
     name: string;
@@ -36,6 +38,7 @@ export default function DonationsAdminPage() {
     };
 
     const [bankOptions, setBankOptions] = useState<{ value: string; label: string }[]>([]);
+    const [isProcessingOCR, setIsProcessingOCR] = useState(false);
 
     useEffect(() => {
         const fetchBanks = async () => {
@@ -210,6 +213,64 @@ export default function DonationsAdminPage() {
         }));
     };
 
+    const handleAutoFill = async (imageUrl: string) => {
+        setIsProcessingOCR(true);
+        try {
+            const worker = await createWorker("tha+eng");
+            const ret = await worker.recognize(imageUrl);
+            const text = ret.data.text;
+            await worker.terminate();
+
+            const parsed = parseDonationText(text);
+
+            if (parsed.accountNumber || parsed.bankName) {
+                setFormData(prev => {
+                    const newBankAccounts = [...prev.bankAccounts];
+                    // Check if the first account is empty, if so fill it, otherwise add new
+                    const firstAccount = newBankAccounts[0];
+                    const isFirstEmpty = !firstAccount.accountNumber && !firstAccount.bankName;
+
+                    if (isFirstEmpty) {
+                        newBankAccounts[0] = {
+                            ...firstAccount,
+                            accountNumber: parsed.accountNumber || firstAccount.accountNumber,
+                            bankName: parsed.bankName ? bankOptions.find(b => b.label === parsed.bankName)?.value || "" : firstAccount.bankName
+                        };
+                    } else {
+                        newBankAccounts.push({
+                            id: generateId(),
+                            accountNumber: parsed.accountNumber || "",
+                            bankName: parsed.bankName ? bankOptions.find(b => b.label === parsed.bankName)?.value || "" : "",
+                            accountName: ""
+                        });
+                    }
+
+                    // Also try to guess bank value from label if exact match failed but we have the label
+                    if (parsed.bankName && !newBankAccounts[isFirstEmpty ? 0 : newBankAccounts.length - 1].bankName) {
+                        // Try to find by partial match or just leave empty
+                        const match = bankOptions.find(b => b.label.includes(parsed.bankName!) || parsed.bankName!.includes(b.label));
+                        if (match) {
+                            newBankAccounts[isFirstEmpty ? 0 : newBankAccounts.length - 1].bankName = match.value;
+                        }
+                    }
+
+                    return {
+                        ...prev,
+                        bankAccounts: newBankAccounts
+                    };
+                });
+                alert(`ดึงข้อมูลสำเร็จ: ${parsed.bankName || '-'} / ${parsed.accountNumber || '-'}`);
+            } else {
+                alert("ไม่พบข้อมูลบัญชีธนาคารในรูปภาพนี้");
+            }
+        } catch (error) {
+            console.error("OCR Failed:", error);
+            alert("เกิดข้อผิดพลาดในการอ่านรูปภาพ");
+        } finally {
+            setIsProcessingOCR(false);
+        }
+    };
+
     if (loading) return <LoadingSpinner color="border-purple-600" />;
 
     return (
@@ -369,14 +430,25 @@ export default function DonationsAdminPage() {
                                         <div key={index} className="w-24 h-24 relative border rounded overflow-hidden shrink-0 group">
                                             {/* eslint-disable-next-line @next/next/no-img-element */}
                                             <img src={img} alt={`Gallery Image ${index + 1}`} className="object-cover w-full h-full" />
-                                            <button
-                                                type="button"
-                                                onClick={() => removeGalleryImage(index)}
-                                                className="absolute top-0 right-0 bg-red-500 text-white w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
-                                                title="ลบรูปภาพ"
-                                            >
-                                                ✕
-                                            </button>
+                                            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleAutoFill(img)}
+                                                    className="text-white hover:text-purple-200 text-xs flex items-center gap-1 bg-purple-600/80 px-2 py-1 rounded"
+                                                    title="ดึงข้อมูลจากรูป"
+                                                    disabled={isProcessingOCR}
+                                                >
+                                                    {isProcessingOCR ? "..." : "✨ Auto"}
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeGalleryImage(index)}
+                                                    className="text-white hover:text-red-200 text-xs bg-red-600/80 px-2 py-1 rounded"
+                                                    title="ลบรูปภาพ"
+                                                >
+                                                    ลบ
+                                                </button>
+                                            </div>
                                         </div>
                                     ))}
                                 </div>
