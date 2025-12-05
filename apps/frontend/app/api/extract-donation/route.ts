@@ -22,11 +22,11 @@ export async function POST(req: Request) {
 
         const prompt = `
             Analyze this donation image and extract the following information in JSON format:
-            - name: Organization or project name (Thai or English)
-            - description: Brief description of the donation purpose
-            - bankName: Bank name (e.g., KBANK, SCB, BBL) - map to standard Thai bank names if possible
-            - accountNumber: Bank account number (digits only or with separators)
-            - accountName: Name of the bank account owner
+            - name: Organization or project name (Thai or English) - usually at the top or prominent.
+            - description: Brief description of the donation purpose.
+            - bankName: Bank name (e.g., KBANK, SCB, BBL) - map to standard Thai bank names if possible.
+            - accountNumber: Bank account number (digits only or with separators).
+            - accountName: Name of the bank account owner. Look for keywords like "ชื่อบัญชี", "Account Name", or text adjacent to the account number. It is often different from the organization name.
             - contacts: Array of contact info objects { type: "เบอร์โทรศัพท์" | "Line" | "Facebook" | "Website", value: string }
 
             If a field is not found, set it to null.

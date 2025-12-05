@@ -287,6 +287,7 @@ export default function DonationsAdminPage() {
                     parsed.name ? `ชื่อ: ${parsed.name}` : null,
                     parsed.bankName ? `ธนาคาร: ${parsed.bankName}` : null,
                     parsed.accountNumber ? `เลขบัญชี: ${parsed.accountNumber}` : null,
+                    parsed.accountName ? `ชื่อบัญชี: ${parsed.accountName}` : null,
                     parsed.contacts?.length > 0 ? `ผู้ติดต่อ: ${parsed.contacts.length} รายการ` : null
                 ].filter(Boolean).join('\n');
 
@@ -419,30 +420,6 @@ export default function DonationsAdminPage() {
                 maxWidth="max-w-2xl"
             >
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                        <label htmlFor="name" className="block text-sm font-medium text-neutral-700 mb-1">ชื่อหน่วยงาน/โครงการ</label>
-                        <AdminInput
-                            id="name"
-                            type="text"
-                            required
-                            value={formData.name}
-                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                            placeholder="เช่น สภากาชาดไทย..."
-                            theme="purple"
-                        />
-                    </div>
-
-                    <div>
-                        <label htmlFor="description" className="block text-sm font-medium text-neutral-700 mb-1">รายละเอียด</label>
-                        <AdminTextarea
-                            id="description"
-                            value={formData.description || ""}
-                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                            className="h-20"
-                            placeholder="รายละเอียดโครงการ..."
-                            theme="purple"
-                        />
-                    </div>
 
                     <div>
                         <label htmlFor="gallery" className="block text-sm font-medium text-neutral-700 mb-1">รูปภาพ (Images)</label>
@@ -485,6 +462,31 @@ export default function DonationsAdminPage() {
                                 </div>
                             )}
                         </div>
+                    </div>
+                    
+                    <div>
+                        <label htmlFor="name" className="block text-sm font-medium text-neutral-700 mb-1">ชื่อหน่วยงาน/โครงการ</label>
+                        <AdminInput
+                            id="name"
+                            type="text"
+                            required
+                            value={formData.name}
+                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                            placeholder="เช่น สภากาชาดไทย..."
+                            theme="purple"
+                        />
+                    </div>
+
+                    <div>
+                        <label htmlFor="description" className="block text-sm font-medium text-neutral-700 mb-1">รายละเอียด</label>
+                        <AdminTextarea
+                            id="description"
+                            value={formData.description || ""}
+                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                            className="h-20"
+                            placeholder="รายละเอียดโครงการ..."
+                            theme="purple"
+                        />
                     </div>
 
                     <div className="border-t border-neutral-100 pt-4 mt-4">
