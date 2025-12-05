@@ -7,8 +7,6 @@ import type { DonationChannel } from "@/lib/types";
 import { useEffect, useState } from "react";
 import { AdminInput } from "@/components/ui/AdminInput";
 import { AdminTextarea } from "@/components/ui/AdminTextarea";
-import { createWorker } from "tesseract.js";
-import { parseDonationText } from "@/lib/utils/donation-parser";
 
 interface DonationForm {
     name: string;
@@ -216,21 +214,23 @@ export default function DonationsAdminPage() {
     const handleAutoFill = async (imageUrl: string) => {
         setIsProcessingOCR(true);
         try {
-            const worker = await createWorker("tha+eng");
-            const ret = await worker.recognize(imageUrl);
-            const text = ret.data.text;
-            await worker.terminate();
+            const res = await fetch("/api/extract-donation", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ image: imageUrl }),
+            });
 
-            const parsed = parseDonationText(text);
+            if (!res.ok) throw new Error("Failed to extract data");
 
-            if (parsed.accountNumber || parsed.bankName || parsed.name || parsed.contacts.length > 0) {
+            const parsed = await res.json();
+
+            if (parsed.accountNumber || parsed.bankName || parsed.name || (parsed.contacts && parsed.contacts.length > 0)) {
                 setFormData(prev => {
                     const newState = { ...prev };
 
-                    // 1. Name (Fill if empty)
-                    if (!newState.name && parsed.name) {
-                        newState.name = parsed.name;
-                    }
+                    // 1. Name & Description
+                    if (!newState.name && parsed.name) newState.name = parsed.name;
+                    if (!newState.description && parsed.description) newState.description = parsed.description;
 
                     // 2. Bank Accounts
                     const newBankAccounts = [...newState.bankAccounts];
@@ -241,42 +241,33 @@ export default function DonationsAdminPage() {
                         newBankAccounts[0] = {
                             ...firstAccount,
                             accountNumber: parsed.accountNumber || firstAccount.accountNumber,
-                            bankName: parsed.bankName ? bankOptions.find(b => b.label === parsed.bankName)?.value || "" : firstAccount.bankName,
+                            bankName: parsed.bankName ? bankOptions.find(b => b.label.includes(parsed.bankName) || parsed.bankName.includes(b.label))?.value || "" : firstAccount.bankName,
                             accountName: parsed.accountName || firstAccount.accountName
                         };
                     } else if (parsed.accountNumber || parsed.bankName) {
                         newBankAccounts.push({
                             id: generateId(),
                             accountNumber: parsed.accountNumber || "",
-                            bankName: parsed.bankName ? bankOptions.find(b => b.label === parsed.bankName)?.value || "" : "",
+                            bankName: parsed.bankName ? bankOptions.find(b => b.label.includes(parsed.bankName) || parsed.bankName.includes(b.label))?.value || "" : "",
                             accountName: parsed.accountName || ""
                         });
-                    }
-
-                    // Try to guess bank value from label
-                    const targetIndex = isFirstEmpty ? 0 : newBankAccounts.length - 1;
-                    if (parsed.bankName && !newBankAccounts[targetIndex].bankName) {
-                        const match = bankOptions.find(b => b.label.includes(parsed.bankName!) || parsed.bankName!.includes(b.label));
-                        if (match) {
-                            newBankAccounts[targetIndex].bankName = match.value;
-                        }
                     }
                     newState.bankAccounts = newBankAccounts;
 
                     // 3. Contacts
-                    if (parsed.contacts.length > 0) {
+                    if (parsed.contacts && parsed.contacts.length > 0) {
                         const newContacts = [...newState.contacts];
-                        // Remove default empty contact if present
                         if (newContacts.length === 1 && !newContacts[0].name && !newContacts[0].phone) {
                             newContacts.pop();
                         }
 
-                        parsed.contacts.forEach(c => {
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        parsed.contacts.forEach((c: any) => {
                             const exists = newContacts.some(existing => existing.phone === c.value);
                             if (!exists) {
                                 newContacts.push({
                                     id: generateId(),
-                                    type: c.type,
+                                    type: c.type || "เบอร์โทรศัพท์",
                                     name: '',
                                     phone: c.value
                                 });
@@ -296,16 +287,16 @@ export default function DonationsAdminPage() {
                     parsed.name ? `ชื่อ: ${parsed.name}` : null,
                     parsed.bankName ? `ธนาคาร: ${parsed.bankName}` : null,
                     parsed.accountNumber ? `เลขบัญชี: ${parsed.accountNumber}` : null,
-                    parsed.contacts.length > 0 ? `ผู้ติดต่อ: ${parsed.contacts.length} รายการ` : null
+                    parsed.contacts?.length > 0 ? `ผู้ติดต่อ: ${parsed.contacts.length} รายการ` : null
                 ].filter(Boolean).join('\n');
 
-                alert(`ดึงข้อมูลสำเร็จ:\n${summary}`);
+                alert(`ดึงข้อมูลสำเร็จ (AI):\n${summary}`);
             } else {
-                alert("ไม่พบข้อมูลที่สามารถระบุได้ในรูปภาพนี้");
+                alert("AI ไม่พบข้อมูลที่สามารถระบุได้ในรูปภาพนี้");
             }
         } catch (error) {
-            console.error("OCR Failed:", error);
-            alert("เกิดข้อผิดพลาดในการอ่านรูปภาพ");
+            console.error("AI Extraction Failed:", error);
+            alert("เกิดข้อผิดพลาดในการดึงข้อมูลจากรูปภาพ");
         } finally {
             setIsProcessingOCR(false);
         }
