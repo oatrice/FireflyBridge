@@ -223,10 +223,17 @@ export default function DonationsAdminPage() {
 
             const parsed = parseDonationText(text);
 
-            if (parsed.accountNumber || parsed.bankName) {
+            if (parsed.accountNumber || parsed.bankName || parsed.name || parsed.contacts.length > 0) {
                 setFormData(prev => {
-                    const newBankAccounts = [...prev.bankAccounts];
-                    // Check if the first account is empty, if so fill it, otherwise add new
+                    const newState = { ...prev };
+
+                    // 1. Name (Fill if empty)
+                    if (!newState.name && parsed.name) {
+                        newState.name = parsed.name;
+                    }
+
+                    // 2. Bank Accounts
+                    const newBankAccounts = [...newState.bankAccounts];
                     const firstAccount = newBankAccounts[0];
                     const isFirstEmpty = !firstAccount.accountNumber && !firstAccount.bankName;
 
@@ -234,34 +241,67 @@ export default function DonationsAdminPage() {
                         newBankAccounts[0] = {
                             ...firstAccount,
                             accountNumber: parsed.accountNumber || firstAccount.accountNumber,
-                            bankName: parsed.bankName ? bankOptions.find(b => b.label === parsed.bankName)?.value || "" : firstAccount.bankName
+                            bankName: parsed.bankName ? bankOptions.find(b => b.label === parsed.bankName)?.value || "" : firstAccount.bankName,
+                            accountName: parsed.accountName || firstAccount.accountName
                         };
-                    } else {
+                    } else if (parsed.accountNumber || parsed.bankName) {
                         newBankAccounts.push({
                             id: generateId(),
                             accountNumber: parsed.accountNumber || "",
                             bankName: parsed.bankName ? bankOptions.find(b => b.label === parsed.bankName)?.value || "" : "",
-                            accountName: ""
+                            accountName: parsed.accountName || ""
                         });
                     }
 
-                    // Also try to guess bank value from label if exact match failed but we have the label
-                    if (parsed.bankName && !newBankAccounts[isFirstEmpty ? 0 : newBankAccounts.length - 1].bankName) {
-                        // Try to find by partial match or just leave empty
+                    // Try to guess bank value from label
+                    const targetIndex = isFirstEmpty ? 0 : newBankAccounts.length - 1;
+                    if (parsed.bankName && !newBankAccounts[targetIndex].bankName) {
                         const match = bankOptions.find(b => b.label.includes(parsed.bankName!) || parsed.bankName!.includes(b.label));
                         if (match) {
-                            newBankAccounts[isFirstEmpty ? 0 : newBankAccounts.length - 1].bankName = match.value;
+                            newBankAccounts[targetIndex].bankName = match.value;
                         }
                     }
+                    newState.bankAccounts = newBankAccounts;
 
-                    return {
-                        ...prev,
-                        bankAccounts: newBankAccounts
-                    };
+                    // 3. Contacts
+                    if (parsed.contacts.length > 0) {
+                        const newContacts = [...newState.contacts];
+                        // Remove default empty contact if present
+                        if (newContacts.length === 1 && !newContacts[0].name && !newContacts[0].phone) {
+                            newContacts.pop();
+                        }
+
+                        parsed.contacts.forEach(c => {
+                            const exists = newContacts.some(existing => existing.phone === c.value);
+                            if (!exists) {
+                                newContacts.push({
+                                    id: generateId(),
+                                    type: c.type,
+                                    name: '',
+                                    phone: c.value
+                                });
+                            }
+                        });
+
+                        if (newContacts.length === 0) {
+                            newContacts.push({ id: generateId(), name: "", phone: "", type: "เบอร์โทรศัพท์" });
+                        }
+                        newState.contacts = newContacts;
+                    }
+
+                    return newState;
                 });
-                alert(`ดึงข้อมูลสำเร็จ: ${parsed.bankName || '-'} / ${parsed.accountNumber || '-'}`);
+
+                const summary = [
+                    parsed.name ? `ชื่อ: ${parsed.name}` : null,
+                    parsed.bankName ? `ธนาคาร: ${parsed.bankName}` : null,
+                    parsed.accountNumber ? `เลขบัญชี: ${parsed.accountNumber}` : null,
+                    parsed.contacts.length > 0 ? `ผู้ติดต่อ: ${parsed.contacts.length} รายการ` : null
+                ].filter(Boolean).join('\n');
+
+                alert(`ดึงข้อมูลสำเร็จ:\n${summary}`);
             } else {
-                alert("ไม่พบข้อมูลบัญชีธนาคารในรูปภาพนี้");
+                alert("ไม่พบข้อมูลที่สามารถระบุได้ในรูปภาพนี้");
             }
         } catch (error) {
             console.error("OCR Failed:", error);

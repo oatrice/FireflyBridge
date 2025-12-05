@@ -31,4 +31,29 @@ describe('Donation Parser', () => {
         expect(result.accountNumber).toBeNull();
         expect(result.bankName).toBeNull();
     });
+
+    it('extracts account name', () => {
+        const text = "ชื่อบัญชี มูลนิธิกระจกเงา 123-4-56789-0";
+        const result = parseDonationText(text);
+        expect(result.accountName).toBe('มูลนิธิกระจกเงา');
+    });
+
+    it('extracts phone number', () => {
+        const text = "โทร 081-234-5678 หรือ 02-123-4567";
+        const result = parseDonationText(text);
+        expect(result.contacts).toContainEqual({ type: 'เบอร์โทรศัพท์', value: '081-234-5678' });
+        expect(result.contacts).toContainEqual({ type: 'เบอร์โทรศัพท์', value: '02-123-4567' });
+    });
+
+    it('extracts line id', () => {
+        const text = "Line ID: @mirror_org";
+        const result = parseDonationText(text);
+        expect(result.contacts).toContainEqual({ type: 'Line', value: '@mirror_org' });
+    });
+
+    it('extracts facebook', () => {
+        const text = "FB: Mirror Foundation";
+        const result = parseDonationText(text);
+        expect(result.contacts).toContainEqual({ type: 'Facebook', value: 'Mirror Foundation' });
+    });
 });
