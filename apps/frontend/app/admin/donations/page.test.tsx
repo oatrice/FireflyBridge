@@ -581,5 +581,63 @@ describe('DonationsAdminPage', () => {
 
 
 
+    it('handles auto-fill from image', async () => {
+        const user = userEvent.setup();
+        const mockExtractedData = {
+            name: 'Extracted Org',
+            description: 'Extracted Desc',
+            bankName: 'KBANK',
+            accountNumber: '999-9-99999-9',
+            accountName: 'Extracted Account',
+            contacts: [{ type: 'Line', value: '@lineid' }]
+        };
+
+        (global.fetch as unknown as jest.Mock).mockImplementation((url, options) => {
+            if (url === '/api/extract-donation' && options?.method === 'POST') {
+                return Promise.resolve({
+                    ok: true,
+                    json: async () => mockExtractedData,
+                });
+            }
+            if (url === '/api/banks') return Promise.resolve({ ok: true, json: async () => [{ value: 'KBANK', label: 'Kasikorn (KBANK)' }] });
+            if (url === '/api/donations') return Promise.resolve({ ok: true, json: async () => [] });
+            return Promise.resolve({ ok: true, json: async () => ({}) });
+        });
+
+        // Mock window.alert
+        window.alert = jest.fn();
+
+        render(<DonationsAdminPage />);
+
+        await waitFor(() => {
+            expect(screen.getByText('เพิ่มข้อมูล')).toBeInTheDocument();
+        });
+
+        await user.click(screen.getByText('เพิ่มข้อมูล'));
+
+        // Upload an image to trigger the gallery view
+        const fileInput = screen.getByLabelText('รูปภาพ (Images)');
+        const file = new File(['(⌐□_□)'], 'test.png', { type: 'image/png' });
+        await user.upload(fileInput, file);
+
+        await waitFor(() => {
+            expect(screen.getByText('✨ Auto')).toBeInTheDocument();
+        });
+
+        // Click Auto button
+        await user.click(screen.getByText('✨ Auto'));
+
+        // Verify form updates
+        await waitFor(() => {
+            expect(screen.getByDisplayValue('Extracted Org')).toBeInTheDocument();
+            expect(screen.getByDisplayValue('Extracted Desc')).toBeInTheDocument();
+            expect(screen.getByDisplayValue('999-9-99999-9')).toBeInTheDocument();
+            expect(screen.getByDisplayValue('Extracted Account')).toBeInTheDocument();
+            expect(screen.getByDisplayValue('@lineid')).toBeInTheDocument();
+        });
+
+        expect(window.alert).toHaveBeenCalledWith(expect.stringContaining('ดึงข้อมูลสำเร็จ'));
+    });
+
 });
 

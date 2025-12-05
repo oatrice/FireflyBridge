@@ -243,4 +243,50 @@ describe('DonationsSection', () => {
 
         expect(screen.queryByText('📦 บริจาคสิ่งของ')).not.toBeInTheDocument()
     })
+    it('renders multiple bank accounts correctly', () => {
+        const donationWithMultipleAccounts = [{
+            id: '1',
+            name: 'Multiple Banks',
+            bankAccounts: [
+                { bankName: 'KBANK', accountNumber: '111', accountName: 'Acc1' },
+                { bankName: 'SCB', accountNumber: '222', accountName: 'Acc2' }
+            ],
+            acceptsMoney: true
+        }];
+
+        render(<DonationsSection donations={donationWithMultipleAccounts} loading={false} />)
+
+        expect(screen.getByText('KBANK')).toBeInTheDocument()
+        expect(screen.getByText('111')).toBeInTheDocument()
+        expect(screen.getByText('SCB')).toBeInTheDocument()
+        expect(screen.getByText('222')).toBeInTheDocument()
+    })
+
+    it('sorts by name when bank names are identical', () => {
+        const donations = [
+            { id: '1', name: 'B Org', bankName: 'SameBank' },
+            { id: '2', name: 'A Org', bankName: 'SameBank' },
+        ]
+        render(<DonationsSection donations={donations} loading={false} />)
+
+        const sortSelect = screen.getByRole('combobox')
+        fireEvent.change(sortSelect, { target: { value: 'bank' } })
+
+        const items = screen.getAllByRole('heading', { level: 3 })
+        expect(items[0]).toHaveTextContent('A Org')
+        expect(items[1]).toHaveTextContent('B Org')
+    })
+
+    it('renders contacts', () => {
+        const donationWithContacts = [{
+            id: '1',
+            name: 'Contact Org',
+            contacts: [
+                { name: 'Contact Person', phone: '081-234-5678', type: 'Phone' }
+            ]
+        }];
+        render(<DonationsSection donations={donationWithContacts} loading={false} />)
+        expect(screen.getByText('Contact Person')).toBeInTheDocument()
+        expect(screen.getByText('081-234-5678')).toBeInTheDocument()
+    })
 })
