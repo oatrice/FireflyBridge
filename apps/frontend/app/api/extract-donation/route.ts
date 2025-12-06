@@ -43,7 +43,7 @@ export async function POST(req: Request) {
             },
         ]);
 
-        const response = await result.response;
+        const response = result.response;
         const text = response.text();
 
         // Clean up markdown code blocks if present

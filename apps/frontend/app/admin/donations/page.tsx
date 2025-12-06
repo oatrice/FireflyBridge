@@ -186,23 +186,26 @@ export default function DonationsAdminPage() {
         setFormData({ ...formData, bankAccounts: newBankAccounts });
     };
 
+    const readFiles = async (files: FileList): Promise<string[]> => {
+        const promises = Array.from(files).map(file => {
+            return new Promise<string>((resolve) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result as string);
+                reader.readAsDataURL(file);
+            });
+        });
+        return Promise.all(promises);
+    };
+
     const handleGalleryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
-        if (files && files.length > 0) {
-            const promises = Array.from(files).map(file => {
-                return new Promise<string>((resolve) => {
-                    const reader = new FileReader();
-                    reader.onloadend = () => resolve(reader.result as string);
-                    reader.readAsDataURL(file);
-                });
-            });
+        if (!files || files.length === 0) return;
 
-            const results = await Promise.all(promises);
-            setFormData(prev => ({
-                ...prev,
-                images: [...(prev.images || []), ...results]
-            }));
-        }
+        const results = await readFiles(files);
+        setFormData(prev => ({
+            ...prev,
+            images: [...(prev.images || []), ...results]
+        }));
     };
 
     const removeGalleryImage = (index: number) => {
@@ -210,6 +213,53 @@ export default function DonationsAdminPage() {
             ...prev,
             images: prev.images.filter((_, i) => i !== index)
         }));
+    };
+
+    const updateBankAccounts = (currentAccounts: DonationForm['bankAccounts'], parsed: any, bankOptions: { value: string; label: string }[]) => {
+        const newAccounts = [...currentAccounts];
+        const firstAccount = newAccounts[0];
+        const isFirstEmpty = !firstAccount.accountNumber && !firstAccount.bankName;
+
+        if (isFirstEmpty) {
+            newAccounts[0] = {
+                ...firstAccount,
+                accountNumber: parsed.accountNumber || firstAccount.accountNumber,
+                bankName: parsed.bankName ? bankOptions.find(b => b.label.includes(parsed.bankName) || parsed.bankName.includes(b.label))?.value || "" : firstAccount.bankName,
+                accountName: parsed.accountName || firstAccount.accountName
+            };
+        } else if (parsed.accountNumber || parsed.bankName) {
+            newAccounts.push({
+                id: generateId(),
+                accountNumber: parsed.accountNumber || "",
+                bankName: parsed.bankName ? bankOptions.find(b => b.label.includes(parsed.bankName) || parsed.bankName.includes(b.label))?.value || "" : "",
+                accountName: parsed.accountName || ""
+            });
+        }
+        return newAccounts;
+    };
+
+    const updateContacts = (currentContacts: DonationForm['contacts'], parsedContacts: any[]) => {
+        const newContacts = [...currentContacts];
+        if (newContacts.length === 1 && !newContacts[0].name && !newContacts[0].phone) {
+            newContacts.pop();
+        }
+
+        parsedContacts.forEach((c: any) => {
+            const exists = newContacts.some(existing => existing.phone === c.value);
+            if (!exists) {
+                newContacts.push({
+                    id: generateId(),
+                    type: c.type || "เบอร์โทรศัพท์",
+                    name: '',
+                    phone: c.value
+                });
+            }
+        });
+
+        if (newContacts.length === 0) {
+            newContacts.push({ id: generateId(), name: "", phone: "", type: "เบอร์โทรศัพท์" });
+        }
+        return newContacts;
     };
 
     const handleAutoFill = async (imageUrl: string) => {
@@ -234,51 +284,11 @@ export default function DonationsAdminPage() {
                     if (!newState.description && parsed.description) newState.description = parsed.description;
 
                     // 2. Bank Accounts
-                    const newBankAccounts = [...newState.bankAccounts];
-                    const firstAccount = newBankAccounts[0];
-                    const isFirstEmpty = !firstAccount.accountNumber && !firstAccount.bankName;
-
-                    if (isFirstEmpty) {
-                        newBankAccounts[0] = {
-                            ...firstAccount,
-                            accountNumber: parsed.accountNumber || firstAccount.accountNumber,
-                            bankName: parsed.bankName ? bankOptions.find(b => b.label.includes(parsed.bankName) || parsed.bankName.includes(b.label))?.value || "" : firstAccount.bankName,
-                            accountName: parsed.accountName || firstAccount.accountName
-                        };
-                    } else if (parsed.accountNumber || parsed.bankName) {
-                        newBankAccounts.push({
-                            id: generateId(),
-                            accountNumber: parsed.accountNumber || "",
-                            bankName: parsed.bankName ? bankOptions.find(b => b.label.includes(parsed.bankName) || parsed.bankName.includes(b.label))?.value || "" : "",
-                            accountName: parsed.accountName || ""
-                        });
-                    }
-                    newState.bankAccounts = newBankAccounts;
+                    newState.bankAccounts = updateBankAccounts(newState.bankAccounts, parsed, bankOptions);
 
                     // 3. Contacts
                     if (parsed.contacts && parsed.contacts.length > 0) {
-                        const newContacts = [...newState.contacts];
-                        if (newContacts.length === 1 && !newContacts[0].name && !newContacts[0].phone) {
-                            newContacts.pop();
-                        }
-
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        parsed.contacts.forEach((c: any) => {
-                            const exists = newContacts.some(existing => existing.phone === c.value);
-                            if (!exists) {
-                                newContacts.push({
-                                    id: generateId(),
-                                    type: c.type || "เบอร์โทรศัพท์",
-                                    name: '',
-                                    phone: c.value
-                                });
-                            }
-                        });
-
-                        if (newContacts.length === 0) {
-                            newContacts.push({ id: generateId(), name: "", phone: "", type: "เบอร์โทรศัพท์" });
-                        }
-                        newState.contacts = newContacts;
+                        newState.contacts = updateContacts(newState.contacts, parsed.contacts);
                     }
 
                     return newState;
@@ -348,25 +358,31 @@ export default function DonationsAdminPage() {
                                     </td>
                                     <td className="px-6 py-4">
                                         {/* Display multiple bank accounts or fallback to legacy */}
-                                        {(donation.bankAccounts && donation.bankAccounts.length > 0) ? (
-                                            <div className="flex flex-col gap-2">
-                                                {donation.bankAccounts.map((bank, idx) => (
-                                                    <div key={idx} className="text-sm border-b border-neutral-100 last:border-0 pb-1 last:pb-0">
-                                                        <div className="font-medium text-neutral-900">{bank.bankName}</div>
-                                                        <div className="text-neutral-600 font-mono">{bank.accountNumber}</div>
-                                                        <div className="text-neutral-500 text-xs">{bank.accountName}</div>
+                                        {(() => {
+                                            if (donation.bankAccounts && donation.bankAccounts.length > 0) {
+                                                return (
+                                                    <div className="flex flex-col gap-2">
+                                                        {donation.bankAccounts.map((bank, idx) => (
+                                                            <div key={bank.id || `${bank.bankName}-${bank.accountNumber}-${idx}`} className="text-sm border-b border-neutral-100 last:border-0 pb-1 last:pb-0">
+                                                                <div className="font-medium text-neutral-900">{bank.bankName}</div>
+                                                                <div className="text-neutral-600 font-mono">{bank.accountNumber}</div>
+                                                                <div className="text-neutral-500 text-xs">{bank.accountName}</div>
+                                                            </div>
+                                                        ))}
                                                     </div>
-                                                ))}
-                                            </div>
-                                        ) : donation.bankName ? (
-                                            <div className="text-sm">
-                                                <div className="font-medium text-neutral-900">{donation.bankName}</div>
-                                                <div className="text-neutral-600 font-mono">{donation.accountNumber}</div>
-                                                <div className="text-neutral-500 text-xs">{donation.accountName}</div>
-                                            </div>
-                                        ) : (
-                                            <span className="text-neutral-400 text-sm">-</span>
-                                        )}
+                                                );
+                                            } else if (donation.bankName) {
+                                                return (
+                                                    <div className="text-sm">
+                                                        <div className="font-medium text-neutral-900">{donation.bankName}</div>
+                                                        <div className="text-neutral-600 font-mono">{donation.accountNumber}</div>
+                                                        <div className="text-neutral-500 text-xs">{donation.accountName}</div>
+                                                    </div>
+                                                );
+                                            } else {
+                                                return <span className="text-neutral-400 text-sm">-</span>;
+                                            }
+                                        })()}
                                     </td>
                                     <td className="px-6 py-4">
                                         {donation.donationPoints && donation.donationPoints.length > 0 ? (
@@ -446,7 +462,7 @@ export default function DonationsAdminPage() {
                             {formData.images && formData.images.length > 0 && (
                                 <div className="flex flex-wrap gap-4">
                                     {formData.images.map((img, index) => (
-                                        <div key={index} className="w-24 h-24 relative border rounded overflow-hidden shrink-0 group">
+                                        <div key={img} className="w-24 h-24 relative border rounded overflow-hidden shrink-0 group">
                                             {/* eslint-disable-next-line @next/next/no-img-element */}
                                             <img src={img} alt={`Gallery item ${index + 1}`} className="object-cover w-full h-full" />
                                             <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2">

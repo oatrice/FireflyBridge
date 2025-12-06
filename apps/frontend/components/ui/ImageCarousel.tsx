@@ -3,13 +3,13 @@
 import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 
-interface ImageCarouselProps {
+type ImageCarouselProps = Readonly<{
     images: string[];
     alt: string;
     className?: string;
     autoPlay?: boolean;
     interval?: number;
-}
+}>;
 
 export function ImageCarousel({
     images,
@@ -61,23 +61,17 @@ export function ImageCarousel({
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
             >
-                <div
-                    className="relative overflow-hidden rounded-xl border border-neutral-200 bg-neutral-50 aspect-video cursor-pointer"
+                <button
+                    type="button"
+                    className="relative overflow-hidden rounded-xl border border-neutral-200 bg-neutral-50 aspect-video cursor-pointer w-full text-left p-0"
                     onClick={() => setModalOpen(true)}
-                    role="button"
-                    tabIndex={0}
-                    onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                            setModalOpen(true);
-                        }
-                    }}
                 >
                     <div
                         className="flex h-full transition-transform duration-500 ease-out"
                         style={{ transform: `translateX(-${currentIndex * 100}%)` }}
                     >
                         {safeImages.map((src, index) => (
-                            <div key={index} className="relative min-w-full h-full">
+                            <div key={`${src}-${index}`} className="relative min-w-full h-full">
                                 <Image
                                     src={src}
                                     alt={`${alt} - Image ${index + 1}`}
@@ -115,7 +109,7 @@ export function ImageCarousel({
                         <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
                             {safeImages.map((_, idx) => (
                                 <button
-                                    key={idx}
+                                    key={`dot-${idx}`}
                                     onClick={(e) => goToSlide(idx, e)}
                                     className={`w-2 h-2 rounded-full transition-colors ${idx === currentIndex ? "bg-white" : "bg-white/50 hover:bg-white/80"
                                         }`}
@@ -128,8 +122,8 @@ export function ImageCarousel({
                     <div className="absolute top-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
                         🔍 คลิกเพื่อขยาย
                     </div>
-                </div>
-            </div>
+                </button>
+            </div >
 
             {/* Modal */}
             {modalOpen && (

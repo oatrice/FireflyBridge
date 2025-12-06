@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
+
 import { ImageCarousel } from "@/components/ui/ImageCarousel";
 import type { DonationChannel } from "@/lib/types";
 import { getBankInfo } from "@/lib/utils/bankInfo";
@@ -168,7 +168,15 @@ export default function DonationsSection({ donations, loading }: DonationsSectio
                             {(showAllDonations ? sortedDonations : sortedDonations.slice(0, 6)).map((donation, i) => {
                                 const bankAccounts = donation.bankAccounts && donation.bankAccounts.length > 0
                                     ? donation.bankAccounts
-                                    : (donation.bankName ? [{ bankName: donation.bankName, accountNumber: donation.accountNumber, accountName: donation.accountName }] : []);
+                                    : [];
+
+                                if (bankAccounts.length === 0 && donation.bankName) {
+                                    bankAccounts.push({
+                                        bankName: donation.bankName,
+                                        accountNumber: donation.accountNumber,
+                                        accountName: donation.accountName
+                                    });
+                                }
 
                                 const isMoney = bankAccounts.length > 0 || !!donation.acceptsMoney;
                                 const isItems = !!donation.donationPoints && donation.donationPoints.length > 0;
@@ -220,7 +228,7 @@ export default function DonationsSection({ donations, loading }: DonationsSectio
                                                 {bankAccounts.map((account, idx) => {
                                                     const bankInfo = getBankInfo(account.bankName);
                                                     return (
-                                                        <div key={idx} className="bg-neutral-50 p-4 rounded-xl border border-neutral-100">
+                                                        <div key={`${account.bankName}-${account.accountNumber}`} className="bg-neutral-50 p-4 rounded-xl border border-neutral-100">
                                                             <div className="flex items-center gap-2 mb-2">
                                                                 <span className="text-xl">{bankInfo?.icon || '🏦'}</span>
                                                                 <div>
