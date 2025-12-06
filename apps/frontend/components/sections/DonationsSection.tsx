@@ -173,8 +173,8 @@ export default function DonationsSection({ donations, loading }: DonationsSectio
                                 if (bankAccounts.length === 0 && donation.bankName) {
                                     bankAccounts.push({
                                         bankName: donation.bankName,
-                                        accountNumber: donation.accountNumber,
-                                        accountName: donation.accountName
+                                        accountNumber: donation.accountNumber || "",
+                                        accountName: donation.accountName || ""
                                     });
                                 }
 
