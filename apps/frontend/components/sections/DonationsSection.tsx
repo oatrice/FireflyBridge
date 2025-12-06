@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
+
+import { ImageCarousel } from "@/components/ui/ImageCarousel";
 import type { DonationChannel } from "@/lib/types";
 import { getBankInfo } from "@/lib/utils/bankInfo";
 
@@ -15,9 +16,7 @@ export default function DonationsSection({ donations, loading }: DonationsSectio
     const [donationFilter, setDonationFilter] = useState("ทั้งหมด");
     const [donationSortBy, setDonationSortBy] = useState<"name" | "bank">("name");
     const [showAllDonations, setShowAllDonations] = useState(false);
-    const [qrModalOpen, setQrModalOpen] = useState(false);
-    const [qrModalImage, setQrModalImage] = useState("");
-    const [qrModalTitle, setQrModalTitle] = useState("");
+
 
     const getCategory = (d: DonationChannel) => {
         if (d.name.includes("โรงพยาบาล") || d.name.includes("รพ.")) return "โรงพยาบาล";
@@ -167,9 +166,20 @@ export default function DonationsSection({ donations, loading }: DonationsSectio
                         </div>
                         <div className="columns-1 md:columns-2 gap-6 space-y-6">
                             {(showAllDonations ? sortedDonations : sortedDonations.slice(0, 6)).map((donation, i) => {
-                                const isMoney = !!donation.bankName || !!donation.acceptsMoney;
+                                const bankAccounts = donation.bankAccounts && donation.bankAccounts.length > 0
+                                    ? donation.bankAccounts
+                                    : [];
+
+                                if (bankAccounts.length === 0 && donation.bankName) {
+                                    bankAccounts.push({
+                                        bankName: donation.bankName,
+                                        accountNumber: donation.accountNumber || "",
+                                        accountName: donation.accountName || ""
+                                    });
+                                }
+
+                                const isMoney = bankAccounts.length > 0 || !!donation.acceptsMoney;
                                 const isItems = !!donation.donationPoints && donation.donationPoints.length > 0;
-                                const bankInfo = donation.bankName ? getBankInfo(donation.bankName) : null;
 
                                 return (
                                     <div
@@ -202,57 +212,54 @@ export default function DonationsSection({ donations, loading }: DonationsSectio
                                             </p>
                                         )}
 
-                                        {donation.qrCodeUrl && (
-                                            <div className="mb-4 flex justify-center bg-neutral-50 p-4 rounded-xl group relative">
-                                                <Image
-                                                    src={donation.qrCodeUrl}
-                                                    alt={`QR Code for ${donation.name}`}
-                                                    width={180}
-                                                    height={180}
-                                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                                                    onClick={() => {
-                                                        setQrModalImage(donation.qrCodeUrl!);
-                                                        setQrModalTitle(donation.name);
-                                                        setQrModalOpen(true);
-                                                    }}
-                                                    className="rounded-lg border border-neutral-200 shadow-sm hover:scale-105 hover:shadow-xl transition-all duration-300 cursor-pointer object-contain bg-white"
+                                        {donation.images && donation.images.length > 0 && (
+                                            <div className="mb-4">
+                                                <ImageCarousel
+                                                    images={donation.images}
+                                                    alt={`Gallery for ${donation.name}`}
                                                 />
-                                                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-black/75 text-white text-xs px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
-                                                    🔍 คลิกเพื่อขยาย
-                                                </div>
                                             </div>
                                         )}
 
-                                        {donation.bankName && bankInfo ? (
-                                            <div className="bg-neutral-50 p-4 rounded-xl mb-4 border border-neutral-100">
-                                                <div className="flex items-center gap-2 mb-2">
-                                                    <span className="text-xl">{bankInfo.icon}</span>
-                                                    <div>
-                                                        <p className="text-xs text-neutral-500 font-medium">ธนาคาร</p>
-                                                        <p className={`font-bold text-sm ${bankInfo.color.replace("bg-", "text-")}`}>
-                                                            {donation.bankName}
-                                                        </p>
-                                                    </div>
-                                                </div>
 
-                                                <div className="flex items-center justify-between gap-2 bg-white p-3 rounded-lg border border-neutral-200 shadow-sm">
-                                                    <p className="text-lg font-mono font-bold text-neutral-800 tracking-wide">
-                                                        {donation.accountNumber}
-                                                    </p>
-                                                    <button
-                                                        onClick={() => {
-                                                            navigator.clipboard.writeText(donation.accountNumber || "");
-                                                            alert("คัดลอกเลขบัญชีแล้ว");
-                                                        }}
-                                                        className="flex items-center gap-1 text-xs bg-neutral-100 hover:bg-neutral-200 text-neutral-700 px-3 py-1.5 rounded-md font-medium transition-colors"
-                                                    >
-                                                        <span>📋</span>
-                                                        <span>คัดลอก</span>
-                                                    </button>
-                                                </div>
-                                                <p className="text-xs text-neutral-500 mt-2 truncate">
-                                                    ชื่อบัญชี: {donation.accountName}
-                                                </p>
+
+                                        {bankAccounts.length > 0 ? (
+                                            <div className="space-y-3 mb-4">
+                                                {bankAccounts.map((account, idx) => {
+                                                    const bankInfo = getBankInfo(account.bankName);
+                                                    return (
+                                                        <div key={`${account.bankName}-${account.accountNumber}`} className="bg-neutral-50 p-4 rounded-xl border border-neutral-100">
+                                                            <div className="flex items-center gap-2 mb-2">
+                                                                <span className="text-xl">{bankInfo?.icon || '🏦'}</span>
+                                                                <div>
+                                                                    <p className="text-xs text-neutral-500 font-medium">ธนาคาร</p>
+                                                                    <p className={`font-bold text-sm ${bankInfo?.color?.replace("bg-", "text-") || 'text-neutral-700'}`}>
+                                                                        {account.bankName}
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+
+                                                            <div className="flex items-center justify-between gap-2 bg-white p-3 rounded-lg border border-neutral-200 shadow-sm">
+                                                                <p className="text-lg font-mono font-bold text-neutral-800 tracking-wide">
+                                                                    {account.accountNumber}
+                                                                </p>
+                                                                <button
+                                                                    onClick={() => {
+                                                                        navigator.clipboard.writeText(account.accountNumber || "");
+                                                                        alert("คัดลอกเลขบัญชีแล้ว");
+                                                                    }}
+                                                                    className="flex items-center gap-1 text-xs bg-neutral-100 hover:bg-neutral-200 text-neutral-700 px-3 py-1.5 rounded-md font-medium transition-colors"
+                                                                >
+                                                                    <span>📋</span>
+                                                                    <span>คัดลอก</span>
+                                                                </button>
+                                                            </div>
+                                                            <p className="text-xs text-neutral-500 mt-2 truncate">
+                                                                ชื่อบัญชี: {account.accountName}
+                                                            </p>
+                                                        </div>
+                                                    );
+                                                })}
                                             </div>
                                         ) : (
                                             <div className="bg-neutral-50 p-4 rounded-xl mb-4 border border-neutral-100 text-center py-6 flex-1 flex flex-col justify-center">
@@ -318,40 +325,7 @@ export default function DonationsSection({ donations, loading }: DonationsSectio
                 )}
             </section>
 
-            {/* QR Code Modal */}
-            {qrModalOpen && (
-                <div
-                    className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
-                    onClick={() => setQrModalOpen(false)}
-                >
-                    <div className="relative max-w-4xl w-full">
-                        <button
-                            onClick={() => setQrModalOpen(false)}
-                            className="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors text-4xl font-light"
-                        >
-                            ×
-                        </button>
-                        <div className="bg-white rounded-2xl p-8 shadow-2xl">
-                            <h3 className="text-2xl font-bold text-neutral-800 mb-4 text-center">
-                                {qrModalTitle}
-                            </h3>
-                            <div className="flex justify-center">
-                                <Image
-                                    src={qrModalImage}
-                                    alt={qrModalTitle}
-                                    width={600}
-                                    height={600}
-                                    className="max-w-full max-h-[70vh] w-auto h-auto rounded-lg shadow-lg object-contain"
-                                    onClick={(e) => e.stopPropagation()}
-                                />
-                            </div>
-                            <p className="text-center text-neutral-500 text-sm mt-4">
-                                คลิกนอกกรอบเพื่อปิด
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            )}
+            {/* QR Code Modal Removed */}
         </>
     );
 }

@@ -47,10 +47,11 @@ export interface DonationChannel {
     accountNumber?: string;
     accountName?: string;
     description?: string;
-    qrCodeUrl?: string;
     contacts?: { name: string; phone: string; type?: string }[];
     donationPoints?: string[];
     acceptsMoney?: boolean;
+    bankAccounts?: { id?: string; bankName: string; accountNumber: string; accountName: string }[];
+    images?: string[];
 }
 
 export interface BankInfo {

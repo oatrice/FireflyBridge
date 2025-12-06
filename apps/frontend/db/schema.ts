@@ -87,10 +87,11 @@ export const donations = pgTable("donations", {
     accountNumber: text("account_number"),
     accountName: text("account_name"),
     description: text("description"),
-    qrCodeUrl: text("qr_code_url"),
     contacts: jsonb("contacts"),
     donationPoints: text("donation_points").array(),
     acceptsMoney: boolean("accepts_money").default(true),
+    bankAccounts: jsonb("bank_accounts"),
+    images: jsonb("images"),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),
 });

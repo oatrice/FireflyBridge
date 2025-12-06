@@ -117,25 +117,7 @@ describe('DonationsSection', () => {
         expect(sortSelect).toHaveValue('bank')
     })
 
-    it('opens and closes QR modal', () => {
-        const donationsWithQR = [
-            { ...mockDonations[0], qrCodeUrl: '/qr-test.png' }
-        ]
-        render(<DonationsSection donations={donationsWithQR} loading={false} />)
 
-        // Click QR code image
-        const qrImage = screen.getByAltText(/QR Code for/i)
-        fireEvent.click(qrImage)
-
-        // Check if modal is open (look for close button or modal content)
-        expect(screen.getByText('คลิกนอกกรอบเพื่อปิด')).toBeInTheDocument()
-
-        // Close modal
-        const closeBtn = screen.getByText('×')
-        fireEvent.click(closeBtn)
-
-        expect(screen.queryByText('คลิกนอกกรอบเพื่อปิด')).not.toBeInTheDocument()
-    })
 
     it('copies account number to clipboard', () => {
         const writeText = jest.fn()
@@ -234,29 +216,20 @@ describe('DonationsSection', () => {
         expect(items.length).toBe(2)
     })
 
-    it('handles QR modal backdrop click and propagation', () => {
-        const donationsWithQR = [
-            { ...mockDonations[0], qrCodeUrl: '/qr-test.png' }
+
+    it('renders ImageCarousel when images are present', () => {
+        const donationsWithImages = [
+            { ...mockDonations[0], images: ['/img1.png', '/img2.png'] }
         ]
-        render(<DonationsSection donations={donationsWithQR} loading={false} />)
+        render(<DonationsSection donations={donationsWithImages} loading={false} />)
 
-        // Open modal
-        fireEvent.click(screen.getByAltText(/QR Code for/i))
-        expect(screen.getByText('คลิกนอกกรอบเพื่อปิด')).toBeInTheDocument()
-
-        // Click on the image inside modal (should NOT close)
-        // The modal image alt text is just the donation name, while the trigger is "QR Code for ..."
-        const modalImage = screen.getByAltText(donationsWithQR[0].name)
-        fireEvent.click(modalImage)
-        expect(screen.getByText('คลิกนอกกรอบเพื่อปิด')).toBeInTheDocument()
-
-        // Click on backdrop (should close)
-        const backdrop = screen.getByText('คลิกนอกกรอบเพื่อปิด').closest('div')?.parentElement?.parentElement
-        if (backdrop) {
-            fireEvent.click(backdrop)
-            expect(screen.queryByText('คลิกนอกกรอบเพื่อปิด')).not.toBeInTheDocument()
-        }
+        // ImageCarousel renders images with alt text containing the passed alt prop
+        // In DonationsSection we pass `Gallery for ${donation.name}`
+        // The Carousel renders the first image initially
+        const carouselImage = screen.getByAltText(`Gallery for ${donationsWithImages[0].name} - Image 1`)
+        expect(carouselImage).toBeInTheDocument()
     })
+
     it('does not show isItems badge when donationPoints is empty array', () => {
         const donationsWithEmptyPoints = [
             {
@@ -269,5 +242,51 @@ describe('DonationsSection', () => {
         render(<DonationsSection donations={donationsWithEmptyPoints} loading={false} />)
 
         expect(screen.queryByText('📦 บริจาคสิ่งของ')).not.toBeInTheDocument()
+    })
+    it('renders multiple bank accounts correctly', () => {
+        const donationWithMultipleAccounts = [{
+            id: '1',
+            name: 'Multiple Banks',
+            bankAccounts: [
+                { bankName: 'KBANK', accountNumber: '111', accountName: 'Acc1' },
+                { bankName: 'SCB', accountNumber: '222', accountName: 'Acc2' }
+            ],
+            acceptsMoney: true
+        }];
+
+        render(<DonationsSection donations={donationWithMultipleAccounts} loading={false} />)
+
+        expect(screen.getByText('KBANK')).toBeInTheDocument()
+        expect(screen.getByText('111')).toBeInTheDocument()
+        expect(screen.getByText('SCB')).toBeInTheDocument()
+        expect(screen.getByText('222')).toBeInTheDocument()
+    })
+
+    it('sorts by name when bank names are identical', () => {
+        const donations = [
+            { id: '1', name: 'B Org', bankName: 'SameBank' },
+            { id: '2', name: 'A Org', bankName: 'SameBank' },
+        ]
+        render(<DonationsSection donations={donations} loading={false} />)
+
+        const sortSelect = screen.getByRole('combobox')
+        fireEvent.change(sortSelect, { target: { value: 'bank' } })
+
+        const items = screen.getAllByRole('heading', { level: 3 })
+        expect(items[0]).toHaveTextContent('A Org')
+        expect(items[1]).toHaveTextContent('B Org')
+    })
+
+    it('renders contacts', () => {
+        const donationWithContacts = [{
+            id: '1',
+            name: 'Contact Org',
+            contacts: [
+                { name: 'Contact Person', phone: '081-234-5678', type: 'Phone' }
+            ]
+        }];
+        render(<DonationsSection donations={donationWithContacts} loading={false} />)
+        expect(screen.getByText('Contact Person')).toBeInTheDocument()
+        expect(screen.getByText('081-234-5678')).toBeInTheDocument()
     })
 })
